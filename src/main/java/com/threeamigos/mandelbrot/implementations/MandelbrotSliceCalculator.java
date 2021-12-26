@@ -138,10 +138,6 @@ public class MandelbrotSliceCalculator implements Runnable {
 		return iterations;
 	}
 
-	private boolean isPeriod2BulbVisible(double x, double y) {
-		return true;
-	}
-
 	private boolean inCardioid(double x, double y) {
 		double xMinusQuarter = x - 0.25d;
 		double y2 = y * y;
