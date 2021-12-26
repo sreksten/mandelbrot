@@ -1,0 +1,12 @@
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/PointsInfoImpl.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/MultithreadedMandelbrotCalculator.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/IndexColorModelImageProducer.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/MandelbrotSliceCalculator.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/DataBufferImpl.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/interfaces/ImageProducer.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/MandelbrotCanvas.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/implementations/DirectColorModelImageProducer.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/interfaces/DataBuffer.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/interfaces/MandelbrotCalculator.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/interfaces/PointsInfo.java
+/mnt/raid1/stefano/eclipse-workspace/mandelbrot/src/main/java/com/threeamigos/mandelbrot/Main.java
