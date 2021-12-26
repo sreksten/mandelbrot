@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces;
 
 public interface MandelbrotCalculator {
 
-	public static final int MAX_ITERATIONS = 1024;
+	public static final int MAX_ITERATIONS = 8192;
 
 	public void calculate(PointsInfo pointsInfo, DataBuffer dataBuffer);
 
