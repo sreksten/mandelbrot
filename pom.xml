@@ -24,6 +24,7 @@
 							<mainClass>com.threeamigos.mandelbrot.Main</mainClass>
 						</manifest>
 					</archive>
+					<outputDirectory>${project.basedir}</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
