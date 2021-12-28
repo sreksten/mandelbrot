@@ -4,7 +4,7 @@
   <artifactId>mandelbrot</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <name>Mandelbrot</name>
-  <description>Disegna l'insieme di Mandelbrot</description>
+  <description>Draws the Mandelbrot set</description>
   <packaging>jar</packaging>
   
 	<properties>
