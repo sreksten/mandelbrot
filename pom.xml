@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.threeamigos</groupId>
   <artifactId>mandelbrot</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>Mandelbrot</name>
   <description>Disegna l'insieme di Mandelbrot</description>
   <packaging>jar</packaging>
