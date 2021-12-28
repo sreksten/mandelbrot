@@ -5,20 +5,11 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 public class Main {
 
-	private boolean fullScreen;
-
 	public Main(boolean fullScreen) {
-		this.fullScreen = fullScreen;
-		SwingUtilities.invokeLater(this::createAndShowGUI);
-	}
-
-	private void createAndShowGUI() {
-
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 
 		JFrame jframe = new JFrame("3AM Mandelbrot");

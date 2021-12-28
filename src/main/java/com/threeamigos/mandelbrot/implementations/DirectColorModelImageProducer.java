@@ -61,7 +61,8 @@ public class DirectColorModelImageProducer implements ImageProducer {
 		int length = pixels.length;
 		for (int i = 0; i < length; i++) {
 			int currentIterations = pixels[i];
-			if (currentIterations == MandelbrotCalculator.MAX_ITERATIONS) {
+			if (currentIterations == MandelbrotCalculator.MAX_ITERATIONS
+					|| currentIterations == dataBuffer.NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
 				translatedValues[i] = map[currentIterations];

@@ -48,6 +48,7 @@ public class MandelbrotCanvas extends JPanel
 		setSize(width, height);
 		setBackground(Color.YELLOW);
 		setFocusable(true);
+		setDoubleBuffered(true);
 
 		pointsInfo = new PointsInfoImpl();
 		pointsInfo.setDimensions(width, height);
@@ -71,18 +72,25 @@ public class MandelbrotCanvas extends JPanel
 	}
 
 	private void startCalculationThread() {
-		if (calculationThread == null || !calculationThreadRunning) {
-			calculationThreadRunning = true;
-			calculationThread = new Thread(this);
-			calculationThread.setDaemon(true);
-			calculationThread.start();
-
-			calculator.calculate(pointsInfo, dataBuffer);
-			lastDrawTime = calculator.getDrawTime();
-			image = imageProducer.produceImage(dataBuffer);
-
-			calculationThreadRunning = false;
+		if (calculationThreadRunning) {
+			calculationThread.interrupt();
+			try {
+				calculationThread.join();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
+
+		calculationThreadRunning = true;
+		calculationThread = new Thread(this);
+		calculationThread.setDaemon(true);
+		calculationThread.start();
+
+		calculator.calculate(pointsInfo, dataBuffer);
+		lastDrawTime = calculator.getDrawTime();
+		image = imageProducer.produceImage(dataBuffer);
+
+		calculationThreadRunning = false;
 	}
 
 	@Override
@@ -115,7 +123,8 @@ public class MandelbrotCanvas extends JPanel
 				String.format("Zoom factor: %f - count: %d", pointsInfo.getZoomFactor(), pointsInfo.getZoomCount()),
 				xCoord, yCoord);
 		yCoord += vSpacing;
-		drawString(graphics, String.format("Draw time: %d ms", lastDrawTime), xCoord, yCoord);
+		drawString(graphics, String.format("Draw time: %d ms using %d threads, max %d iterations", lastDrawTime,
+				calculator.getNumberOfThreads(), MandelbrotCalculator.MAX_ITERATIONS), xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics,
 				String.format("Real interval: [%1.14f,%1.14f]", pointsInfo.getMinX(), pointsInfo.getMaxX()), xCoord,
@@ -239,16 +248,6 @@ public class MandelbrotCanvas extends JPanel
 		// We won't follow this
 	}
 
-	private void switchColorModels() {
-		if (imageProducer == directColorModelImageProducer) {
-			imageProducer = indexColorModelImageProducer;
-		} else {
-			imageProducer = directColorModelImageProducer;
-		}
-		image = imageProducer.produceImage(dataBuffer);
-		repaint();
-	}
-
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
@@ -261,6 +260,16 @@ public class MandelbrotCanvas extends JPanel
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// We won't follow this
+	}
+
+	private void switchColorModels() {
+		if (imageProducer == directColorModelImageProducer) {
+			imageProducer = indexColorModelImageProducer;
+		} else {
+			imageProducer = directColorModelImageProducer;
+		}
+		image = imageProducer.produceImage(dataBuffer);
+		repaint();
 	}
 
 }

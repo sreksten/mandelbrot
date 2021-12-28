@@ -27,6 +27,11 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	}
 
 	@Override
+	public int getNumberOfThreads() {
+		return cores;
+	}
+
+	@Override
 	public void calculate(PointsInfo pointsInfo, DataBuffer dataBuffer) {
 
 		calculationNumber++;
