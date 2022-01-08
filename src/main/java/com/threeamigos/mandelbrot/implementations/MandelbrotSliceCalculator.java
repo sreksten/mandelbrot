@@ -15,9 +15,9 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 	private boolean running;
 
-	public MandelbrotSliceCalculator(PointsInfo drawInfo, int startX, int startY, int endX, int endY,
+	public MandelbrotSliceCalculator(PointsInfo pointsInfo, int startX, int startY, int endX, int endY,
 			DataBuffer dataBuffer) {
-		this.pointsInfo = drawInfo;
+		this.pointsInfo = pointsInfo;
 		this.startX = startX;
 		this.startY = startY;
 		this.endX = endX;
