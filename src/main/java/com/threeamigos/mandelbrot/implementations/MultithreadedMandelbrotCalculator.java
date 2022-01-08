@@ -1,8 +1,6 @@
 package com.threeamigos.mandelbrot.implementations;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
@@ -10,13 +8,12 @@ import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 
 public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
-	private int calculationNumber = 0;
-
 	private long drawTime;
 
 	int cores;
 	private Thread[] threads;
 	private MandelbrotSliceCalculator[] calculators;
+	private SliceDataQueue queue;
 
 	boolean running;
 
@@ -24,6 +21,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 		cores = Runtime.getRuntime().availableProcessors();
 		threads = new Thread[cores];
 		calculators = new MandelbrotSliceCalculator[cores];
+		queue = SliceDataQueue.getInstance();
 	}
 
 	@Override
@@ -34,25 +32,22 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	@Override
 	public void calculate(PointsInfo pointsInfo, DataBuffer dataBuffer) {
 
-		calculationNumber++;
-
 		running = true;
 
 		dataBuffer.clear();
 
-		List<Slice> slices = prepareSlices(pointsInfo);
+		prepareSlices(pointsInfo);
 
 		long startMillis = System.currentTimeMillis();
 
-		while (running && !slices.isEmpty()) {
-			for (int i = 0; i < cores && !slices.isEmpty(); i++) {
+		while (running && !queue.isEmpty()) {
+			for (int i = 0; i < cores && !queue.isEmpty(); i++) {
 				Thread thread = threads[i];
 				if (thread == null || !thread.isAlive()) {
-					Slice slice = slices.remove(0); // NOSONAR
+					SliceData slice = queue.remove();
 					calculators[i] = new MandelbrotSliceCalculator(pointsInfo, slice.startX, slice.startY, slice.endX,
 							slice.endY, dataBuffer);
 					thread = new Thread(calculators[i]);
-					thread.setName("SliceCalculatorThread-" + calculationNumber + "-" + i);
 					threads[i] = thread;
 					thread.start();
 				}
@@ -71,7 +66,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 	}
 
-	private List<Slice> prepareSlices(PointsInfo pointsInfo) {
+	private void prepareSlices(PointsInfo pointsInfo) {
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
 
@@ -81,7 +76,6 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 		int sliceWidth = width / horizontalSlices;
 		int sliceHeight = height / verticalSlices;
 
-		List<Slice> slices = new LinkedList<>();
 		for (int i = 0; i < horizontalSlices; i++) {
 			for (int j = 0; j < verticalSlices; j++) {
 				int startX = i * sliceWidth;
@@ -98,10 +92,9 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 				} else {
 					endY = height;
 				}
-				slices.add(new Slice(startX, startY, endX, endY));
+				queue.add(new SliceData(startX, startY, endX, endY));
 			}
 		}
-		return slices;
 	}
 
 	@Override
@@ -133,17 +126,4 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 		return drawTime;
 	}
 
-	private class Slice {
-		int startX;
-		int startY;
-		int endX;
-		int endY;
-
-		Slice(int startX, int startY, int endX, int endY) {
-			this.startX = startX;
-			this.startY = startY;
-			this.endX = endX;
-			this.endY = endY;
-		}
-	}
 }
