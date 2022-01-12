@@ -13,7 +13,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	int cores;
 	private Thread[] threads;
 	private MandelbrotSliceCalculator[] calculators;
-	private SliceDataQueue queue;
+	private SliceDataDeque deque;
 
 	boolean running;
 
@@ -21,12 +21,24 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 		cores = Runtime.getRuntime().availableProcessors();
 		threads = new Thread[cores];
 		calculators = new MandelbrotSliceCalculator[cores];
-		queue = SliceDataQueue.getInstance();
+		deque = SliceDataDeque.getInstance();
 	}
 
 	@Override
 	public int getNumberOfThreads() {
 		return cores;
+	}
+
+	boolean finished() {
+		for (Thread t : threads) {
+			if (t != null && t.isAlive()) {
+				return false;
+			}
+		}
+		if (!deque.isEmpty()) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -40,17 +52,22 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 		long startMillis = System.currentTimeMillis();
 
-		while (running && !queue.isEmpty()) {
-			for (int i = 0; i < cores && !queue.isEmpty(); i++) {
+		while (running && !finished()) {
+			for (int i = 0; i < cores && !deque.isEmpty(); i++) {
 				Thread thread = threads[i];
 				if (thread == null || !thread.isAlive()) {
-					SliceData slice = queue.remove();
-					calculators[i] = new MandelbrotSliceCalculator(pointsInfo, slice.startX, slice.startY, slice.endX,
-							slice.endY, dataBuffer);
+					SliceData slice = deque.remove();
+					calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), pointsInfo, slice,
+							dataBuffer);
 					thread = new Thread(calculators[i]);
 					threads[i] = thread;
 					thread.start();
 				}
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// Thread.currentThread().interrupt();
 			}
 		}
 
@@ -92,7 +109,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 				} else {
 					endY = height;
 				}
-				queue.add(new SliceData(startX, startY, endX, endY));
+				deque.add(new SliceData(startX, startY, endX, endY));
 			}
 		}
 	}

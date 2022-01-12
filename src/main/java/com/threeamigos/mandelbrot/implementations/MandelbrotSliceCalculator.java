@@ -6,6 +6,7 @@ import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 
 public class MandelbrotSliceCalculator implements Runnable {
 
+	private Thread mainThread;
 	private PointsInfo pointsInfo;
 	private int startX;
 	private int startY;
@@ -15,13 +16,13 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 	private boolean running;
 
-	public MandelbrotSliceCalculator(PointsInfo pointsInfo, int startX, int startY, int endX, int endY,
-			DataBuffer dataBuffer) {
+	public MandelbrotSliceCalculator(Thread mainThread, PointsInfo pointsInfo, SliceData slice, DataBuffer dataBuffer) {
+		this.mainThread = mainThread;
 		this.pointsInfo = pointsInfo;
-		this.startX = startX;
-		this.startY = startY;
-		this.endX = endX;
-		this.endY = endY;
+		this.startX = slice.startX;
+		this.startY = slice.startY;
+		this.endX = slice.endX;
+		this.endY = slice.endY;
 		this.dataBuffer = dataBuffer;
 	}
 
@@ -29,6 +30,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 	public void run() {
 		running = true;
 		calculateSliceRecursively(startX, endX, startY, endY);
+		mainThread.interrupt();
 	}
 
 	public void stop() {
@@ -41,7 +43,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 		}
 		boolean cardioidVisible = pointsInfo.isCardioidVisible(fromX, toX, fromY, toY);
 		boolean period2BulbVisible = pointsInfo.isPeriod2BulbVisible(fromX, toX, fromY, toY);
-		if (toX - fromX < 5 || toY - fromY < 5) {
+		if (toX - fromX <= 5 || toY - fromY <= 5) {
 			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
 		} else {
 			int uniqueValue = DataBuffer.NOT_CALCULATED;
@@ -87,12 +89,22 @@ public class MandelbrotSliceCalculator implements Runnable {
 				if (hasUniqueValue) {
 					setEveryPixel(fromX + 1, toX - 1, fromY + 1, toY - 1, uniqueValue);
 				} else {
-					int halfX = fromX + (toX - fromX) / 2;
-					int halfY = fromY + (toY - fromY) / 2;
-					calculateSliceRecursively(fromX, halfX, fromY, halfY);
-					calculateSliceRecursively(halfX, toX, fromY, halfY);
-					calculateSliceRecursively(fromX, halfX, halfY, toY);
-					calculateSliceRecursively(halfX, toX, halfY, toY);
+					int diffX = toX - fromX;
+					int diffY = toY - fromY;
+					int halfX = fromX + diffX / 2;
+					int halfY = fromY + diffY / 2;
+					if (diffX > 80 && diffY > 80) {
+						SliceDataDeque queue = SliceDataDeque.getInstance();
+						queue.add(new SliceData(fromX, fromY, halfX, halfY));
+						queue.add(new SliceData(halfX, fromY, toX, halfY));
+						queue.add(new SliceData(fromX, halfY, halfX, toY));
+						queue.add(new SliceData(halfX, halfY, toX, toY));
+					} else {
+						calculateSliceRecursively(fromX, halfX, fromY, halfY);
+						calculateSliceRecursively(halfX, toX, fromY, halfY);
+						calculateSliceRecursively(fromX, halfX, halfY, toY);
+						calculateSliceRecursively(halfX, toX, halfY, toY);
+					}
 				}
 			}
 		}

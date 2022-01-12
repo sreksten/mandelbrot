@@ -24,6 +24,8 @@ public interface PointsInfo {
 
 	double getMaxY();
 
+	void setPointOfInterest(PointOfInterest pointOfInterest);
+
 	void reset();
 
 	void changeCenterTo(int x, int y);

@@ -1,5 +1,6 @@
 package com.threeamigos.mandelbrot.implementations;
 
+import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 
 public class PointsInfoImpl implements PointsInfo {
@@ -112,6 +113,18 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	@Override
+	public void setPointOfInterest(PointOfInterest pointOfInterest) {
+		this.minX = pointOfInterest.getMinReal();
+		this.maxX = pointOfInterest.getMaxReal();
+		calculateStepX();
+		this.minY = pointOfInterest.getMinImaginary();
+		this.maxY = pointOfInterest.getMaxImaginary();
+		calculateStepY();
+		this.zoomCount = pointOfInterest.getZoomCount();
+		this.zoomFactor = calculateZoomFactor(zoomCount);
+	}
+
+	@Override
 	public void reset() {
 		minX = DEFAULT_MIN_X;
 		maxX = DEFAULT_MAX_X;
@@ -155,7 +168,7 @@ public class PointsInfoImpl implements PointsInfo {
 			zoomCount++;
 		}
 
-		this.zoomFactor = (zoomCount < 0 ? Math.pow(0.9d, -zoomCount) : Math.pow(1.1d, zoomCount));
+		this.zoomFactor = calculateZoomFactor(zoomCount);
 
 		double percentageX = (double) x / (double) width;
 		double intervalWidth = maxX - minX;
@@ -174,6 +187,10 @@ public class PointsInfoImpl implements PointsInfo {
 		calculateStepY();
 
 		checkInterval();
+	}
+
+	private double calculateZoomFactor(int zoomCount) {
+		return zoomCount < 0 ? Math.pow(0.9d, -zoomCount) : Math.pow(1.1d, zoomCount);
 	}
 
 	private void checkInterval() {
