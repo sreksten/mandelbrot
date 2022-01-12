@@ -300,6 +300,30 @@ public class MandelbrotCanvas extends JPanel
 		case KeyEvent.VK_2:
 			setPointOfInterest(2);
 			break;
+		case KeyEvent.VK_3:
+			setPointOfInterest(3);
+			break;
+		case KeyEvent.VK_4:
+			setPointOfInterest(4);
+			break;
+		case KeyEvent.VK_5:
+			setPointOfInterest(5);
+			break;
+		case KeyEvent.VK_6:
+			setPointOfInterest(6);
+			break;
+		case KeyEvent.VK_7:
+			setPointOfInterest(7);
+			break;
+		case KeyEvent.VK_8:
+			setPointOfInterest(8);
+			break;
+		case KeyEvent.VK_9:
+			setPointOfInterest(9);
+			break;
+		case KeyEvent.VK_0:
+			setPointOfInterest(10);
+			break;
 		}
 
 	}
