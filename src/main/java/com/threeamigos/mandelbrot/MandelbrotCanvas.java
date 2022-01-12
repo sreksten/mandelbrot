@@ -338,7 +338,7 @@ public class MandelbrotCanvas extends JPanel
 			ImageIO.write(buffImg, "png", outputfile);
 			JOptionPane.showMessageDialog(this, "File saved in " + filename);
 		} catch (IOException e) {
-
+			JOptionPane.showMessageDialog(this, "Error while saving image: " + e.getMessage());
 		}
 	}
 
