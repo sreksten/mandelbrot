@@ -1,12 +1,11 @@
 package com.threeamigos.mandelbrot.interfaces;
 
-import java.io.PrintWriter;
 import java.util.List;
 
 public interface PointsOfInterest {
 
-	public List<PointOfInterest> getPointsOfInterest();
+	public static final String POINTS_OF_INTEREST_FILENAME = "points_of_interest.txt";
 
-	public void store(PointOfInterest pointOfInterest, PrintWriter printWriter);
+	public List<PointOfInterest> getPointsOfInterest();
 
 }

@@ -1,8 +1,5 @@
 package com.threeamigos.mandelbrot.interfaces;
 
-import com.threeamigos.mandelbrot.implementations.DirectColorModelImageProducer;
-import com.threeamigos.mandelbrot.implementations.IndexColorModelImageProducer;
-
 public interface Registry {
 
 	public int getWidth();
@@ -15,10 +12,10 @@ public interface Registry {
 
 	public MandelbrotCalculator getCalculator();
 
-	public DirectColorModelImageProducer getDirectColorModelImageProducer();
-
-	public IndexColorModelImageProducer getIndexColorModelImageProducer();
+	public MultipleVariantImageProducer getImageProducer();
 
 	public PointsOfInterest getPointsOfInterest();
+
+	public DataPersister getDataPersister();
 
 }

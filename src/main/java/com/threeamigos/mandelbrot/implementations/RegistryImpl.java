@@ -1,7 +1,12 @@
 package com.threeamigos.mandelbrot.implementations;
 
+import java.util.ArrayList;
+
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
+import com.threeamigos.mandelbrot.interfaces.DataPersister;
+import com.threeamigos.mandelbrot.interfaces.DataPersister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
+import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
 import com.threeamigos.mandelbrot.interfaces.Registry;
@@ -13,9 +18,9 @@ public class RegistryImpl implements Registry {
 	private PointsInfo pointsInfo;
 	private DataBuffer dataBuffer;
 	private MandelbrotCalculator calculator;
-	private DirectColorModelImageProducer directColorModelImageProducer;
-	private IndexColorModelImageProducer indexColorModelImageProducer;
+	private MultipleVariantImageProducer imageProducer;
 	private PointsOfInterest pointsOfInterest;
+	private DataPersister dataPersister;
 
 	public RegistryImpl(int width, int height) {
 
@@ -30,11 +35,16 @@ public class RegistryImpl implements Registry {
 
 		calculator = new MultithreadedMandelbrotCalculator();
 
-		directColorModelImageProducer = new DirectColorModelImageProducer();
-		indexColorModelImageProducer = new IndexColorModelImageProducer();
+		imageProducer = new ImageProducerImpl();
 
-		pointsOfInterest = new ResourceBasedPointsOfInterest("/points_of_interest.txt");
+		dataPersister = new DiskPersister();
 
+		PersistResult result = dataPersister.loadPointsOfInterest(PointsOfInterest.POINTS_OF_INTEREST_FILENAME);
+		if (result.isSuccessful()) {
+			pointsOfInterest = new PointsOfInterestImpl(result.getPointsOfInterest());
+		} else {
+			pointsOfInterest = new PointsOfInterestImpl(new ArrayList<>());
+		}
 	}
 
 	@Override
@@ -63,18 +73,18 @@ public class RegistryImpl implements Registry {
 	}
 
 	@Override
-	public DirectColorModelImageProducer getDirectColorModelImageProducer() {
-		return directColorModelImageProducer;
-	}
-
-	@Override
-	public IndexColorModelImageProducer getIndexColorModelImageProducer() {
-		return indexColorModelImageProducer;
+	public MultipleVariantImageProducer getImageProducer() {
+		return imageProducer;
 	}
 
 	@Override
 	public PointsOfInterest getPointsOfInterest() {
 		return pointsOfInterest;
+	}
+
+	@Override
+	public DataPersister getDataPersister() {
+		return dataPersister;
 	}
 
 }

@@ -11,23 +11,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
-import com.threeamigos.mandelbrot.implementations.DirectColorModelImageProducer;
-import com.threeamigos.mandelbrot.implementations.IndexColorModelImageProducer;
+import com.threeamigos.mandelbrot.implementations.PointOfInterestImpl;
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.ImageProducer;
+import com.threeamigos.mandelbrot.interfaces.DataPersister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
+import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
 import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
 import com.threeamigos.mandelbrot.interfaces.Registry;
 
 public class MandelbrotCanvas extends JPanel
@@ -40,12 +40,12 @@ public class MandelbrotCanvas extends JPanel
 	private transient PointsInfo pointsInfo;
 	private transient DataBuffer dataBuffer;
 	private transient MandelbrotCalculator calculator;
-	private transient DirectColorModelImageProducer directColorModelImageProducer;
-	private transient IndexColorModelImageProducer indexColorModelImageProducer;
-	private transient ImageProducer imageProducer;
+	private transient MultipleVariantImageProducer imageProducer;
 
 	private boolean showInfo = true;
 	private boolean showHelp = true;
+
+	private Integer currentPointOfInterestIndex;
 
 	private transient Thread calculationThread;
 	private boolean calculationThreadRunning = false;
@@ -64,10 +64,8 @@ public class MandelbrotCanvas extends JPanel
 		pointsInfo = registry.getPointsInfo();
 		dataBuffer = registry.getDataBuffer();
 		calculator = registry.getCalculator();
-		directColorModelImageProducer = registry.getDirectColorModelImageProducer();
-		indexColorModelImageProducer = registry.getIndexColorModelImageProducer();
 
-		imageProducer = registry.getDirectColorModelImageProducer();
+		imageProducer = registry.getImageProducer();
 
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -180,39 +178,56 @@ public class MandelbrotCanvas extends JPanel
 			int vSpacing = fontHeight + 4;
 			Font font = new Font("Serif", Font.BOLD, fontHeight);
 			graphics.setFont(font);
+			if (registry.getPointsOfInterest().getPointsOfInterest().size() < 10) {
+				drawString(graphics, "A - add point of interest", xCoord, yCoord);
+				yCoord += vSpacing;
+			}
+			drawString(graphics, "C - switch between indexed and direct color model", xCoord, yCoord);
+			yCoord += vSpacing;
+			if (currentPointOfInterestIndex != null) {
+				drawString(graphics, "D - delete current point of interest", xCoord, yCoord);
+				yCoord += vSpacing;
+			}
 			drawString(graphics, "H - hide or show help", xCoord, yCoord);
 			yCoord += vSpacing;
 			drawString(graphics, "I - hide or show info", xCoord, yCoord);
 			yCoord += vSpacing;
 			drawString(graphics, "S - save image", xCoord, yCoord);
 			yCoord += vSpacing;
-			drawString(graphics, "C - switch between indexed and direct color model", xCoord, yCoord);
-			yCoord += vSpacing;
 
 			int index = 1;
 			for (PointOfInterest pointOfInterest : registry.getPointsOfInterest().getPointsOfInterest()) {
-				drawString(graphics, String.format("%d - %s", index, pointOfInterest.getName()), xCoord, yCoord);
+				if (currentPointOfInterestIndex != null && currentPointOfInterestIndex == index) {
+					drawString(graphics, String.format("%d - %s", index, pointOfInterest.getName()), xCoord, yCoord,
+							Color.YELLOW);
+				} else {
+					drawString(graphics, String.format("%d - %s", index, pointOfInterest.getName()), xCoord, yCoord);
+				}
 				index++;
 				yCoord += vSpacing;
 			}
 		}
-
 	}
 
 	private void drawString(Graphics2D graphics, String s, int x, int y) {
+		drawString(graphics, s, x, y, Color.WHITE);
+	}
+
+	private void drawString(Graphics2D graphics, String s, int x, int y, Color color) {
 		graphics.setColor(Color.BLACK);
 		for (int i = x - 1; i <= x + 1; i++) {
 			for (int j = y - 1; j <= y + 1; j++) {
 				graphics.drawString(s, i, j);
 			}
 		}
-		graphics.setColor(Color.WHITE);
+		graphics.setColor(color);
 		graphics.drawString(s, x, y);
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		calculator.interruptPreviousCalculation();
+		currentPointOfInterestIndex = null;
 		if (e.getWheelRotation() < 0) {
 			pointsInfo.zoom(e.getX(), e.getY(), 0.9d);
 		} else {
@@ -282,8 +297,14 @@ public class MandelbrotCanvas extends JPanel
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
+		case KeyEvent.VK_A:
+			addPointOfInterest();
+			break;
 		case KeyEvent.VK_C:
 			switchColorModels();
+			break;
+		case KeyEvent.VK_D:
+			deletePointOfInterest();
 			break;
 		case KeyEvent.VK_H:
 			hideOrShowHelp();
@@ -324,18 +345,53 @@ public class MandelbrotCanvas extends JPanel
 		case KeyEvent.VK_0:
 			setPointOfInterest(10);
 			break;
+		default:
+			break;
 		}
+	}
 
+	private void addPointOfInterest() {
+		if (registry.getPointsOfInterest().getPointsOfInterest().size() < 10) {
+			String name = JOptionPane.showInputDialog(this, "Give it a name:");
+			if (name != null && !name.isBlank()) {
+				PointOfInterest newPoint = new PointOfInterestImpl(name, pointsInfo.getMinX(), pointsInfo.getMaxX(),
+						pointsInfo.getMinY(), pointsInfo.getMaxY(), pointsInfo.getZoomCount());
+				registry.getPointsOfInterest().getPointsOfInterest().add(newPoint);
+				PersistResult result = registry.getDataPersister().savePointsOfInterest(registry.getPointsOfInterest(),
+						PointsOfInterest.POINTS_OF_INTEREST_FILENAME);
+				if (result.isSuccessful()) {
+					notify(String.format("Point of interest '%s' added.", name));
+					repaint();
+				} else {
+					notify("Error while saving points of interest: " + result.getError());
+				}
+			}
+		}
 	}
 
 	private void switchColorModels() {
-		if (imageProducer == directColorModelImageProducer) {
-			imageProducer = indexColorModelImageProducer;
+		if (imageProducer.isUsingDirectColorModel()) {
+			imageProducer.useIndexColorModel();
 		} else {
-			imageProducer = directColorModelImageProducer;
+			imageProducer.useDirectColorModel();
 		}
 		image = imageProducer.produceImage(dataBuffer);
 		repaint();
+	}
+
+	private void deletePointOfInterest() {
+		if (currentPointOfInterestIndex != null) {
+			registry.getPointsOfInterest().getPointsOfInterest().remove(currentPointOfInterestIndex - 1);
+			PersistResult result = registry.getDataPersister().savePointsOfInterest(registry.getPointsOfInterest(),
+					PointsOfInterest.POINTS_OF_INTEREST_FILENAME);
+			if (result.isSuccessful()) {
+				currentPointOfInterestIndex = null;
+				notify("Point of interest removed.");
+				repaint();
+			} else {
+				notify("Error while saving points of interest: " + result.getError());
+			}
+		}
 	}
 
 	private void hideOrShowHelp() {
@@ -349,29 +405,28 @@ public class MandelbrotCanvas extends JPanel
 	}
 
 	private void saveImage() {
-		try {
-			String filename = System.getProperty("java.io.tmpdir") + File.separatorChar + "3AM_Mandelbrot.png";
-			File outputfile = new File(filename);
+		String filename = new StringBuilder().append(System.getProperty("user.home")).append(File.separatorChar)
+				.append("3AM_Mandelbrot_").append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))
+				.append(".png").toString();
 
-			final BufferedImage buffImg = new BufferedImage(image.getWidth(null), image.getHeight(null),
-					BufferedImage.TYPE_3BYTE_BGR);
-			final Graphics2D g2 = buffImg.createGraphics();
-			g2.drawImage(image, null, null);
-			g2.dispose();
-
-			ImageIO.write(buffImg, "png", outputfile);
-			JOptionPane.showMessageDialog(this, "File saved in " + filename);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, "Error while saving image: " + e.getMessage());
+		PersistResult result = registry.getDataPersister().saveImage(image, filename);
+		if (result.isSuccessful()) {
+			notify("File saved in " + filename);
+		} else {
+			notify("Error while saving image: " + result.getError());
 		}
 	}
 
 	private void setPointOfInterest(int pointIndex) {
 		List<PointOfInterest> pointsOfInterest = registry.getPointsOfInterest().getPointsOfInterest();
 		if (pointsOfInterest.size() >= pointIndex) {
+			currentPointOfInterestIndex = pointIndex;
 			pointsInfo.setPointOfInterest(pointsOfInterest.get(pointIndex - 1));
 			startCalculationThread();
 		}
 	}
 
+	private void notify(String message) {
+		JOptionPane.showMessageDialog(this, message);
+	}
 }
