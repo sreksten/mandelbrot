@@ -12,19 +12,16 @@ import com.threeamigos.mandelbrot.interfaces.Registry;
 
 public class Main {
 
-	public Main(boolean fullScreen) {
-		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+	public Main() {
 
-		int width;
-		int height;
+		Resolution resolution = new ResolutionChooser().chooseResolution();
 
-		if (fullScreen) {
-			width = screenDimension.width;
-			height = screenDimension.height;
-		} else {
-			width = 1280;
-			height = 1024;
+		if (resolution == null) {
+			return;
 		}
+
+		int width = resolution.getWidth();
+		int height = resolution.getHeight();
 
 		Registry registry = new RegistryImpl(width, height);
 
@@ -41,6 +38,9 @@ public class Main {
 
 		jframe.pack();
 		jframe.setResizable(false);
+
+		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+
 		jframe.setLocation((screenDimension.width - jframe.getSize().width) / 2,
 				(screenDimension.height - jframe.getSize().height) / 2);
 		jframe.setVisible(true);
@@ -48,7 +48,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		new Main(false);
+		new Main();
 	}
 
 }

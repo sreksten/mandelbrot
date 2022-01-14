@@ -8,17 +8,25 @@ public class PointsInfoImpl implements PointsInfo {
 	private int width;
 	private int height;
 
+	private static final double JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB = -0.75d;
+
 	private static final double DEFAULT_MIN_X = -2.0d;
 	private static final double DEFAULT_MAX_X = 0.47d;
 
 	private static final double DEFAULT_MIN_Y = -1.12d;
 	private static final double DEFAULT_MAX_Y = 1.12d;
 
-	private double minX = DEFAULT_MIN_X;
-	private double maxX = DEFAULT_MAX_X;
+	private double startingMinX;
+	private double startingMaxX;
 
-	private double minY = DEFAULT_MIN_Y;
-	private double maxY = DEFAULT_MAX_Y;
+	private double startingMinY;
+	private double startingMaxY;
+
+	private double minX;
+	private double maxX;
+
+	private double minY;
+	private double maxY;
 
 	private double stepX;
 	private double stepY;
@@ -35,9 +43,25 @@ public class PointsInfoImpl implements PointsInfo {
 	@Override
 	public void setDimensions(int width, int height) {
 		this.width = width;
-		calculateStepX();
 		this.height = height;
+
+		startingMinY = DEFAULT_MIN_Y;
+		startingMaxY = DEFAULT_MAX_Y;
+
+		minY = startingMinY;
+		maxY = startingMaxY;
+
 		calculateStepY();
+
+		double halfWidth = (stepY * width) / 2.0d;
+
+		startingMinX = JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB - halfWidth;
+		startingMaxX = JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB + halfWidth;
+
+		minX = startingMinX;
+		maxX = startingMaxX;
+
+		calculateStepX();
 	}
 
 	@Override
@@ -126,12 +150,12 @@ public class PointsInfoImpl implements PointsInfo {
 
 	@Override
 	public void reset() {
-		minX = DEFAULT_MIN_X;
-		maxX = DEFAULT_MAX_X;
+		minX = startingMinX;
+		maxX = startingMaxX;
 		calculateStepX();
 
-		minY = DEFAULT_MIN_Y;
-		maxY = DEFAULT_MAX_Y;
+		minY = startingMinY;
+		maxY = startingMaxY;
 		calculateStepY();
 
 		zoomCount = 0;
@@ -151,8 +175,6 @@ public class PointsInfoImpl implements PointsInfo {
 		double newCenterY = minY + (intervalY * percentageY);
 		minY = newCenterY - intervalY / 2.0d;
 		maxY = minY + intervalY;
-
-		checkInterval();
 	}
 
 	@Override
@@ -185,34 +207,10 @@ public class PointsInfoImpl implements PointsInfo {
 		minY = pointImaginaryCoord - newIntervalHeight * percentageY;
 		maxY = minY + newIntervalHeight;
 		calculateStepY();
-
-		checkInterval();
 	}
 
 	private double calculateZoomFactor(int zoomCount) {
 		return zoomCount < 0 ? Math.pow(0.9d, -zoomCount) : Math.pow(1.1d, zoomCount);
-	}
-
-	private void checkInterval() {
-		if (minX < -2.0d) {
-			double interval = maxX - minX;
-			minX = -2.0d;
-			maxX = minX + interval;
-		} else if (maxX > 2.0d) {
-			double interval = maxX - minX;
-			maxX = 2.0d;
-			minX = maxX - interval;
-		}
-
-		if (minY < -2.0d) {
-			double interval = maxY - minY;
-			minY = -2.0d;
-			maxY = minY + interval;
-		} else if (maxY > 2.0d) {
-			double interval = maxY - minY;
-			maxY = 2.0d;
-			minY = maxY - interval;
-		}
 	}
 
 	@Override
