@@ -50,17 +50,14 @@ public class PointsInfoImpl implements PointsInfo {
 
 		minY = startingMinY;
 		maxY = startingMaxY;
-
 		calculateStepY();
 
 		double halfWidth = (stepY * width) / 2.0d;
-
 		startingMinX = JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB - halfWidth;
 		startingMaxX = JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB + halfWidth;
 
 		minX = startingMinX;
 		maxX = startingMaxX;
-
 		calculateStepX();
 	}
 
@@ -94,6 +91,11 @@ public class PointsInfoImpl implements PointsInfo {
 	@Override
 	public double getMaxX() {
 		return maxX;
+	}
+
+	@Override
+	public double getCentralX() {
+		return (maxX - minX) / 2.0d + minX;
 	}
 
 	@Override
@@ -138,12 +140,15 @@ public class PointsInfoImpl implements PointsInfo {
 
 	@Override
 	public void setPointOfInterest(PointOfInterest pointOfInterest) {
-		this.minX = pointOfInterest.getMinReal();
-		this.maxX = pointOfInterest.getMaxReal();
-		calculateStepX();
-		this.minY = pointOfInterest.getMinImaginary();
-		this.maxY = pointOfInterest.getMaxImaginary();
+		minY = pointOfInterest.getMinImaginary();
+		maxY = pointOfInterest.getMaxImaginary();
 		calculateStepY();
+
+		double halfWidth = (stepY * width) / 2.0d;
+		minX = pointOfInterest.getCentralReal() - halfWidth;
+		maxX = pointOfInterest.getCentralReal() + halfWidth;
+		calculateStepX();
+
 		this.zoomCount = pointOfInterest.getZoomCount();
 		this.zoomFactor = calculateZoomFactor(zoomCount);
 	}

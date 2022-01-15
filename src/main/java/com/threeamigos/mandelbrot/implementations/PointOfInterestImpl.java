@@ -5,35 +5,23 @@ import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
 public class PointOfInterestImpl implements PointOfInterest {
 
 	private String name;
-	private double minReal;
-	private double maxReal;
 	private double minImaginary;
 	private double maxImaginary;
+	private double centralReal;
 	private int zoomCount;
 
-	public PointOfInterestImpl(String name, double minReal, double maxReal, double minImaginary, double maxImaginary,
+	public PointOfInterestImpl(String name, double minImaginary, double maxImaginary, double centralReal,
 			int zoomCount) {
 		this.name = name;
-		this.minReal = minReal;
-		this.maxReal = maxReal;
 		this.minImaginary = minImaginary;
 		this.maxImaginary = maxImaginary;
+		this.centralReal = centralReal;
 		this.zoomCount = zoomCount;
 	}
 
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public double getMinReal() {
-		return minReal;
-	}
-
-	@Override
-	public double getMaxReal() {
-		return maxReal;
 	}
 
 	@Override
@@ -44,6 +32,11 @@ public class PointOfInterestImpl implements PointOfInterest {
 	@Override
 	public double getMaxImaginary() {
 		return maxImaginary;
+	}
+
+	@Override
+	public double getCentralReal() {
+		return centralReal;
 	}
 
 	@Override

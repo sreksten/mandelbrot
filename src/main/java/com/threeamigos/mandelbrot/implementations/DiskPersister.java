@@ -91,8 +91,10 @@ public class DiskPersister implements DataPersister {
 				String line;
 				List<PointOfInterest> pointsOfInterest = new ArrayList<>();
 				while ((line = reader.readLine()) != null) {
-					PointOfInterest pointOfInterest = PointOfInterestCodec.parsePointOfInterest(line);
-					pointsOfInterest.add(pointOfInterest);
+					if (!line.isBlank()) {
+						PointOfInterest pointOfInterest = PointOfInterestCodec.parsePointOfInterest(line);
+						pointsOfInterest.add(pointOfInterest);
+					}
 				}
 				return new PersistResultImpl(pointsOfInterest);
 			}

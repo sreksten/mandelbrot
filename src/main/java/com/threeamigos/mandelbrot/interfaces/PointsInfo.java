@@ -16,6 +16,8 @@ public interface PointsInfo {
 
 	double getMaxX();
 
+	double getCentralX();
+
 	void setMinY(double minY);
 
 	double getMinY();

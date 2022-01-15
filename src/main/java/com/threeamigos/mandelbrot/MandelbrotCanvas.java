@@ -354,8 +354,8 @@ public class MandelbrotCanvas extends JPanel
 		if (registry.getPointsOfInterest().getPointsOfInterest().size() < 10) {
 			String name = JOptionPane.showInputDialog(this, "Give it a name:");
 			if (name != null && !name.isBlank()) {
-				PointOfInterest newPoint = new PointOfInterestImpl(name, pointsInfo.getMinX(), pointsInfo.getMaxX(),
-						pointsInfo.getMinY(), pointsInfo.getMaxY(), pointsInfo.getZoomCount());
+				PointOfInterest newPoint = new PointOfInterestImpl(name, pointsInfo.getMinY(), pointsInfo.getMaxY(),
+						pointsInfo.getCentralX(), pointsInfo.getZoomCount());
 				registry.getPointsOfInterest().getPointsOfInterest().add(newPoint);
 				PersistResult result = registry.getDataPersister().savePointsOfInterest(registry.getPointsOfInterest(),
 						PointsOfInterest.POINTS_OF_INTEREST_FILENAME);
