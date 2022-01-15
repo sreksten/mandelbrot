@@ -41,6 +41,26 @@ public class PointsInfoImpl implements PointsInfo {
 	private Double imaginaryCoordinateUnderPointer;
 
 	@Override
+	public PointsInfo adaptToDimensions(int width, int height) {
+		PointsInfoImpl newPoint = new PointsInfoImpl();
+		newPoint.width = width;
+		newPoint.height = height;
+
+		newPoint.minY = minY;
+		newPoint.maxY = maxY;
+		newPoint.calculateStepY();
+
+		double halfWidth = (newPoint.stepY * width) / 2.0d;
+		double centerX = (maxX - minX) / 2.0d + minX;
+
+		newPoint.minX = centerX - halfWidth;
+		newPoint.maxX = centerX + halfWidth;
+		newPoint.calculateStepX();
+
+		return newPoint;
+	}
+
+	@Override
 	public void setDimensions(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -59,16 +79,6 @@ public class PointsInfoImpl implements PointsInfo {
 		minX = startingMinX;
 		maxX = startingMaxX;
 		calculateStepX();
-	}
-
-	@Override
-	public int getWidth() {
-		return width;
-	}
-
-	@Override
-	public int getHeight() {
-		return height;
 	}
 
 	@Override
@@ -136,6 +146,11 @@ public class PointsInfoImpl implements PointsInfo {
 
 	private void calculateStepY() {
 		stepY = (maxY - minY) / height;
+	}
+
+	@Override
+	public PointOfInterest getPointOfInterest(String name) {
+		return new PointOfInterestImpl(name, getMinY(), getMaxY(), getCentralX(), getZoomCount());
 	}
 
 	@Override

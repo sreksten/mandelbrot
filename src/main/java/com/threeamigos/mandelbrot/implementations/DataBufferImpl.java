@@ -4,17 +4,17 @@ import java.util.Arrays;
 
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
 
-public class DataBufferImpl implements DataBuffer {
+class DataBufferImpl implements DataBuffer {
 
 	private int width;
 	private int height;
 	private int[] pixels;
 
-	@Override
-	public void setDimensions(int width, int height) {
+	public DataBufferImpl(int width, int height) {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
+		Arrays.fill(pixels, NOT_CALCULATED);
 	}
 
 	@Override
@@ -25,11 +25,6 @@ public class DataBufferImpl implements DataBuffer {
 	@Override
 	public int getHeight() {
 		return height;
-	}
-
-	@Override
-	public void clear() {
-		Arrays.fill(pixels, NOT_CALCULATED);
 	}
 
 	@Override

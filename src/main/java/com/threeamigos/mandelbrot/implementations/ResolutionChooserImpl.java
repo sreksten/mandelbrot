@@ -1,22 +1,21 @@
-package com.threeamigos.mandelbrot;
+package com.threeamigos.mandelbrot.implementations;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JOptionPane;
 
-public class ResolutionChooser {
+import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.ResolutionChooser;
 
-	public Resolution chooseResolution() {
+public class ResolutionChooserImpl implements ResolutionChooser {
 
+	@Override
+	public Resolution chooseResolution(Component component) {
 		Resolution defaultValue = matchScreenResolution();
-		if (defaultValue == null) {
-			defaultValue = Resolution.FULL_HD;
-		}
-
-		return (Resolution) JOptionPane.showInputDialog(null, "Choose resolution:", "3AM Mandelbrot",
+		return (Resolution) JOptionPane.showInputDialog(component, "Choose resolution:", "3AM Mandelbrot",
 				JOptionPane.PLAIN_MESSAGE, null, Resolution.values(), defaultValue);
-
 	}
 
 	private Resolution matchScreenResolution() {
@@ -26,7 +25,7 @@ public class ResolutionChooser {
 				return res;
 			}
 		}
-		return null;
+		return Resolution.FULL_HD;
 	}
 
 }

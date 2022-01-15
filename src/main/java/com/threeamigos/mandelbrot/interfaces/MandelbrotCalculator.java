@@ -6,10 +6,12 @@ public interface MandelbrotCalculator {
 
 	public int getNumberOfThreads();
 
-	public void calculate(PointsInfo pointsInfo, DataBuffer dataBuffer);
+	public void calculate(PointsInfo pointsInfo, int width, int height);
 
 	public void interruptPreviousCalculation();
 
 	public long getDrawTime();
+
+	public DataBuffer getDataBuffer();
 
 }

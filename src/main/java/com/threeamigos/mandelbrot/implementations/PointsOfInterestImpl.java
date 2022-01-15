@@ -14,7 +14,22 @@ public class PointsOfInterestImpl implements PointsOfInterest {
 	}
 
 	@Override
-	public List<PointOfInterest> getPointsOfInterest() {
+	public int count() {
+		return pointsOfInterest.size();
+	}
+
+	@Override
+	public void add(PointOfInterest pointOfInterest) {
+		pointsOfInterest.add(pointOfInterest);
+	}
+
+	@Override
+	public void remove(int index) {
+		pointsOfInterest.remove(index);
+	}
+
+	@Override
+	public List<PointOfInterest> getElements() {
 		return pointsOfInterest;
 	}
 

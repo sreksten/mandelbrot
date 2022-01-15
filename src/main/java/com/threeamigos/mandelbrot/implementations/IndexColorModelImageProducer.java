@@ -8,7 +8,7 @@ import java.awt.image.MemoryImageSource;
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
 import com.threeamigos.mandelbrot.interfaces.ImageProducer;
 
-public class IndexColorModelImageProducer implements ImageProducer {
+class IndexColorModelImageProducer implements ImageProducer {
 
 	private final byte[] colorMapR;
 	private final byte[] colorMapG;

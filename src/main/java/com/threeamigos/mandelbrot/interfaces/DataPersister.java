@@ -7,9 +7,9 @@ public interface DataPersister {
 
 	public PersistResult saveImage(Image image, String filename);
 
-	public PersistResult savePointsOfInterest(PointsOfInterest pointsOfInterest, String filename);
+	public PersistResult savePointsOfInterest(PointsOfInterest pointsOfInterest);
 
-	public PersistResult loadPointsOfInterest(String filename);
+	public PersistResult loadPointsOfInterest();
 
 	public interface PersistResult {
 

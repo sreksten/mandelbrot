@@ -2,11 +2,9 @@ package com.threeamigos.mandelbrot.interfaces;
 
 public interface PointsInfo {
 
+	public PointsInfo adaptToDimensions(int width, int height);
+
 	void setDimensions(int width, int height);
-
-	int getWidth();
-
-	int getHeight();
 
 	void setMinX(double minX);
 
@@ -25,6 +23,8 @@ public interface PointsInfo {
 	void setMaxY(double maxY);
 
 	double getMaxY();
+
+	PointOfInterest getPointOfInterest(String name);
 
 	void setPointOfInterest(PointOfInterest pointOfInterest);
 

@@ -9,7 +9,7 @@ import com.threeamigos.mandelbrot.interfaces.DataBuffer;
 import com.threeamigos.mandelbrot.interfaces.ImageProducer;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
 
-public class DirectColorModelImageProducer implements ImageProducer {
+class DirectColorModelImageProducer implements ImageProducer {
 
 	private final DirectColorModel directColorModel;
 

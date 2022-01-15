@@ -14,6 +14,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	private Thread[] threads;
 	private MandelbrotSliceCalculator[] calculators;
 	private SliceDataDeque deque;
+	private DataBuffer dataBuffer;
 
 	boolean running;
 
@@ -42,13 +43,13 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	}
 
 	@Override
-	public void calculate(PointsInfo pointsInfo, DataBuffer dataBuffer) {
+	public void calculate(PointsInfo pointsInfo, int width, int height) {
 
 		running = true;
 
-		dataBuffer.clear();
+		dataBuffer = new DataBufferImpl(width, height);
 
-		prepareSlices(pointsInfo);
+		prepareSlices(pointsInfo, width, height);
 
 		long startMillis = System.currentTimeMillis();
 
@@ -83,12 +84,9 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 	}
 
-	private void prepareSlices(PointsInfo pointsInfo) {
+	private void prepareSlices(PointsInfo pointsInfo, int width, int height) {
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
-
-		int width = pointsInfo.getWidth();
-		int height = pointsInfo.getHeight();
 
 		int sliceWidth = width / horizontalSlices;
 		int sliceHeight = height / verticalSlices;
@@ -141,6 +139,11 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	@Override
 	public long getDrawTime() {
 		return drawTime;
+	}
+
+	@Override
+	public DataBuffer getDataBuffer() {
+		return dataBuffer;
 	}
 
 }
