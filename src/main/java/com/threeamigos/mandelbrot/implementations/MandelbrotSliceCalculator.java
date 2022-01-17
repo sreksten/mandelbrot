@@ -1,7 +1,6 @@
 package com.threeamigos.mandelbrot.implementations;
 
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 
 public class MandelbrotSliceCalculator implements Runnable {
@@ -13,10 +12,12 @@ public class MandelbrotSliceCalculator implements Runnable {
 	private int endX;
 	private int endY;
 	private DataBuffer dataBuffer;
+	private int maxIterations;
 
 	private boolean running;
 
-	public MandelbrotSliceCalculator(Thread mainThread, PointsInfo pointsInfo, SliceData slice, DataBuffer dataBuffer) {
+	public MandelbrotSliceCalculator(Thread mainThread, PointsInfo pointsInfo, SliceData slice, DataBuffer dataBuffer,
+			int maxIterations) {
 		this.mainThread = mainThread;
 		this.pointsInfo = pointsInfo;
 		this.startX = slice.startX;
@@ -24,6 +25,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 		this.endX = slice.endX;
 		this.endY = slice.endY;
 		this.dataBuffer = dataBuffer;
+		this.maxIterations = maxIterations;
 	}
 
 	@Override
@@ -143,9 +145,9 @@ public class MandelbrotSliceCalculator implements Runnable {
 		int iterations;
 		if (cardioidVisible
 				&& (inCardioid(cReal, cImaginary) || period2BulbVisible && inPeriod2Bulb(cReal, cImaginary))) {
-			iterations = MandelbrotCalculator.MAX_ITERATIONS;
+			iterations = maxIterations;
 		} else {
-			iterations = calculateIterationsImpl(cReal, cImaginary, MandelbrotCalculator.MAX_ITERATIONS);
+			iterations = calculateIterationsImpl(cReal, cImaginary, maxIterations);
 		}
 		return iterations;
 	}

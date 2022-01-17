@@ -8,44 +8,52 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import com.threeamigos.mandelbrot.implementations.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.DiskPersister;
 import com.threeamigos.mandelbrot.implementations.ImageProducerImpl;
 import com.threeamigos.mandelbrot.implementations.MandelbrotCalculatorFactory;
+import com.threeamigos.mandelbrot.implementations.MultipleVariantImageProducerFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.PointsInfoImpl;
 import com.threeamigos.mandelbrot.implementations.PointsOfInterestImpl;
-import com.threeamigos.mandelbrot.implementations.ResolutionChooserImpl;
+import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
+import com.threeamigos.mandelbrot.interfaces.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.DataPersister;
 import com.threeamigos.mandelbrot.interfaces.DataPersister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculatorProducer;
 import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
+import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducerFactory;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
-import com.threeamigos.mandelbrot.interfaces.ResolutionChooser;
 
 public class Main {
 
 	public Main() {
 
-		ResolutionChooser resolutionChooser = new ResolutionChooserImpl();
+		CalculationParametersRequester calculationParametersRequester = new CalculationParametersRequesterImpl();
 
-		Resolution resolution = new ResolutionChooserImpl().chooseResolution(null);
-		if (resolution == null) {
+		CalculationParameters calculationParameters = calculationParametersRequester.getCalculationParameters(null);
+
+		if (calculationParameters == null) {
 			return;
 		}
 
+		Resolution resolution = calculationParameters.getResolution();
 		int width = resolution.getWidth();
 		int height = resolution.getHeight();
 
 		PointsInfo pointsInfo = new PointsInfoImpl();
 		pointsInfo.setDimensions(width, height);
 
-		MandelbrotCalculatorProducer mandelbrotCalculatorProducer = new MandelbrotCalculatorFactory();
-		MultipleVariantImageProducer imageProducer = new ImageProducerImpl();
+		MandelbrotCalculatorProducer mandelbrotCalculatorProducer = new MandelbrotCalculatorFactory(
+				calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations());
+		MultipleVariantImageProducerFactory imageProducerFactory = new MultipleVariantImageProducerFactoryImpl();
+		MultipleVariantImageProducer imageProducer = new ImageProducerImpl(calculationParameters.getMaxIterations());
 		DataPersister dataPersister = new DiskPersister();
 		PointsOfInterest pointsOfInterest = loadPointsOfInterest(dataPersister);
 
-		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(width, height, resolutionChooser,
-				mandelbrotCalculatorProducer, pointsInfo, imageProducer, pointsOfInterest, dataPersister);
+		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(width, height, calculationParametersRequester,
+				mandelbrotCalculatorProducer, pointsInfo, imageProducerFactory, pointsOfInterest, dataPersister,
+				calculationParameters);
 
 		prepareFrame(mandelbrotCanvas);
 	}

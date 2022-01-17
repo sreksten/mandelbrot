@@ -1,8 +1,10 @@
 package com.threeamigos.mandelbrot.implementations;
 
+import java.awt.Image;
 import java.util.Arrays;
 
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
+import com.threeamigos.mandelbrot.interfaces.ImageProducer;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 
@@ -10,7 +12,8 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 	private long drawTime;
 
-	int cores;
+	int maxThreads;
+	int maxIterations;
 	private Thread[] threads;
 	private MandelbrotSliceCalculator[] calculators;
 	private SliceDataDeque deque;
@@ -18,16 +21,22 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 	boolean running;
 
-	public MultithreadedMandelbrotCalculator() {
-		cores = Runtime.getRuntime().availableProcessors();
-		threads = new Thread[cores];
-		calculators = new MandelbrotSliceCalculator[cores];
+	public MultithreadedMandelbrotCalculator(int maxThreads, int maxIterations) {
+		this.maxThreads = maxThreads;
+		this.maxIterations = maxIterations;
+		threads = new Thread[maxThreads];
+		calculators = new MandelbrotSliceCalculator[maxThreads];
 		deque = SliceDataDeque.getInstance();
 	}
 
 	@Override
 	public int getNumberOfThreads() {
-		return cores;
+		return maxThreads;
+	}
+
+	@Override
+	public int getMaxIterations() {
+		return maxIterations;
 	}
 
 	boolean finished() {
@@ -54,13 +63,14 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 		long startMillis = System.currentTimeMillis();
 
 		while (running && !finished()) {
-			for (int i = 0; i < cores && !deque.isEmpty(); i++) {
+			for (int i = 0; i < maxThreads && !deque.isEmpty(); i++) {
 				Thread thread = threads[i];
 				if (thread == null || !thread.isAlive()) {
 					SliceData slice = deque.remove();
 					calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), pointsInfo, slice,
-							dataBuffer);
+							dataBuffer, maxIterations);
 					thread = new Thread(calculators[i]);
+					thread.setDaemon(true);
 					threads[i] = thread;
 					thread.start();
 				}
@@ -76,7 +86,7 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 		long endMillis = System.currentTimeMillis();
 
-		for (int i = 0; i < cores; i++) {
+		for (int i = 0; i < maxThreads; i++) {
 			threads[i] = null;
 		}
 
@@ -142,8 +152,13 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	}
 
 	@Override
-	public DataBuffer getDataBuffer() {
-		return dataBuffer;
+	public int getIterations(int x, int y) {
+		return dataBuffer.getPixel(x, y);
+	}
+
+	@Override
+	public Image produceImage(ImageProducer imageProducer) {
+		return imageProducer.produceImage(dataBuffer);
 	}
 
 }

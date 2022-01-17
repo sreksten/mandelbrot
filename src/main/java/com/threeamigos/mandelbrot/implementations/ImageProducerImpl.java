@@ -8,14 +8,14 @@ import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
 
 public class ImageProducerImpl implements MultipleVariantImageProducer {
 
-	private ImageProducer indexColorModelImageProducer = new IndexColorModelImageProducer();
-	private ImageProducer directColorModelImageProducer = new DirectColorModelImageProducer();
+	private ImageProducer indexColorModelImageProducer;
+	private ImageProducer directColorModelImageProducer;
 
 	private ImageProducer currentImageProducer;
 
-	public ImageProducerImpl() {
+	public ImageProducerImpl(int maxIterations) {
 		indexColorModelImageProducer = new IndexColorModelImageProducer();
-		directColorModelImageProducer = new DirectColorModelImageProducer();
+		directColorModelImageProducer = new DirectColorModelImageProducer(maxIterations);
 
 		currentImageProducer = directColorModelImageProducer;
 	}

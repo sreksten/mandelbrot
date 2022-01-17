@@ -20,25 +20,28 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
+import com.threeamigos.mandelbrot.interfaces.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.DataPersister;
 import com.threeamigos.mandelbrot.interfaces.DataPersister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculatorProducer;
 import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
+import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducerFactory;
 import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
-import com.threeamigos.mandelbrot.interfaces.ResolutionChooser;
 
 public class MandelbrotCanvas extends JPanel
 		implements Runnable, MouseWheelListener, MouseInputListener, MouseMotionListener, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient ResolutionChooser resolutionChooser;
+	private transient CalculationParametersRequester calculationParametersRequester;
 	private transient MandelbrotCalculatorProducer mandelbrotCalculatorProducer;
 	private transient PointsInfo pointsInfo;
 	private transient PointsOfInterest pointsOfInterest;
+	private transient MultipleVariantImageProducerFactory imageProducerFactory;
 	private transient MultipleVariantImageProducer imageProducer;
 	private transient DataPersister dataPersister;
 
@@ -55,16 +58,17 @@ public class MandelbrotCanvas extends JPanel
 	private transient Image image;
 	private long lastDrawTime;
 
-	public MandelbrotCanvas(int width, int height, ResolutionChooser resolutionChooser,
+	public MandelbrotCanvas(int width, int height, CalculationParametersRequester calculationParametersRequester,
 			MandelbrotCalculatorProducer mandelbrotCalculatorProducer, PointsInfo pointsInfo,
-			MultipleVariantImageProducer imageProducer, PointsOfInterest pointsOfInterest,
-			DataPersister dataPersister) {
+			MultipleVariantImageProducerFactory imageProducerFactory, PointsOfInterest pointsOfInterest,
+			DataPersister dataPersister, CalculationParameters calculationParameters) {
 		super();
-		this.resolutionChooser = resolutionChooser;
+		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotCalculatorProducer = mandelbrotCalculatorProducer;
 		this.pointsInfo = pointsInfo;
 		this.pointsOfInterest = pointsOfInterest;
-		this.imageProducer = imageProducer;
+		this.imageProducerFactory = imageProducerFactory;
+		this.imageProducer = imageProducerFactory.createInstance(calculationParameters);
 		this.dataPersister = dataPersister;
 
 		setSize(width, height);
@@ -99,7 +103,7 @@ public class MandelbrotCanvas extends JPanel
 
 		calculator.calculate(pointsInfo, getWidth(), getHeight());
 		lastDrawTime = calculator.getDrawTime();
-		image = imageProducer.produceImage(calculator.getDataBuffer());
+		image = calculator.produceImage(imageProducer);
 
 		calculationThreadRunning = false;
 	}
@@ -137,7 +141,7 @@ public class MandelbrotCanvas extends JPanel
 					xCoord, yCoord);
 			yCoord += vSpacing;
 			drawString(graphics, String.format("Draw time: %d ms using %d threads, max %d iterations", lastDrawTime,
-					calculator.getNumberOfThreads(), MandelbrotCalculator.MAX_ITERATIONS), xCoord, yCoord);
+					calculator.getNumberOfThreads(), calculator.getMaxIterations()), xCoord, yCoord);
 			yCoord += vSpacing;
 			drawString(graphics,
 					String.format("Real interval: [%1.14f,%1.14f]", pointsInfo.getMinX(), pointsInfo.getMaxX()), xCoord,
@@ -172,8 +176,8 @@ public class MandelbrotCanvas extends JPanel
 							xCoord, yCoord);
 					yCoord += vSpacing;
 					drawString(graphics,
-							String.format("Current point iterations: %d", calculator.getDataBuffer()
-									.getPixel(pointsInfo.getPointerXCoordinate(), pointsInfo.getPointerYCoordinate())),
+							String.format("Current point iterations: %d", calculator.getIterations(
+									pointsInfo.getPointerXCoordinate(), pointsInfo.getPointerYCoordinate())),
 							xCoord, yCoord);
 					yCoord += vSpacing;
 				}
@@ -380,7 +384,7 @@ public class MandelbrotCanvas extends JPanel
 		} else {
 			imageProducer.useDirectColorModel();
 		}
-		image = imageProducer.produceImage(calculator.getDataBuffer());
+		image = calculator.produceImage(imageProducer);
 		repaint();
 	}
 
@@ -410,20 +414,27 @@ public class MandelbrotCanvas extends JPanel
 
 	private void saveImage() {
 
-		Resolution resolution = resolutionChooser.chooseResolution(this);
-		if (resolution == null) {
+		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(this);
+		if (tempCalculationParameters == null) {
 			return;
 		}
 
 		Image imageToSave = image;
 
-		int resWidth = resolution.getWidth();
-		int resHeight = resolution.getHeight();
-		if (resWidth != getWidth() || resHeight != getHeight()) {
-			MandelbrotCalculator tempCalculator = mandelbrotCalculatorProducer.createInstance();
-			PointsInfo tempPointsInfo = pointsInfo.adaptToDimensions(resWidth, resHeight);
-			tempCalculator.calculate(tempPointsInfo, resWidth, resHeight);
-			imageToSave = imageProducer.produceImage(tempCalculator.getDataBuffer());
+		Resolution tempResolution = tempCalculationParameters.getResolution();
+		int tempWidth = tempResolution.getWidth();
+		int tempHeight = tempResolution.getHeight();
+		if (tempWidth != getWidth() || tempHeight != getHeight()) {
+			MandelbrotCalculator tempCalculator = mandelbrotCalculatorProducer.createInstance(
+					tempCalculationParameters.getMaxThreads(), tempCalculationParameters.getMaxIterations());
+			PointsInfo tempPointsInfo = pointsInfo.adaptToDimensions(tempWidth, tempHeight);
+			MultipleVariantImageProducer tempImageProducer = imageProducerFactory
+					.createInstance(tempCalculationParameters);
+			if (imageProducer.isUsingIndexColorModel()) {
+				tempImageProducer.useIndexColorModel();
+			}
+			tempCalculator.calculate(tempPointsInfo, tempWidth, tempHeight);
+			imageToSave = tempCalculator.produceImage(tempImageProducer);
 		}
 
 		String filename = new StringBuilder().append(System.getProperty("user.home")).append(File.separatorChar)
