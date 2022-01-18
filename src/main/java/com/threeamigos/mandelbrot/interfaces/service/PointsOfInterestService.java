@@ -2,14 +2,15 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.util.List;
 
-import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 
 public interface PointsOfInterestService {
 
-	public PersistResult loadPointsOfInterest(Notifier notifier);
+	public PersistResult loadPointsOfInterest();
 
-	public PersistResult savePointsOfInterest(Notifier notifier);
+	public PersistResult savePointsOfInterest();
+
+	public String getFilename();
 
 	public int getCount();
 

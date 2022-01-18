@@ -1,17 +1,15 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.imageproducer;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.ImageProducer;
-import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 
-class DirectColorModelImageProducer implements ImageProducer {
+class DirectColorModelImageProducer implements SingleColorModelImageProducer {
 
-	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotCalculator.MAX_CALCULATIONS_EXPONENT);
+	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT);
 
 	private final DirectColorModel directColorModel;
 
@@ -62,21 +60,20 @@ class DirectColorModelImageProducer implements ImageProducer {
 	}
 
 	@Override
-	public Image produceImage(DataBuffer dataBuffer) {
-		int[] pixels = dataBuffer.getPixels();
+	public Image produceImage(int width, int height, int[] pixels) {
 		int[] translatedValues = new int[pixels.length];
 		int length = pixels.length;
-		int multiplier = (int) Math.pow(2, MandelbrotCalculator.MAX_CALCULATIONS_EXPONENT) / maxIterations;
+		int multiplier = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT) / maxIterations;
 		for (int i = 0; i < length; i++) {
 			int currentIterations = pixels[i];
-			if (currentIterations == maxIterations || currentIterations == DataBuffer.NOT_CALCULATED) {
+			if (currentIterations == maxIterations || currentIterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
 				translatedValues[i] = map[currentIterations * multiplier];
 			}
 		}
-		return Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(dataBuffer.getWidth(),
-				dataBuffer.getHeight(), directColorModel, translatedValues, 0, dataBuffer.getWidth()));
+		return Toolkit.getDefaultToolkit()
+				.createImage(new MemoryImageSource(width, height, directColorModel, translatedValues, 0, width));
 	}
 
 }

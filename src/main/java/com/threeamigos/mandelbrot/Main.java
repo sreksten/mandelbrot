@@ -7,19 +7,18 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import com.threeamigos.mandelbrot.implementations.ImageProducerImpl;
-import com.threeamigos.mandelbrot.implementations.MandelbrotCalculatorFactory;
-import com.threeamigos.mandelbrot.implementations.MultipleVariantImageProducerFactoryImpl;
-import com.threeamigos.mandelbrot.implementations.PointsInfoImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.MandelbrotServiceFactoryImpl;
+import com.threeamigos.mandelbrot.implementations.service.MultipleColorModelImageProducerServiceFactoryImpl;
+import com.threeamigos.mandelbrot.implementations.service.PointsInfoImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
-import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculatorProducer;
-import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
-import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducerFactory;
-import com.threeamigos.mandelbrot.interfaces.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImageService;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
@@ -34,25 +33,24 @@ public class Main {
 			return;
 		}
 
-		Resolution resolution = calculationParameters.getResolution();
-
 		PointsInfo pointsInfo = new PointsInfoImpl();
-		pointsInfo.setDimensions(resolution.getWidth(), resolution.getHeight());
+		pointsInfo.setResolution(calculationParameters.getResolution());
 
-		MandelbrotCalculatorProducer mandelbrotCalculatorProducer = new MandelbrotCalculatorFactory(
-				calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations());
-		MultipleVariantImageProducerFactory imageProducerFactory = new MultipleVariantImageProducerFactoryImpl();
-		MultipleVariantImageProducer imageProducer = new ImageProducerImpl(calculationParameters.getMaxIterations());
+		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
+		MultipleColorModelImageProducerServiceFactory imageProducerServiceFactory = new MultipleColorModelImageProducerServiceFactoryImpl();
 		ImageService imageService = new ImageServiceImpl();
 		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(calculationParametersRequester,
-				mandelbrotCalculatorProducer, pointsInfo, imageProducerFactory, pointsOfInterestService, imageService,
-				calculationParameters);
+				mandelbrotServiceFactory, pointsOfInterestService, imageService, imageProducerServiceFactory,
+				pointsInfo, calculationParameters);
 
 		prepareFrame(mandelbrotCanvas);
 
-		pointsOfInterestService.loadPointsOfInterest(mandelbrotCanvas);
+		PersistResult result = pointsOfInterestService.loadPointsOfInterest();
+		if (!result.isSuccessful()) {
+			mandelbrotCanvas.notify(result.getError());
+		}
 	}
 
 	private void prepareFrame(MandelbrotCanvas mandelbrotCanvas) {

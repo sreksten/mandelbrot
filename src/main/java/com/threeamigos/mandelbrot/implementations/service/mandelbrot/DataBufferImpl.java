@@ -1,8 +1,8 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
 import java.util.Arrays;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 
 class DataBufferImpl implements DataBuffer {
 
@@ -14,7 +14,7 @@ class DataBufferImpl implements DataBuffer {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
-		Arrays.fill(pixels, NOT_CALCULATED);
+		Arrays.fill(pixels, MandelbrotService.ITERATION_NOT_CALCULATED);
 	}
 
 	@Override

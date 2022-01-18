@@ -1,6 +1,6 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-public class SliceData {
+class SliceData {
 
 	final int startX;
 	final int startY;

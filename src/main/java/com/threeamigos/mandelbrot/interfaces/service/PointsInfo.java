@@ -1,10 +1,12 @@
-package com.threeamigos.mandelbrot.interfaces;
+package com.threeamigos.mandelbrot.interfaces.service;
+
+import com.threeamigos.mandelbrot.Resolution;
 
 public interface PointsInfo {
 
-	PointsInfo adaptToDimensions(int width, int height);
+	PointsInfo adaptToResolution(Resolution resolution);
 
-	void setDimensions(int width, int height);
+	void setResolution(Resolution resolution);
 
 	int getWidth();
 

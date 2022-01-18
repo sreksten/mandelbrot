@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.threeamigos.mandelbrot.implementations.PointOfInterestImpl;
-import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
+import com.threeamigos.mandelbrot.implementations.service.PointOfInterestImpl;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
+import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 
 public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister {
 

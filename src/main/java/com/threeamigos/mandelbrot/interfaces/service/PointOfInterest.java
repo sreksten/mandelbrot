@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.interfaces;
+package com.threeamigos.mandelbrot.interfaces.service;
 
 public interface PointOfInterest {
 

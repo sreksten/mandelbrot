@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.persister;
 
 import java.util.List;
 
-import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
+import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 
 public interface PointsOfInterestPersister {
 

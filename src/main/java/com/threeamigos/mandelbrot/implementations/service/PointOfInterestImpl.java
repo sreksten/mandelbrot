@@ -1,6 +1,6 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service;
 
-import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
+import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 
 public class PointOfInterestImpl implements PointOfInterest {
 

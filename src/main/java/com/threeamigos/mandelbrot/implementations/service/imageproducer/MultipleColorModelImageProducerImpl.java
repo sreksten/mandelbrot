@@ -1,19 +1,17 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.imageproducer;
 
 import java.awt.Image;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.ImageProducer;
-import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
+import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerService;
 
-public class ImageProducerImpl implements MultipleVariantImageProducer {
+public class MultipleColorModelImageProducerImpl implements MultipleColorModelImageProducerService {
 
-	private ImageProducer indexColorModelImageProducer;
-	private ImageProducer directColorModelImageProducer;
+	private SingleColorModelImageProducer indexColorModelImageProducer;
+	private SingleColorModelImageProducer directColorModelImageProducer;
 
-	private ImageProducer currentImageProducer;
+	private SingleColorModelImageProducer currentImageProducer;
 
-	public ImageProducerImpl(int maxIterations) {
+	public MultipleColorModelImageProducerImpl(int maxIterations) {
 		indexColorModelImageProducer = new IndexColorModelImageProducer();
 		directColorModelImageProducer = new DirectColorModelImageProducer(maxIterations);
 
@@ -41,8 +39,8 @@ public class ImageProducerImpl implements MultipleVariantImageProducer {
 	}
 
 	@Override
-	public Image produceImage(DataBuffer dataBuffer) {
-		return currentImageProducer.produceImage(dataBuffer);
+	public Image produceImage(int width, int height, int[] pixels) {
+		return currentImageProducer.produceImage(width, height, pixels);
 	}
 
 }

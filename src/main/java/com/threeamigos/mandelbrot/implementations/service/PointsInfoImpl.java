@@ -1,7 +1,8 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service;
 
-import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
-import com.threeamigos.mandelbrot.interfaces.PointsInfo;
+import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
+import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 
 public class PointsInfoImpl implements PointsInfo {
 
@@ -41,16 +42,16 @@ public class PointsInfoImpl implements PointsInfo {
 	private Double imaginaryCoordinateUnderPointer;
 
 	@Override
-	public PointsInfo adaptToDimensions(int width, int height) {
+	public PointsInfo adaptToResolution(Resolution resolution) {
 		PointsInfoImpl newPoint = new PointsInfoImpl();
-		newPoint.width = width;
-		newPoint.height = height;
+		newPoint.width = resolution.getWidth();
+		newPoint.height = resolution.getHeight();
 
 		newPoint.minY = minY;
 		newPoint.maxY = maxY;
 		newPoint.calculateStepY();
 
-		double halfWidth = (newPoint.stepY * width) / 2.0d;
+		double halfWidth = (newPoint.stepY * resolution.getWidth()) / 2.0d;
 		double centerX = (maxX - minX) / 2.0d + minX;
 
 		newPoint.minX = centerX - halfWidth;
@@ -61,9 +62,9 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	@Override
-	public void setDimensions(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public void setResolution(Resolution resolution) {
+		this.width = resolution.getWidth();
+		this.height = resolution.getHeight();
 
 		startingMinY = DEFAULT_MIN_Y;
 		startingMaxY = DEFAULT_MAX_Y;

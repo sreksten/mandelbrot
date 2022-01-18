@@ -1,14 +1,11 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.imageproducer;
 
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.ImageProducer;
-
-class IndexColorModelImageProducer implements ImageProducer {
+class IndexColorModelImageProducer implements SingleColorModelImageProducer {
 
 	private final byte[] colorMapR;
 	private final byte[] colorMapG;
@@ -35,9 +32,9 @@ class IndexColorModelImageProducer implements ImageProducer {
 	}
 
 	@Override
-	public Image produceImage(DataBuffer dataBuffer) {
-		return Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(dataBuffer.getWidth(),
-				dataBuffer.getHeight(), indexColorModel, dataBuffer.getPixels(), 0, dataBuffer.getWidth()));
+	public Image produceImage(int width, int height, int[] pixels) {
+		return Toolkit.getDefaultToolkit()
+				.createImage(new MemoryImageSource(width, height, indexColorModel, pixels, 0, width));
 	}
 
 }

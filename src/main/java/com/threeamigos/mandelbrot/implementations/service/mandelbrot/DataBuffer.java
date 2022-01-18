@@ -1,8 +1,6 @@
-package com.threeamigos.mandelbrot.interfaces;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-public interface DataBuffer {
-
-	public static final int NOT_CALCULATED = -1;
+interface DataBuffer {
 
 	public int getWidth();
 

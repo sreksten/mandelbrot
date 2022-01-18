@@ -1,8 +1,8 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class SliceDataDeque {
+class SliceDataDeque {
 
 	private static final SliceDataDeque instance = new SliceDataDeque();
 

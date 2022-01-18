@@ -1,14 +1,12 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-import java.awt.Image;
 import java.util.Arrays;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.ImageProducer;
-import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
-import com.threeamigos.mandelbrot.interfaces.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 
-public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
+public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	private long drawTime;
 
@@ -21,9 +19,9 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 
 	boolean running;
 
-	public MultithreadedMandelbrotCalculator(int maxThreads, int maxIterations) {
-		this.maxThreads = maxThreads;
-		this.maxIterations = maxIterations;
+	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
+		this.maxThreads = calculationParameters.getMaxThreads();
+		this.maxIterations = calculationParameters.getMaxIterations();
 		threads = new Thread[maxThreads];
 		calculators = new MandelbrotSliceCalculator[maxThreads];
 		deque = SliceDataDeque.getInstance();
@@ -52,7 +50,10 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	}
 
 	@Override
-	public void calculate(PointsInfo pointsInfo, int width, int height) {
+	public void calculate(PointsInfo pointsInfo) {
+
+		int width = pointsInfo.getWidth();
+		int height = pointsInfo.getHeight();
 
 		running = true;
 
@@ -152,13 +153,13 @@ public class MultithreadedMandelbrotCalculator implements MandelbrotCalculator {
 	}
 
 	@Override
-	public int getIterations(int x, int y) {
-		return dataBuffer.getPixel(x, y);
+	public int[] getIterations() {
+		return dataBuffer.getPixels();
 	}
 
 	@Override
-	public Image produceImage(ImageProducer imageProducer) {
-		return imageProducer.produceImage(dataBuffer);
+	public int getIterations(int x, int y) {
+		return dataBuffer.getPixel(x, y);
 	}
 
 }

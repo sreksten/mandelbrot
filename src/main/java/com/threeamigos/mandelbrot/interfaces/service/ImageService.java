@@ -6,6 +6,6 @@ import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 
 public interface ImageService {
 
-	public PersistResult saveImage(Notifier notifier, Image image, String filename);
+	public PersistResult saveImage(Image image, String filename);
 
 }

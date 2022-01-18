@@ -1,9 +1,9 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-import com.threeamigos.mandelbrot.interfaces.DataBuffer;
-import com.threeamigos.mandelbrot.interfaces.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 
-public class MandelbrotSliceCalculator implements Runnable {
+class MandelbrotSliceCalculator implements Runnable {
 
 	private Thread mainThread;
 	private PointsInfo pointsInfo;
@@ -48,12 +48,12 @@ public class MandelbrotSliceCalculator implements Runnable {
 		if (toX - fromX <= 5 || toY - fromY <= 5) {
 			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
 		} else {
-			int uniqueValue = DataBuffer.NOT_CALCULATED;
+			int uniqueValue = MandelbrotService.ITERATION_NOT_CALCULATED;
 			boolean hasUniqueValue = true;
 
 			for (int x = fromX; x < toX && running; x++) {
 				int iterations = calculateIterations(x, fromY, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == DataBuffer.NOT_CALCULATED) {
+				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -62,7 +62,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 			for (int y = fromY; y < toY && running; y++) {
 				int iterations = calculateIterations(fromX, y, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == DataBuffer.NOT_CALCULATED) {
+				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -71,7 +71,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 			for (int x = fromX; x < toX && running; x++) {
 				int iterations = calculateIterations(x, toY - 1, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == DataBuffer.NOT_CALCULATED) {
+				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -80,7 +80,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 			for (int y = fromY; y < toY && running; y++) {
 				int iterations = calculateIterations(toX - 1, y, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == DataBuffer.NOT_CALCULATED) {
+				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -131,7 +131,7 @@ public class MandelbrotSliceCalculator implements Runnable {
 
 	private int calculateIterations(int x, int y, boolean cardioidVisible, boolean period2BulbVisible) {
 		int iterations = dataBuffer.getPixel(x, y);
-		if (iterations == DataBuffer.NOT_CALCULATED) {
+		if (iterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
 			double cReal = pointsInfo.toCReal(x);
 			double cImaginary = pointsInfo.toCImaginary(y);
 			iterations = calculateIterations(cReal, cImaginary, cardioidVisible, period2BulbVisible);

@@ -11,8 +11,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 
 import com.threeamigos.mandelbrot.Resolution;
-import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
@@ -54,7 +54,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		panel.add(Box.createVerticalStrut(5));
 
 		int defaultMaxIterationsExponent = 5;
-		int actualExponent = MandelbrotCalculator.MIN_CALCULATIONS_EXPONENT + defaultMaxIterationsExponent;
+		int actualExponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
 		int defaultMaxIterations = (int) Math.pow(2, actualExponent);
 
 		JLabel iterationsLabel = new JLabel("Max iterations: " + defaultMaxIterations);
@@ -62,14 +62,14 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		panel.add(iterationsLabel);
 
 		JSlider iterationsSlider = new JSlider(0,
-				MandelbrotCalculator.MAX_CALCULATIONS_EXPONENT - MandelbrotCalculator.MIN_CALCULATIONS_EXPONENT,
+				MandelbrotService.MAX_ITERATIONS_EXPONENT - MandelbrotService.MIN_ITERATIONS_EXPONENT,
 				defaultMaxIterationsExponent);
 		iterationsSlider.setMajorTickSpacing(4);
 		iterationsSlider.setMinorTickSpacing(2);
 		iterationsSlider.setPaintTicks(true);
 		iterationsSlider.addChangeListener(event -> {
 			JSlider source = (JSlider) event.getSource();
-			int exponent = MandelbrotCalculator.MIN_CALCULATIONS_EXPONENT + source.getValue();
+			int exponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + source.getValue();
 			iterationsLabel.setText("Max iterations: " + (int) Math.pow(2, exponent));
 		});
 		iterationsSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -80,7 +80,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		if (result == JOptionPane.OK_OPTION) {
 			Resolution resolution = Resolution.values()[resolutionComboBox.getSelectedIndex()];
 			int maxThreads = threadsSlider.getValue();
-			int exponent = MandelbrotCalculator.MIN_CALCULATIONS_EXPONENT + iterationsSlider.getValue();
+			int exponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
 			int maxIterations = (int) Math.pow(2, exponent);
 			return new CalculationParametersImpl(resolution, maxThreads, maxIterations);
 		}
@@ -100,9 +100,9 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 
 	private class CalculationParametersImpl implements CalculationParameters {
 
-		private Resolution resolution;
-		private int maxThreads;
-		private int maxIterations;
+		private final Resolution resolution;
+		private final int maxThreads;
+		private final int maxIterations;
 
 		CalculationParametersImpl(Resolution resolution, int maxThreads, int maxIterations) {
 			this.resolution = resolution;
