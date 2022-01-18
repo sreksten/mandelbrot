@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,8 +12,8 @@ import javax.swing.JSlider;
 
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
+import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
 

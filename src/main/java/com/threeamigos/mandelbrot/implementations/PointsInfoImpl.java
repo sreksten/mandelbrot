@@ -82,6 +82,16 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
 	public void setMinX(double minX) {
 		this.minX = minX;
 		calculateStepX();

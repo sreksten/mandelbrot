@@ -3,27 +3,25 @@ package com.threeamigos.mandelbrot;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import com.threeamigos.mandelbrot.implementations.CalculationParametersRequesterImpl;
-import com.threeamigos.mandelbrot.implementations.DiskPersister;
 import com.threeamigos.mandelbrot.implementations.ImageProducerImpl;
 import com.threeamigos.mandelbrot.implementations.MandelbrotCalculatorFactory;
 import com.threeamigos.mandelbrot.implementations.MultipleVariantImageProducerFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.PointsInfoImpl;
-import com.threeamigos.mandelbrot.implementations.PointsOfInterestImpl;
+import com.threeamigos.mandelbrot.implementations.service.ImageServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
+import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.interfaces.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.CalculationParametersRequester;
-import com.threeamigos.mandelbrot.interfaces.DataPersister;
-import com.threeamigos.mandelbrot.interfaces.DataPersister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculatorProducer;
 import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducer;
 import com.threeamigos.mandelbrot.interfaces.MultipleVariantImageProducerFactory;
 import com.threeamigos.mandelbrot.interfaces.PointsInfo;
-import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
+import com.threeamigos.mandelbrot.interfaces.service.ImageService;
+import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class Main {
 
@@ -32,42 +30,29 @@ public class Main {
 		CalculationParametersRequester calculationParametersRequester = new CalculationParametersRequesterImpl();
 
 		CalculationParameters calculationParameters = calculationParametersRequester.getCalculationParameters(null);
-
 		if (calculationParameters == null) {
 			return;
 		}
 
 		Resolution resolution = calculationParameters.getResolution();
-		int width = resolution.getWidth();
-		int height = resolution.getHeight();
 
 		PointsInfo pointsInfo = new PointsInfoImpl();
-		pointsInfo.setDimensions(width, height);
+		pointsInfo.setDimensions(resolution.getWidth(), resolution.getHeight());
 
 		MandelbrotCalculatorProducer mandelbrotCalculatorProducer = new MandelbrotCalculatorFactory(
 				calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations());
 		MultipleVariantImageProducerFactory imageProducerFactory = new MultipleVariantImageProducerFactoryImpl();
 		MultipleVariantImageProducer imageProducer = new ImageProducerImpl(calculationParameters.getMaxIterations());
-		DataPersister dataPersister = new DiskPersister();
-		PointsOfInterest pointsOfInterest = loadPointsOfInterest(dataPersister);
+		ImageService imageService = new ImageServiceImpl();
+		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
 
-		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(width, height, calculationParametersRequester,
-				mandelbrotCalculatorProducer, pointsInfo, imageProducerFactory, pointsOfInterest, dataPersister,
+		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(calculationParametersRequester,
+				mandelbrotCalculatorProducer, pointsInfo, imageProducerFactory, pointsOfInterestService, imageService,
 				calculationParameters);
 
 		prepareFrame(mandelbrotCanvas);
-	}
 
-	private final PointsOfInterest loadPointsOfInterest(DataPersister dataPersister) {
-		PointsOfInterest pointsOfInterest = null;
-
-		PersistResult persistResult = dataPersister.loadPointsOfInterest();
-		if (persistResult.isSuccessful()) {
-			pointsOfInterest = new PointsOfInterestImpl(persistResult.getPointsOfInterest());
-		} else {
-			pointsOfInterest = new PointsOfInterestImpl(new ArrayList<>());
-		}
-		return pointsOfInterest;
+		pointsOfInterestService.loadPointsOfInterest(mandelbrotCanvas);
 	}
 
 	private void prepareFrame(MandelbrotCanvas mandelbrotCanvas) {

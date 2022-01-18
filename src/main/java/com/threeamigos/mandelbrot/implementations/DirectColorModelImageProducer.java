@@ -7,8 +7,11 @@ import java.awt.image.MemoryImageSource;
 
 import com.threeamigos.mandelbrot.interfaces.DataBuffer;
 import com.threeamigos.mandelbrot.interfaces.ImageProducer;
+import com.threeamigos.mandelbrot.interfaces.MandelbrotCalculator;
 
 class DirectColorModelImageProducer implements ImageProducer {
+
+	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotCalculator.MAX_CALCULATIONS_EXPONENT);
 
 	private final DirectColorModel directColorModel;
 
@@ -17,16 +20,18 @@ class DirectColorModelImageProducer implements ImageProducer {
 	private final int[] map;
 
 	public DirectColorModelImageProducer(int maxIterations) {
+
 		this.maxIterations = maxIterations;
-		int[] r = new int[maxIterations];
-		int[] g = new int[maxIterations];
-		int[] b = new int[maxIterations];
+
+		int[] r = new int[MAX_ITERATIONS];
+		int[] g = new int[MAX_ITERATIONS];
+		int[] b = new int[MAX_ITERATIONS];
 
 		final int redStartingPoint = 0;
-		final int greenStartingPoint = maxIterations / 3;
-		final int blueStartingPoint = 2 * maxIterations / 3;
+		final int greenStartingPoint = MAX_ITERATIONS / 3;
+		final int blueStartingPoint = 2 * MAX_ITERATIONS / 3;
 
-		int third = maxIterations / 3;
+		int third = MAX_ITERATIONS / 3;
 
 		for (int i = 0; i < third; i++) {
 			int value = 255 - (256 * i / third);
@@ -38,8 +43,8 @@ class DirectColorModelImageProducer implements ImageProducer {
 			b[mod(blueStartingPoint - i)] = value;
 		}
 
-		map = new int[maxIterations];
-		for (int i = 0; i < maxIterations; i++) {
+		map = new int[MAX_ITERATIONS];
+		for (int i = 0; i < MAX_ITERATIONS; i++) {
 			map[i] = (r[i] << 16) | (g[i] << 8) | b[i];
 		}
 
@@ -47,11 +52,11 @@ class DirectColorModelImageProducer implements ImageProducer {
 	}
 
 	private int mod(int value) {
-		if (value >= maxIterations) {
-			value = value % maxIterations;
+		if (value >= MAX_ITERATIONS) {
+			value = value % MAX_ITERATIONS;
 		}
 		if (value < 0) {
-			value = maxIterations + value;
+			value = MAX_ITERATIONS + value;
 		}
 		return value;
 	}
@@ -61,12 +66,13 @@ class DirectColorModelImageProducer implements ImageProducer {
 		int[] pixels = dataBuffer.getPixels();
 		int[] translatedValues = new int[pixels.length];
 		int length = pixels.length;
+		int multiplier = (int) Math.pow(2, MandelbrotCalculator.MAX_CALCULATIONS_EXPONENT) / maxIterations;
 		for (int i = 0; i < length; i++) {
 			int currentIterations = pixels[i];
 			if (currentIterations == maxIterations || currentIterations == DataBuffer.NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
-				translatedValues[i] = map[currentIterations];
+				translatedValues[i] = map[currentIterations * multiplier];
 			}
 		}
 		return Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(dataBuffer.getWidth(),

@@ -1,8 +1,5 @@
-package com.threeamigos.mandelbrot.implementations;
+package com.threeamigos.mandelbrot.implementations.persister;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,44 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.imageio.ImageIO;
-
-import com.threeamigos.mandelbrot.interfaces.DataPersister;
+import com.threeamigos.mandelbrot.implementations.PointOfInterestImpl;
 import com.threeamigos.mandelbrot.interfaces.PointOfInterest;
-import com.threeamigos.mandelbrot.interfaces.PointsOfInterest;
+import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
 
-public class DiskPersister implements DataPersister {
+public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister {
 
 	public static final String POINTS_OF_INTEREST_FILENAME = "points_of_interest.txt";
 
 	private static final String SEPARATOR = "|";
 
-	@Override
-	public PersistResult saveImage(Image image, String filename) {
-		try {
-			File outputFile = new File(filename);
-
-			final BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-					BufferedImage.TYPE_3BYTE_BGR);
-			final Graphics2D g2 = bufferedImage.createGraphics();
-			g2.drawImage(image, null, null);
-			g2.dispose();
-
-			ImageIO.write(bufferedImage, "png", outputFile);
-
-			return new PersistResultImpl();
-
-		} catch (IOException e) {
-			return new PersistResultImpl("Error while saving image: " + e.getMessage());
-		}
-	}
+	private List<PointOfInterest> pointsOfInterest;
 
 	@Override
-	public PersistResult savePointsOfInterest(PointsOfInterest pointsOfInterest) {
-		String path = new StringBuilder(getPointsOfInterestPath()).append(File.separatorChar)
-				.append(POINTS_OF_INTEREST_FILENAME).toString();
-		try (PrintWriter printWriter = new PrintWriter(new File(path))) {
-			for (PointOfInterest pointOfInterest : pointsOfInterest.getElements()) {
+	public PersistResult savePointsOfInterest(List<PointOfInterest> pointsOfInterest) {
+		String filename = getFilename();
+		try (PrintWriter printWriter = new PrintWriter(new File(filename))) {
+			for (PointOfInterest pointOfInterest : pointsOfInterest) {
 				printWriter.println(toString(pointOfInterest));
 			}
 			return new PersistResultImpl();
@@ -67,20 +44,26 @@ public class DiskPersister implements DataPersister {
 			if (inputStream == null) {
 				return new PersistResultImpl("Cannot access " + POINTS_OF_INTEREST_FILENAME);
 			}
-			List<PointOfInterest> pointsOfInterest = new ArrayList<>();
+			List<PointOfInterest> points = new ArrayList<>();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					if (!line.isBlank()) {
-						PointOfInterest pointOfInterest = parsePointOfInterest(line);
-						pointsOfInterest.add(pointOfInterest);
+						PointOfInterest point = parsePointOfInterest(line);
+						points.add(point);
 					}
 				}
 			}
-			return new PersistResultImpl(pointsOfInterest);
+			pointsOfInterest = points;
+			return new PersistResultImpl();
 		} catch (Exception e) {
 			return new PersistResultImpl("Error reading " + POINTS_OF_INTEREST_FILENAME + ": " + e.getMessage());
 		}
+	}
+
+	@Override
+	public List<PointOfInterest> getPointsOfInterest() {
+		return pointsOfInterest;
 	}
 
 	private InputStream getInputStream(String filename) {
@@ -107,6 +90,12 @@ public class DiskPersister implements DataPersister {
 		return path;
 	}
 
+	@Override
+	public String getFilename() {
+		return new StringBuilder(getPointsOfInterestPath()).append(File.separatorChar)
+				.append(POINTS_OF_INTEREST_FILENAME).toString();
+	}
+
 	private final PointOfInterest parsePointOfInterest(String line) {
 		String name;
 		double minImaginary;
@@ -127,45 +116,6 @@ public class DiskPersister implements DataPersister {
 				.append(SEPARATOR).append(pointOfInterest.getMaxImaginary()).append(SEPARATOR)
 				.append(pointOfInterest.getCentralReal()).append(SEPARATOR).append(pointOfInterest.getZoomCount())
 				.toString();
-	}
-
-	public class PersistResultImpl implements PersistResult {
-
-		private final boolean successful;
-
-		private String error;
-
-		private List<PointOfInterest> pointsOfInterest;
-
-		PersistResultImpl() {
-			successful = true;
-		}
-
-		PersistResultImpl(String error) {
-			successful = false;
-			this.error = error;
-		}
-
-		PersistResultImpl(List<PointOfInterest> pointsOfInterest) {
-			successful = true;
-			this.pointsOfInterest = pointsOfInterest;
-		}
-
-		@Override
-		public boolean isSuccessful() {
-			return successful;
-		}
-
-		@Override
-		public String getError() {
-			return error;
-		}
-
-		@Override
-		public List<PointOfInterest> getPointsOfInterest() {
-			return pointsOfInterest;
-		}
-
 	}
 
 }

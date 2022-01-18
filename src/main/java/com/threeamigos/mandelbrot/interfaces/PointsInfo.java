@@ -2,9 +2,13 @@ package com.threeamigos.mandelbrot.interfaces;
 
 public interface PointsInfo {
 
-	public PointsInfo adaptToDimensions(int width, int height);
+	PointsInfo adaptToDimensions(int width, int height);
 
 	void setDimensions(int width, int height);
+
+	int getWidth();
+
+	int getHeight();
 
 	void setMinX(double minX);
 
