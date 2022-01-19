@@ -2,9 +2,11 @@ package com.threeamigos.mandelbrot.implementations.persister;
 
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 
-public class PersistResultImpl implements PersistResult {
+class PersistResultImpl implements PersistResult {
 
 	private final boolean successful;
+
+	private String filename;
 
 	private String error;
 
@@ -20,6 +22,15 @@ public class PersistResultImpl implements PersistResult {
 	@Override
 	public boolean isSuccessful() {
 		return successful;
+	}
+
+	void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	@Override
+	public String getFilename() {
+		return filename;
 	}
 
 	@Override

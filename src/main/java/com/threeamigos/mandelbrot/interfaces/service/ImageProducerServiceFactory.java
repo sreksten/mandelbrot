@@ -1,7 +1,7 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
-public interface MultipleColorModelImageProducerServiceFactory {
+public interface ImageProducerServiceFactory {
 
-	public MultipleColorModelImageProducerService createInstance(CalculationParameters calculationParameters);
+	public ImageProducerService createInstance(CalculationParameters calculationParameters);
 
 }

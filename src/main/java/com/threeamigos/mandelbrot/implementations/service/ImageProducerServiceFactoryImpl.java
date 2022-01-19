@@ -1,15 +1,15 @@
 package com.threeamigos.mandelbrot.implementations.service;
 
-import com.threeamigos.mandelbrot.implementations.service.imageproducer.MultipleColorModelImageProducerImpl;
+import com.threeamigos.mandelbrot.implementations.service.imageproducer.ImageProducerImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerService;
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 
-public class MultipleColorModelImageProducerServiceFactoryImpl implements MultipleColorModelImageProducerServiceFactory {
+public class ImageProducerServiceFactoryImpl implements ImageProducerServiceFactory {
 
 	@Override
-	public MultipleColorModelImageProducerService createInstance(CalculationParameters calculationParameters) {
-		return new MultipleColorModelImageProducerImpl(calculationParameters.getMaxIterations());
+	public ImageProducerService createInstance(CalculationParameters calculationParameters) {
+		return new ImageProducerImpl(calculationParameters.getMaxIterations());
 	}
 
 }

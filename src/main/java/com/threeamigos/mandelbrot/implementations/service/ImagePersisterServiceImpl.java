@@ -5,9 +5,9 @@ import java.awt.Image;
 import com.threeamigos.mandelbrot.implementations.persister.ImagePersisterImpl;
 import com.threeamigos.mandelbrot.interfaces.persister.ImagePersister;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
-import com.threeamigos.mandelbrot.interfaces.service.ImageService;
+import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 
-public class ImageServiceImpl implements ImageService {
+public class ImagePersisterServiceImpl implements ImagePersisterService {
 
 	private ImagePersister imagePersister = new ImagePersisterImpl();
 

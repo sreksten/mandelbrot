@@ -2,16 +2,16 @@ package com.threeamigos.mandelbrot.implementations.service.imageproducer;
 
 import java.awt.Image;
 
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 
-public class MultipleColorModelImageProducerImpl implements MultipleColorModelImageProducerService {
+public class ImageProducerImpl implements ImageProducerService {
 
 	private SingleColorModelImageProducer indexColorModelImageProducer;
 	private SingleColorModelImageProducer directColorModelImageProducer;
 
 	private SingleColorModelImageProducer currentImageProducer;
 
-	public MultipleColorModelImageProducerImpl(int maxIterations) {
+	public ImageProducerImpl(int maxIterations) {
 		indexColorModelImageProducer = new IndexColorModelImageProducer();
 		directColorModelImageProducer = new DirectColorModelImageProducer(maxIterations);
 

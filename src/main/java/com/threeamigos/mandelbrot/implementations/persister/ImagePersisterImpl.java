@@ -26,7 +26,9 @@ public class ImagePersisterImpl implements ImagePersister {
 
 			ImageIO.write(bufferedImage, "png", outputFile);
 
-			return new PersistResultImpl();
+			PersistResultImpl result = new PersistResultImpl();
+			result.setFilename(filename);
+			return result;
 
 		} catch (IOException e) {
 			return new PersistResultImpl("Error while saving image: " + e.getMessage());

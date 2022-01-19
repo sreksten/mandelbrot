@@ -32,7 +32,10 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 			for (PointOfInterest pointOfInterest : pointsOfInterest) {
 				printWriter.println(toString(pointOfInterest));
 			}
-			return new PersistResultImpl();
+			PersistResultImpl result = new PersistResultImpl();
+			result.setFilename(filename);
+			return result;
+
 		} catch (IOException e) {
 			return new PersistResultImpl("Error while saving points of interest: " + e.getMessage());
 		}

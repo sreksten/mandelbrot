@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.awt.Image;
 
-public interface MultipleColorModelImageProducerService {
+public interface ImageProducerService {
 
 	public Image produceImage(int width, int height, int[] pixels);
 

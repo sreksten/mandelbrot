@@ -11,10 +11,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,14 +18,14 @@ import javax.swing.event.MouseInputListener;
 
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.ImageService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerService;
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class MandelbrotCanvas extends JPanel
@@ -41,9 +37,9 @@ public class MandelbrotCanvas extends JPanel
 	private transient MandelbrotServiceFactory mandelbrotServiceFactory;
 	private transient PointsInfo pointsInfo;
 	private transient PointsOfInterestService pointsOfInterestService;
-	private transient ImageService imageService;
-	private transient MultipleColorModelImageProducerServiceFactory imageProducerFactory;
-	private transient MultipleColorModelImageProducerService imageProducer;
+	private transient ImageProducerServiceFactory imageProducerServiceFactory;
+	private transient ImageProducerService imageProducerService;
+	private transient SnapshotService snapshotService;
 
 	private transient MandelbrotService mandelbrotService;
 
@@ -60,16 +56,15 @@ public class MandelbrotCanvas extends JPanel
 
 	public MandelbrotCanvas(CalculationParametersRequester calculationParametersRequester,
 			MandelbrotServiceFactory mandelbrotServiceFactory, PointsOfInterestService pointsOfInterestService,
-			ImageService imageService, MultipleColorModelImageProducerServiceFactory imageProducerFactory,
+			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService,
 			PointsInfo pointsInfo, CalculationParameters calculationParameters) {
 		super();
 		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
 		this.pointsOfInterestService = pointsOfInterestService;
-		this.imageService = imageService;
-		this.imageProducerFactory = imageProducerFactory;
-		this.imageProducer = imageProducerFactory.createInstance(calculationParameters);
-
+		this.imageProducerServiceFactory = imageProducerServiceFactory;
+		this.imageProducerService = imageProducerServiceFactory.createInstance(calculationParameters);
+		this.snapshotService = snapshotService;
 		this.pointsInfo = pointsInfo;
 
 		setSize(pointsInfo.getWidth(), pointsInfo.getHeight());
@@ -104,7 +99,7 @@ public class MandelbrotCanvas extends JPanel
 
 		mandelbrotService.calculate(pointsInfo);
 		lastDrawTime = mandelbrotService.getDrawTime();
-		image = imageProducer.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
+		image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
 				mandelbrotService.getIterations());
 
 		calculationThreadRunning = false;
@@ -371,18 +366,19 @@ public class MandelbrotCanvas extends JPanel
 			if (name != null && !name.isBlank()) {
 				PointOfInterest newPoint = pointsInfo.getPointOfInterest(name);
 				pointsOfInterestService.add(newPoint);
+				currentPointOfInterestIndex = pointsOfInterestService.getCount();
 				savePointsOfInterest();
 			}
 		}
 	}
 
 	private void switchColorModel() {
-		if (imageProducer.isUsingDirectColorModel()) {
-			imageProducer.useIndexColorModel();
+		if (imageProducerService.isUsingDirectColorModel()) {
+			imageProducerService.useIndexColorModel();
 		} else {
-			imageProducer.useDirectColorModel();
+			imageProducerService.useDirectColorModel();
 		}
-		image = imageProducer.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
+		image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
 				mandelbrotService.getIterations());
 		repaint();
 	}
@@ -401,8 +397,8 @@ public class MandelbrotCanvas extends JPanel
 		PersistResult result = pointsOfInterestService.savePointsOfInterest();
 		if (result.isSuccessful()) {
 			currentPointOfInterestIndex = null;
-			notify("Points of interest saved in " + pointsOfInterestService.getFilename());
 			repaint();
+			notify("Points of interest saved in " + result.getFilename());
 		} else {
 			notify("Error while saving points of interest: " + result.getError());
 		}
@@ -420,45 +416,21 @@ public class MandelbrotCanvas extends JPanel
 	}
 
 	private void saveImage() {
-
-		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(this);
-		if (tempCalculationParameters == null) {
-			return;
-		}
-
-		Image imageToSave = image;
-
-		Resolution tempResolution = tempCalculationParameters.getResolution();
-		if (tempResolution.getWidth() != getWidth() || tempResolution.getHeight() != getHeight()) {
-			MandelbrotService tempCalculator = mandelbrotServiceFactory.createInstance(tempCalculationParameters);
-			PointsInfo tempPointsInfo = pointsInfo.adaptToResolution(tempResolution);
-			tempCalculator.calculate(tempPointsInfo);
-			MultipleColorModelImageProducerService tempImageProducer = imageProducerFactory
-					.createInstance(tempCalculationParameters);
-			if (imageProducer.isUsingIndexColorModel()) {
-				tempImageProducer.useIndexColorModel();
+		PersistResult result = snapshotService.saveSnapshot(pointsInfo, imageProducerService.isUsingDirectColorModel(),
+				image, this);
+		if (result != null) {
+			if (result.isSuccessful()) {
+				notify("File saved in " + result.getFilename());
+			} else {
+				notify("Error while saving image: " + result.getError());
 			}
-			imageToSave = tempImageProducer.produceImage(tempPointsInfo.getWidth(), tempPointsInfo.getHeight(),
-					tempCalculator.getIterations());
-		}
-
-		String filename = new StringBuilder().append(System.getProperty("user.home")).append(File.separatorChar)
-				.append("3AM_Mandelbrot_").append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))
-				.append(".png").toString();
-
-		PersistResult result = imageService.saveImage(imageToSave, filename);
-		if (result.isSuccessful()) {
-			notify("File saved in " + filename);
-		} else {
-			notify("Error while saving image: " + result.getError());
 		}
 	}
 
 	private void setPointOfInterest(int pointIndex) {
-		List<PointOfInterest> points = pointsOfInterestService.getElements();
-		if (points.size() >= pointIndex) {
+		if (pointsOfInterestService.getCount() >= pointIndex) {
 			currentPointOfInterestIndex = pointIndex;
-			pointsInfo.setPointOfInterest(points.get(pointIndex - 1));
+			pointsInfo.setPointOfInterest(pointsOfInterestService.getElements().get(pointIndex - 1));
 			startCalculationThread();
 		}
 	}

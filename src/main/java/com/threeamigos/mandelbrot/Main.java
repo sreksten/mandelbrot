@@ -7,19 +7,21 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import com.threeamigos.mandelbrot.implementations.service.ImageServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.MandelbrotServiceFactoryImpl;
-import com.threeamigos.mandelbrot.implementations.service.MultipleColorModelImageProducerServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsInfoImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.ImageService;
+import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MultipleColorModelImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class Main {
@@ -37,12 +39,14 @@ public class Main {
 		pointsInfo.setResolution(calculationParameters.getResolution());
 
 		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
-		MultipleColorModelImageProducerServiceFactory imageProducerServiceFactory = new MultipleColorModelImageProducerServiceFactoryImpl();
-		ImageService imageService = new ImageServiceImpl();
+		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
+		ImagePersisterService imagePersisterService = new ImagePersisterServiceImpl();
 		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
+		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester,
+				mandelbrotServiceFactory, imageProducerServiceFactory, imagePersisterService);
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(calculationParametersRequester,
-				mandelbrotServiceFactory, pointsOfInterestService, imageService, imageProducerServiceFactory,
+				mandelbrotServiceFactory, pointsOfInterestService, imageProducerServiceFactory, snapshotService,
 				pointsInfo, calculationParameters);
 
 		prepareFrame(mandelbrotCanvas);
