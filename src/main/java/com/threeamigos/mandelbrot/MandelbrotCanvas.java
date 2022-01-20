@@ -126,7 +126,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 		int vSpacing = fontHeight + 4;
 		drawString(graphics,
-				String.format("Zoom factor: %f - count: %d", pointsInfo.getZoomFactor(), pointsInfo.getZoomCount()),
+				String.format("Zoom factor: %.2f - count: %d", pointsInfo.getZoomFactor(), pointsInfo.getZoomCount()),
 				xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics, String.format("Draw time: %d ms using %d threads, max %d iterations", lastDrawTime,
@@ -184,11 +184,12 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 		int index = 1;
 		for (PointOfInterest pointOfInterest : pointsOfInterestService.getElements()) {
+			String description = String.format("%d - %s (%d)", index, pointOfInterest.getName(),
+					pointOfInterest.getMaxIterations());
 			if (currentPointOfInterestIndex != null && currentPointOfInterestIndex == index) {
-				drawString(graphics, String.format("%d - %s", index, pointOfInterest.getName()), xCoord, yCoord,
-						Color.YELLOW);
+				drawString(graphics, description, xCoord, yCoord, Color.YELLOW);
 			} else {
-				drawString(graphics, String.format("%d - %s", index, pointOfInterest.getName()), xCoord, yCoord);
+				drawString(graphics, description, xCoord, yCoord);
 			}
 			index++;
 			yCoord += vSpacing;
@@ -394,7 +395,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private void addPointOfInterest() {
-		PersistResult persistResult = pointsOfInterestService.add(pointsInfo.getPointOfInterest());
+		PersistResult persistResult = pointsOfInterestService
+				.add(pointsInfo.getPointOfInterest(mandelbrotService.getMaxIterations()));
 		if (persistResult != null && persistResult.isSuccessful()) {
 			currentPointOfInterestIndex = pointsOfInterestService.getCount();
 			repaint();
@@ -436,7 +438,12 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private void setPointOfInterest(int pointIndex) {
 		if (pointsOfInterestService.getCount() >= pointIndex) {
 			currentPointOfInterestIndex = pointIndex;
-			pointsInfo.setPointOfInterest(pointsOfInterestService.getElements().get(pointIndex - 1));
+			PointOfInterest pointOfInterest = pointsOfInterestService.getElements().get(pointIndex - 1);
+			pointsInfo.setPointOfInterest(pointOfInterest);
+			if (pointOfInterest.getMaxIterations() != mandelbrotService.getMaxIterations()) {
+				imageProducerService = imageProducerServiceFactory.createInstance(pointOfInterest.getMaxIterations());
+			}
+			mandelbrotService.setMaxIterations(pointOfInterest.getMaxIterations());
 			startCalculationThread();
 		}
 	}

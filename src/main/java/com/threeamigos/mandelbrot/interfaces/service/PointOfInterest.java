@@ -14,4 +14,6 @@ public interface PointOfInterest {
 
 	public int getZoomCount();
 
+	public int getMaxIterations();
+
 }

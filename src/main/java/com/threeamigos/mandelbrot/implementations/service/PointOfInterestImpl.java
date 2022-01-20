@@ -9,14 +9,16 @@ public class PointOfInterestImpl implements PointOfInterest {
 	private double maxImaginary;
 	private double centralReal;
 	private int zoomCount;
+	private int maxIterations;
 
-	public PointOfInterestImpl(String name, double minImaginary, double maxImaginary, double centralReal,
-			int zoomCount) {
+	public PointOfInterestImpl(String name, double minImaginary, double maxImaginary, double centralReal, int zoomCount,
+			int maxIterations) {
 		this.name = name;
 		this.minImaginary = minImaginary;
 		this.maxImaginary = maxImaginary;
 		this.centralReal = centralReal;
 		this.zoomCount = zoomCount;
+		this.maxIterations = maxIterations;
 	}
 
 	@Override
@@ -49,4 +51,8 @@ public class PointOfInterestImpl implements PointOfInterest {
 		return zoomCount;
 	}
 
+	@Override
+	public int getMaxIterations() {
+		return maxIterations;
+	}
 }

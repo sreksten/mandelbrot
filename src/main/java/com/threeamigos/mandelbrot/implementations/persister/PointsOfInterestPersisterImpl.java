@@ -100,25 +100,21 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 	}
 
 	private final PointOfInterest parsePointOfInterest(String line) {
-		String name;
-		double minImaginary;
-		double maxImaginary;
-		double centralReal;
-		int zoomCount;
 		StringTokenizer st = new StringTokenizer(line, SEPARATOR);
-		name = st.nextToken();
-		minImaginary = Double.parseDouble(st.nextToken());
-		maxImaginary = Double.parseDouble(st.nextToken());
-		centralReal = Double.parseDouble(st.nextToken());
-		zoomCount = Integer.parseInt(st.nextToken());
-		return new PointOfInterestImpl(name, minImaginary, maxImaginary, centralReal, zoomCount);
+		String name = st.nextToken();
+		double minImaginary = Double.parseDouble(st.nextToken());
+		double maxImaginary = Double.parseDouble(st.nextToken());
+		double centralReal = Double.parseDouble(st.nextToken());
+		int zoomCount = Integer.parseInt(st.nextToken());
+		int maxIterations = Integer.parseInt(st.nextToken());
+		return new PointOfInterestImpl(name, minImaginary, maxImaginary, centralReal, zoomCount, maxIterations);
 	}
 
 	private final String toString(PointOfInterest pointOfInterest) {
 		return new StringBuilder(pointOfInterest.getName()).append(SEPARATOR).append(pointOfInterest.getMinImaginary())
 				.append(SEPARATOR).append(pointOfInterest.getMaxImaginary()).append(SEPARATOR)
 				.append(pointOfInterest.getCentralReal()).append(SEPARATOR).append(pointOfInterest.getZoomCount())
-				.toString();
+				.append(SEPARATOR).append(pointOfInterest.getMaxIterations()).toString();
 	}
 
 }

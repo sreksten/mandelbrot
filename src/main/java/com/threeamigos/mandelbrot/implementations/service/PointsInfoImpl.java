@@ -160,8 +160,8 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	@Override
-	public PointOfInterest getPointOfInterest() {
-		return new PointOfInterestImpl("New point", getMinY(), getMaxY(), getCentralX(), getZoomCount());
+	public PointOfInterest getPointOfInterest(int maxIterations) {
+		return new PointOfInterestImpl("New point", getMinY(), getMaxY(), getCentralX(), getZoomCount(), maxIterations);
 	}
 
 	@Override

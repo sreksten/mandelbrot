@@ -20,6 +20,8 @@ public interface MandelbrotService {
 
 	public boolean halveMaxIterations();
 
+	public boolean setMaxIterations(int maxIterations);
+
 	public boolean decrementThreads();
 
 	public boolean incrementThreads();
