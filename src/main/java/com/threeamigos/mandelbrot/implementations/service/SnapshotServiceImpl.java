@@ -10,29 +10,30 @@ import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
 public class SnapshotServiceImpl implements SnapshotService {
 
 	private CalculationParametersRequester calculationParametersRequester;
 	private MandelbrotServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
-	private ImagePersisterService imageService;
+	private ImagePersisterService imagePersisterService;
+	private MessageNotifier messageNotifier;
 
 	public SnapshotServiceImpl(CalculationParametersRequester calculationParametersRequester,
-			MandelbrotServiceFactory mandelbrotServiceFactory,
-			ImageProducerServiceFactory imageProducerServiceFactory,
+			MandelbrotServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
 			ImagePersisterService imageService) {
 		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
-		this.imageService = imageService;
+		this.imagePersisterService = imageService;
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 				.append("3AM_Mandelbrot_").append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))
 				.append(".png").toString();
 
-		return imageService.saveImage(imageToSave, filename);
+		return imagePersisterService.saveImage(imageToSave, filename);
 	}
 
 }

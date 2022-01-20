@@ -14,7 +14,6 @@ import com.threeamigos.mandelbrot.implementations.service.PointsInfoImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
@@ -39,22 +38,26 @@ public class Main {
 		pointsInfo.setResolution(calculationParameters.getResolution());
 
 		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
+
 		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
+
 		ImagePersisterService imagePersisterService = new ImagePersisterServiceImpl();
+
 		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
+
 		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester,
 				mandelbrotServiceFactory, imageProducerServiceFactory, imagePersisterService);
 
-		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(calculationParametersRequester,
-				mandelbrotServiceFactory, pointsOfInterestService, imageProducerServiceFactory, snapshotService,
-				pointsInfo, calculationParameters);
+		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(
+				mandelbrotServiceFactory.createInstance(calculationParameters), pointsOfInterestService,
+				imageProducerServiceFactory.createInstance(calculationParameters), snapshotService, pointsInfo);
+
+		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
+		pointsOfInterestService.setMessageNotifier(mandelbrotCanvas);
 
 		prepareFrame(mandelbrotCanvas);
 
-		PersistResult result = pointsOfInterestService.loadPointsOfInterest();
-		if (!result.isSuccessful()) {
-			mandelbrotCanvas.notify(result.getError());
-		}
+		pointsOfInterestService.loadPointsOfInterest();
 	}
 
 	private void prepareFrame(MandelbrotCanvas mandelbrotCanvas) {

@@ -3,8 +3,11 @@ package com.threeamigos.mandelbrot.interfaces.service;
 import java.util.List;
 
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
 public interface PointsOfInterestService {
+
+	public void setMessageNotifier(MessageNotifier messageNotifier);
 
 	public PersistResult loadPointsOfInterest();
 

@@ -9,12 +9,20 @@ import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
 public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 
 	private List<PointOfInterest> pointsOfInterest;
 
+	private MessageNotifier messageNotifier;
+
 	PointsOfInterestPersister pointsOfInterestPersister = new PointsOfInterestPersisterImpl();
+
+	@Override
+	public void setMessageNotifier(MessageNotifier messageNotifier) {
+		this.messageNotifier = messageNotifier;
+	}
 
 	@Override
 	public PersistResult loadPointsOfInterest() {
@@ -22,6 +30,7 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 		if (persistResult.isSuccessful()) {
 			pointsOfInterest = pointsOfInterestPersister.getPointsOfInterest();
 		} else {
+			messageNotifier.notify(persistResult.getError());
 			pointsOfInterest = new ArrayList<>();
 		}
 		return persistResult;
@@ -29,7 +38,15 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 
 	@Override
 	public PersistResult savePointsOfInterest() {
-		return pointsOfInterestPersister.savePointsOfInterest(pointsOfInterest);
+		PersistResult persistResult = pointsOfInterestPersister.savePointsOfInterest(pointsOfInterest);
+		if (messageNotifier != null) {
+			if (persistResult.isSuccessful()) {
+				messageNotifier.notify("Points of interest saved in " + persistResult.getFilename());
+			} else {
+				messageNotifier.notify("Error while saving points of interest: " + persistResult.getError());
+			}
+		}
+		return persistResult;
 	}
 
 	@Override
