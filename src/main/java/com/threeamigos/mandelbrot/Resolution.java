@@ -2,7 +2,8 @@ package com.threeamigos.mandelbrot;
 
 public enum Resolution {
 
-	ULTRA_HD("Ultra HD", 3840, 2160),
+	FULL_ULTRA_HD("Full Ultra HD/8K", 7680, 4320),
+	ULTRA_HD("Ultra HD/4K", 3840, 2160),
 	QUAD_HD("Quad HD", 2560, 1440),
 	FULL_HD("Full HD", 1920, 1080),
 	SXGA("SXGA", 1280, 1024),
