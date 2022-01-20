@@ -60,8 +60,16 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 	}
 
 	@Override
-	public void add(PointOfInterest pointOfInterest) {
-		pointsOfInterest.add(pointOfInterest);
+	public PersistResult add(PointOfInterest pointOfInterest) {
+		if (getCount() < 10) {
+			String name = messageNotifier.request("Give it a name:");
+			if (name != null && !name.isBlank()) {
+				pointOfInterest.setName(name);
+				pointsOfInterest.add(pointOfInterest);
+				return savePointsOfInterest();
+			}
+		}
+		return null;
 	}
 
 	@Override

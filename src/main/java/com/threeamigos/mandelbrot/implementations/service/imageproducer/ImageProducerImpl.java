@@ -43,4 +43,13 @@ public class ImageProducerImpl implements ImageProducerService {
 		return currentImageProducer.produceImage(width, height, pixels);
 	}
 
+	@Override
+	public void switchColorModel() {
+		if (isUsingDirectColorModel()) {
+			useIndexColorModel();
+		} else {
+			useDirectColorModel();
+		}
+	}
+
 }

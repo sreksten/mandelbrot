@@ -2,6 +2,8 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 public interface PointOfInterest {
 
+	public void setName(String name);
+
 	public String getName();
 
 	public double getMinImaginary();

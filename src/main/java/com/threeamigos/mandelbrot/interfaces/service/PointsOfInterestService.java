@@ -17,7 +17,7 @@ public interface PointsOfInterestService {
 
 	public int getCount();
 
-	public void add(PointOfInterest pointOfInterest);
+	public PersistResult add(PointOfInterest pointOfInterest);
 
 	public void remove(int index);
 

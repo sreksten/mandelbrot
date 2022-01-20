@@ -30,7 +30,7 @@ public interface PointsInfo {
 
 	double getMaxY();
 
-	PointOfInterest getPointOfInterest(String name);
+	PointOfInterest getPointOfInterest();
 
 	void setPointOfInterest(PointOfInterest pointOfInterest);
 

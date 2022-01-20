@@ -20,6 +20,11 @@ public class PointOfInterestImpl implements PointOfInterest {
 	}
 
 	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}

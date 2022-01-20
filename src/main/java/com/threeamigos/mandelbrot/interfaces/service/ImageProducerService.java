@@ -14,4 +14,6 @@ public interface ImageProducerService {
 
 	public void useDirectColorModel();
 
+	public void switchColorModel();
+
 }
