@@ -1,6 +1,10 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
+import java.beans.PropertyChangeListener;
+
 public interface MandelbrotService {
+
+	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
 
 	public static final int MIN_ITERATIONS_EXPONENT = 8;
 
@@ -21,5 +25,9 @@ public interface MandelbrotService {
 	public int[] getIterations();
 
 	public int getIterations(int x, int y);
+
+	public void addPropertyChangeListener(PropertyChangeListener pcl);
+
+	public void removePropertyChangeListener(PropertyChangeListener pcl);
 
 }

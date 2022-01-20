@@ -17,6 +17,7 @@ import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersReques
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
@@ -48,9 +49,12 @@ public class Main {
 		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester,
 				mandelbrotServiceFactory, imageProducerServiceFactory, imagePersisterService);
 
-		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(
-				mandelbrotServiceFactory.createInstance(calculationParameters), pointsOfInterestService,
+		MandelbrotService mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
+
+		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
 				imageProducerServiceFactory.createInstance(calculationParameters), snapshotService, pointsInfo);
+
+		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
 
 		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
 		pointsOfInterestService.setMessageNotifier(mandelbrotCanvas);

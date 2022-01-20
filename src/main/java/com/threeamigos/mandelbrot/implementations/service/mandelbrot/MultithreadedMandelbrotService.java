@@ -1,5 +1,7 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
@@ -16,8 +18,10 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private MandelbrotSliceCalculator[] calculators;
 	private SliceDataDeque deque;
 	private DataBuffer dataBuffer;
+	private PropertyChangeSupport propertyChangeSupport;
 
 	boolean running;
+	boolean interrupted;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
 		this.maxThreads = calculationParameters.getMaxThreads();
@@ -25,6 +29,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		threads = new Thread[maxThreads];
 		calculators = new MandelbrotSliceCalculator[maxThreads];
 		deque = SliceDataDeque.getInstance();
+		propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 
 	@Override
@@ -56,6 +61,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		int height = pointsInfo.getHeight();
 
 		running = true;
+		interrupted = false;
 
 		dataBuffer = new DataBufferImpl(width, height);
 
@@ -93,6 +99,9 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 
 		drawTime = (endMillis - startMillis);
 
+		if (!interrupted) {
+			propertyChangeSupport.firePropertyChange(CALCULATION_COMPLETE_PROPERTY_CHANGE, null, this);
+		}
 	}
 
 	private void prepareSlices(PointsInfo pointsInfo, int width, int height) {
@@ -126,6 +135,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public void interruptPreviousCalculation() {
 		running = false;
+		interrupted = true;
 		for (MandelbrotSliceCalculator calculator : calculators) {
 			if (calculator != null) {
 				calculator.stop();
@@ -160,6 +170,16 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public int getIterations(int x, int y) {
 		return dataBuffer.getPixel(x, y);
+	}
+
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.addPropertyChangeListener(pcl);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.removePropertyChangeListener(pcl);
 	}
 
 }

@@ -11,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,8 +27,8 @@ import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
-public class MandelbrotCanvas extends JPanel
-		implements Runnable, MouseWheelListener, MouseInputListener, MouseMotionListener, KeyListener, MessageNotifier {
+public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
+		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,30 +81,17 @@ public class MandelbrotCanvas extends JPanel
 				Thread.currentThread().interrupt();
 			}
 		}
-
 		calculationThreadRunning = true;
 		calculationThread = new Thread(this);
 		calculationThread.setDaemon(true);
 		calculationThread.start();
-
-		mandelbrotService.calculate(pointsInfo);
-		lastDrawTime = mandelbrotService.getDrawTime();
-		image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
-				mandelbrotService.getIterations());
-
-		calculationThreadRunning = false;
 	}
 
 	@Override
 	public void run() {
-		while (calculationThreadRunning) {
-			repaint();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+		mandelbrotService.calculate(pointsInfo);
+		lastDrawTime = mandelbrotService.getDrawTime();
+		calculationThreadRunning = false;
 	}
 
 	@Override
@@ -419,4 +408,14 @@ public class MandelbrotCanvas extends JPanel
 	public void notify(String message) {
 		JOptionPane.showMessageDialog(this, message);
 	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		if (MandelbrotService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
+			image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
+					mandelbrotService.getIterations());
+			repaint();
+		}
+	}
+
 }
