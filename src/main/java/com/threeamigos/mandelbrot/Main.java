@@ -52,7 +52,7 @@ public class Main {
 		MandelbrotService mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
-				imageProducerServiceFactory.createInstance(calculationParameters), snapshotService, pointsInfo);
+				imageProducerServiceFactory, snapshotService, pointsInfo, calculationParameters);
 
 		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
 

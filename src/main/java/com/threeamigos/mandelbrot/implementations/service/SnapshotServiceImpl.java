@@ -55,7 +55,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 			PointsInfo tempPointsInfo = pointsInfo.adaptToResolution(tempResolution);
 			tempCalculator.calculate(tempPointsInfo);
 			ImageProducerService tempImageProducer = imageProducerServiceFactory
-					.createInstance(tempCalculationParameters);
+					.createInstance(tempCalculationParameters.getMaxIterations());
 			if (!usingDirectColorModel) {
 				tempImageProducer.useIndexColorModel();
 			}

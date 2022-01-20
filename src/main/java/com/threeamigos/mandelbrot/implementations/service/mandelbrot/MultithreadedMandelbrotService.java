@@ -42,6 +42,42 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		return maxIterations;
 	}
 
+	@Override
+	public boolean doubleUpMaxIterations() {
+		if (maxIterations < (1 << MAX_ITERATIONS_EXPONENT)) {
+			maxIterations <<= 1;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean halveMaxIterations() {
+		if (maxIterations > (1 << MIN_ITERATIONS_EXPONENT)) {
+			maxIterations >>= 1;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean incrementThreads() {
+		if (maxThreads < Runtime.getRuntime().availableProcessors()) {
+			maxThreads++;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean decrementThreads() {
+		if (maxThreads > 1) {
+			maxThreads--;
+			return true;
+		}
+		return false;
+	}
+
 	boolean finished() {
 		for (Thread t : threads) {
 			if (t != null && t.isAlive()) {

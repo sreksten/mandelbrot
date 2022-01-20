@@ -19,7 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
@@ -34,6 +36,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private transient MandelbrotService mandelbrotService;
 	private transient PointsOfInterestService pointsOfInterestService;
+	private transient ImageProducerServiceFactory imageProducerServiceFactory;
 	private transient ImageProducerService imageProducerService;
 	private transient SnapshotService snapshotService;
 	private transient PointsInfo pointsInfo;
@@ -50,10 +53,13 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private long lastDrawTime;
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
-			ImageProducerService imageProducerService, SnapshotService snapshotService, PointsInfo pointsInfo) {
+			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService,
+			PointsInfo pointsInfo, CalculationParameters calculationParameters) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;
-		this.imageProducerService = imageProducerService;
+		this.imageProducerServiceFactory = imageProducerServiceFactory;
+		this.imageProducerService = imageProducerServiceFactory
+				.createInstance(calculationParameters.getMaxIterations());
 		this.snapshotService = snapshotService;
 		this.pointsInfo = pointsInfo;
 
@@ -344,8 +350,46 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		case KeyEvent.VK_0:
 			setPointOfInterest(10);
 			break;
+		case KeyEvent.VK_UP:
+			doubleUpMaxIterations();
+			break;
+		case KeyEvent.VK_DOWN:
+			halveMaxIterations();
+			break;
+		case KeyEvent.VK_LEFT:
+			decrementThreads();
+			break;
+		case KeyEvent.VK_RIGHT:
+			incrementThreads();
+			break;
 		default:
 			break;
+		}
+	}
+
+	private void doubleUpMaxIterations() {
+		if (mandelbrotService.doubleUpMaxIterations()) {
+			imageProducerService = imageProducerServiceFactory.createInstance(mandelbrotService.getMaxIterations());
+			startCalculationThread();
+		}
+	}
+
+	private void halveMaxIterations() {
+		if (mandelbrotService.halveMaxIterations()) {
+			imageProducerService = imageProducerServiceFactory.createInstance(mandelbrotService.getMaxIterations());
+			startCalculationThread();
+		}
+	}
+
+	private void incrementThreads() {
+		if (mandelbrotService.incrementThreads()) {
+			startCalculationThread();
+		}
+	}
+
+	private void decrementThreads() {
+		if (mandelbrotService.decrementThreads()) {
+			startCalculationThread();
 		}
 	}
 

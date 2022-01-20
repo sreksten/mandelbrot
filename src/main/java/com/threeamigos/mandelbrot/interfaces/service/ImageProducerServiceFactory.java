@@ -2,6 +2,6 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 public interface ImageProducerServiceFactory {
 
-	public ImageProducerService createInstance(CalculationParameters calculationParameters);
+	public ImageProducerService createInstance(int maxIterations);
 
 }

@@ -16,6 +16,14 @@ public interface MandelbrotService {
 
 	public int getMaxIterations();
 
+	public boolean doubleUpMaxIterations();
+
+	public boolean halveMaxIterations();
+
+	public boolean decrementThreads();
+
+	public boolean incrementThreads();
+
 	public void calculate(PointsInfo pointsInfo);
 
 	public void interruptPreviousCalculation();
