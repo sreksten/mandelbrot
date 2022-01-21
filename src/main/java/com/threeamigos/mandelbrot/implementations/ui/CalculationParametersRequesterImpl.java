@@ -17,8 +17,15 @@ import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
 
+	private static final int MAX_ITERATIONS_NOT_SPECIFIED = -1;
+
 	@Override
 	public CalculationParameters getCalculationParameters(Component component) {
+		return getCalculationParameters(MAX_ITERATIONS_NOT_SPECIFIED, component);
+	}
+
+	@Override
+	public CalculationParameters getCalculationParameters(int maxIterations, Component component) {
 
 		Box panel = Box.createVerticalBox();
 
@@ -53,9 +60,18 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 
 		panel.add(Box.createVerticalStrut(5));
 
-		int defaultMaxIterationsExponent = 5;
-		int actualExponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
-		int defaultMaxIterations = (int) Math.pow(2, actualExponent);
+		int defaultMaxIterationsExponent;
+		int defaultMaxIterations;
+
+		if (maxIterations == MAX_ITERATIONS_NOT_SPECIFIED) {
+			defaultMaxIterationsExponent = 5;
+			int actualExponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
+			defaultMaxIterations = (int) Math.pow(2, actualExponent);
+		} else {
+			defaultMaxIterationsExponent = ((int) (Math.log(maxIterations) / Math.log(2)))
+					- MandelbrotService.MIN_ITERATIONS_EXPONENT;
+			defaultMaxIterations = maxIterations;
+		}
 
 		JLabel iterationsLabel = new JLabel("Max iterations: " + defaultMaxIterations);
 		iterationsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -81,8 +97,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 			Resolution resolution = Resolution.values()[resolutionComboBox.getSelectedIndex()];
 			int maxThreads = threadsSlider.getValue();
 			int exponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
-			int maxIterations = (int) Math.pow(2, exponent);
-			return new CalculationParametersImpl(resolution, maxThreads, maxIterations);
+			return new CalculationParametersImpl(resolution, maxThreads, (int) Math.pow(2, exponent));
 		}
 
 		return null;

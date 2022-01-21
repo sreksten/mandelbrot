@@ -432,7 +432,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private void saveImage() {
-		snapshotService.saveSnapshot(pointsInfo, imageProducerService.isUsingDirectColorModel(), image, this);
+		snapshotService.saveSnapshot(pointsInfo, mandelbrotService.getMaxIterations(),
+				imageProducerService.isUsingDirectColorModel(), image, this);
 	}
 
 	private void setPointOfInterest(int pointIndex) {

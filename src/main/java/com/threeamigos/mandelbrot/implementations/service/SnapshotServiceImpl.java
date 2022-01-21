@@ -37,11 +37,11 @@ public class SnapshotServiceImpl implements SnapshotService {
 	}
 
 	@Override
-	public PersistResult saveSnapshot(PointsInfo pointsInfo, boolean usingDirectColorModel, Image bufferedImage,
-			Component parentComponent) {
+	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, boolean usingDirectColorModel,
+			Image bufferedImage, Component parentComponent) {
 
 		CalculationParameters tempCalculationParameters = calculationParametersRequester
-				.getCalculationParameters(parentComponent);
+				.getCalculationParameters(maxIterations, parentComponent);
 		if (tempCalculationParameters == null) {
 			return null;
 		}
