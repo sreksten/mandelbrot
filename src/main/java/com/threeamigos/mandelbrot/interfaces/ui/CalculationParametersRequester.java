@@ -8,6 +8,7 @@ public interface CalculationParametersRequester {
 
 	public CalculationParameters getCalculationParameters(Component component);
 
-	public CalculationParameters getCalculationParameters(int maxIterations, Component component);
+	public CalculationParameters getCalculationParameters(boolean matchScreenResolution, int maxIterations,
+			Component component);
 
 }

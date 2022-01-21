@@ -120,7 +120,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private int showInfo(Graphics2D graphics, int xCoord, int yCoord) {
-		int fontHeight = 24;
+		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
 		Font font = new Font("Serif", Font.BOLD, fontHeight);
 		graphics.setFont(font);
 
@@ -129,7 +129,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 				String.format("Zoom factor: %.2f - count: %d", pointsInfo.getZoomFactor(), pointsInfo.getZoomCount()),
 				xCoord, yCoord);
 		yCoord += vSpacing;
-		drawString(graphics, String.format("Draw time: %d ms using %d threads, max %d iterations", lastDrawTime,
+		drawString(graphics, String.format("Draw time: %d ms (%d threads, %d iterations max)", lastDrawTime,
 				mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()), xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics,
@@ -161,7 +161,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private int showHelp(Graphics2D graphics, int xCoord, int yCoord) {
-		int fontHeight = 16;
+		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
 		int vSpacing = fontHeight + 4;
 		Font font = new Font("Serif", Font.BOLD, fontHeight);
 		graphics.setFont(font);

@@ -21,11 +21,12 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 
 	@Override
 	public CalculationParameters getCalculationParameters(Component component) {
-		return getCalculationParameters(MAX_ITERATIONS_NOT_SPECIFIED, component);
+		return getCalculationParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, component);
 	}
 
 	@Override
-	public CalculationParameters getCalculationParameters(int maxIterations, Component component) {
+	public CalculationParameters getCalculationParameters(boolean matchScreenResolution, int maxIterations,
+			Component component) {
 
 		Box panel = Box.createVerticalBox();
 
@@ -34,7 +35,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		panel.add(resolutionLabel);
 
 		JComboBox<Resolution> resolutionComboBox = new JComboBox<>(Resolution.values());
-		Integer defaultValue = matchScreenResolution();
+		Integer defaultValue = matchScreenResolution ? matchScreenResolution() : Resolution.FULL_HD.ordinal();
 		resolutionComboBox.setSelectedIndex(defaultValue);
 		resolutionComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panel.add(resolutionComboBox);
@@ -64,7 +65,8 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		int defaultMaxIterations;
 
 		if (maxIterations == MAX_ITERATIONS_NOT_SPECIFIED) {
-			defaultMaxIterationsExponent = 5;
+			defaultMaxIterationsExponent = MandelbrotService.MAX_ITERATIONS_EXPONENT
+					- MandelbrotService.MIN_ITERATIONS_EXPONENT - 2;
 			int actualExponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
 			defaultMaxIterations = (int) Math.pow(2, actualExponent);
 		} else {

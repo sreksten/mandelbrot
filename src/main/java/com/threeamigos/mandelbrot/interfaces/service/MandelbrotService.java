@@ -6,7 +6,7 @@ public interface MandelbrotService {
 
 	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
 
-	public static final int MIN_ITERATIONS_EXPONENT = 8;
+	public static final int MIN_ITERATIONS_EXPONENT = 5;
 
 	public static final int MAX_ITERATIONS_EXPONENT = 15;
 

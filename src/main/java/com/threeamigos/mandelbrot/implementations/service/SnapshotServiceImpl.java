@@ -40,8 +40,8 @@ public class SnapshotServiceImpl implements SnapshotService {
 	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, boolean usingDirectColorModel,
 			Image bufferedImage, Component parentComponent) {
 
-		CalculationParameters tempCalculationParameters = calculationParametersRequester
-				.getCalculationParameters(maxIterations, parentComponent);
+		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
+				maxIterations, parentComponent);
 		if (tempCalculationParameters == null) {
 			return null;
 		}
