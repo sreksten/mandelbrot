@@ -22,9 +22,11 @@ public interface MandelbrotService {
 
 	public boolean setMaxIterations(int maxIterations);
 
-	public boolean decrementThreads();
+	public boolean decrementNumberOfThreads();
 
-	public boolean incrementThreads();
+	public boolean incrementNumberOfThreads();
+
+	public boolean setNumberOfThreads(int numberOfThreads);
 
 	public void calculate(PointsInfo pointsInfo);
 

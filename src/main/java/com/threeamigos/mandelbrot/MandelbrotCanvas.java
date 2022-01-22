@@ -1,7 +1,9 @@
 package com.threeamigos.mandelbrot;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -13,7 +15,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
@@ -43,6 +50,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private boolean showInfo = true;
 	private boolean showHelp = true;
+	private boolean showPointOfInterestName = true;
 
 	private Integer currentPointOfInterestIndex;
 
@@ -51,6 +59,10 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private transient Image image;
 	private long lastDrawTime;
+
+	private JMenu pointsOfInterestMenu;
+	private JMenu threadsMenu;
+	private JMenu iterationsMenu;
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService,
@@ -117,6 +129,11 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		if (showHelp) {
 			showHelp(graphics, xCoord, yCoord);
 		}
+
+		if (showPointOfInterestName) {
+			showPointOfInterestName(graphics);
+		}
+
 	}
 
 	private int showInfo(Graphics2D graphics, int xCoord, int yCoord) {
@@ -181,10 +198,20 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		yCoord += vSpacing;
 		drawString(graphics, "S - save image", xCoord, yCoord);
 		yCoord += vSpacing;
+		drawString(graphics, "Mouse wheel - zoom in/out", xCoord, yCoord);
+		yCoord += vSpacing;
+		drawString(graphics, "Mouse click - change center", xCoord, yCoord);
+		yCoord += vSpacing;
+		drawString(graphics, "Double click - back to zoom level 0", xCoord, yCoord);
+		yCoord += vSpacing;
+		drawString(graphics, "Arrow up/down - double/halve max iterations", xCoord, yCoord);
+		yCoord += vSpacing;
+		drawString(graphics, "Arrow left/right - more/less threads", xCoord, yCoord);
+		yCoord += vSpacing;
 
 		int index = 1;
 		for (PointOfInterest pointOfInterest : pointsOfInterestService.getElements()) {
-			String description = String.format("%d - %s (%d)", index, pointOfInterest.getName(),
+			String description = String.format("%d - %s (%d)", index == 10 ? 0 : index, pointOfInterest.getName(),
 					pointOfInterest.getMaxIterations());
 			if (currentPointOfInterestIndex != null && currentPointOfInterestIndex == index) {
 				drawString(graphics, description, xCoord, yCoord, Color.YELLOW);
@@ -195,6 +222,20 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			yCoord += vSpacing;
 		}
 		return yCoord;
+	}
+
+	private void showPointOfInterestName(Graphics2D graphics) {
+		if (currentPointOfInterestIndex != null) {
+			PointOfInterest pointOfInterest = pointsOfInterestService.getElements()
+					.get(currentPointOfInterestIndex - 1);
+			int fontHeight = getHeight() / 20;
+			Font font = new Font("Serif", Font.BOLD | Font.ITALIC, fontHeight);
+			graphics.setFont(font);
+			FontMetrics fontMetrics = graphics.getFontMetrics();
+			drawString(graphics, pointOfInterest.getName(),
+					getWidth() - 40 - fontMetrics.stringWidth(pointOfInterest.getName()), getHeight() - 40 - fontHeight,
+					Color.YELLOW);
+		}
 	}
 
 	private String getOptimizationsDescription() {
@@ -245,6 +286,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		mandelbrotService.interruptPreviousCalculation();
+		currentPointOfInterestIndex = null;
 		if (e.getClickCount() == 1) {
 			pointsInfo.changeCenterTo(e.getX(), e.getY());
 		} else {
@@ -318,6 +360,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		case KeyEvent.VK_I:
 			hideOrShowInfo();
 			break;
+		case KeyEvent.VK_P:
+			hideOrShowPointOfInterestName();
+			break;
 		case KeyEvent.VK_S:
 			saveImage();
 			break;
@@ -368,9 +413,18 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		}
 	}
 
+	private void setMaxIterations(int maxIterations) {
+		if (mandelbrotService.setMaxIterations(maxIterations)) {
+			imageProducerService = imageProducerServiceFactory.createInstance(mandelbrotService.getMaxIterations());
+			updateIterationsMenu();
+			startCalculationThread();
+		}
+	}
+
 	private void doubleUpMaxIterations() {
 		if (mandelbrotService.doubleUpMaxIterations()) {
 			imageProducerService = imageProducerServiceFactory.createInstance(mandelbrotService.getMaxIterations());
+			updateIterationsMenu();
 			startCalculationThread();
 		}
 	}
@@ -378,18 +432,28 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private void halveMaxIterations() {
 		if (mandelbrotService.halveMaxIterations()) {
 			imageProducerService = imageProducerServiceFactory.createInstance(mandelbrotService.getMaxIterations());
+			updateIterationsMenu();
+			startCalculationThread();
+		}
+	}
+
+	private void setNumberOfThreads(int numberOfThreads) {
+		if (mandelbrotService.setNumberOfThreads(numberOfThreads)) {
+			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void incrementThreads() {
-		if (mandelbrotService.incrementThreads()) {
+		if (mandelbrotService.incrementNumberOfThreads()) {
+			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void decrementThreads() {
-		if (mandelbrotService.decrementThreads()) {
+		if (mandelbrotService.decrementNumberOfThreads()) {
+			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
@@ -399,6 +463,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 				.add(pointsInfo.getPointOfInterest(mandelbrotService.getMaxIterations()));
 		if (persistResult != null && persistResult.isSuccessful()) {
 			currentPointOfInterestIndex = pointsOfInterestService.getCount();
+			updatePointsOfInterestMenu();
 			repaint();
 		}
 	}
@@ -416,6 +481,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			PersistResult result = pointsOfInterestService.savePointsOfInterest();
 			if (result.isSuccessful()) {
 				currentPointOfInterestIndex = null;
+				updatePointsOfInterestMenu();
 				repaint();
 			}
 		}
@@ -431,6 +497,11 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		repaint();
 	}
 
+	private void hideOrShowPointOfInterestName() {
+		showPointOfInterestName = !showPointOfInterestName;
+		repaint();
+	}
+
 	private void saveImage() {
 		snapshotService.saveSnapshot(pointsInfo, mandelbrotService.getMaxIterations(),
 				imageProducerService.isUsingDirectColorModel(), image, this);
@@ -443,8 +514,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			pointsInfo.setPointOfInterest(pointOfInterest);
 			if (pointOfInterest.getMaxIterations() != mandelbrotService.getMaxIterations()) {
 				imageProducerService = imageProducerServiceFactory.createInstance(pointOfInterest.getMaxIterations());
+				mandelbrotService.setMaxIterations(pointOfInterest.getMaxIterations());
+				updateIterationsMenu();
 			}
-			mandelbrotService.setMaxIterations(pointOfInterest.getMaxIterations());
 			startCalculationThread();
 		}
 	}
@@ -466,6 +538,117 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 					mandelbrotService.getIterations());
 			repaint();
 		}
+	}
+
+	public void addMenus(JMenuBar menuBar) {
+		JMenu fileMenu = new JMenu("File");
+		menuBar.add(fileMenu);
+
+		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, showInfo, event -> hideOrShowInfo());
+		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, showHelp, event -> hideOrShowHelp());
+		fileMenu.addSeparator();
+		addMenuItem(fileMenu, "Save image", KeyEvent.VK_S, event -> saveImage());
+		fileMenu.addSeparator();
+		addMenuItem(fileMenu, "Quit", KeyEvent.VK_Q, event -> System.exit(0));
+
+		pointsOfInterestMenu = new JMenu("Points of interest");
+		menuBar.add(pointsOfInterestMenu);
+
+		addMenuItem(pointsOfInterestMenu, "Add point of interest", KeyEvent.VK_A, event -> addPointOfInterest());
+		addMenuItem(pointsOfInterestMenu, "Delete current point of interest", KeyEvent.VK_D,
+				event -> deletePointOfInterest());
+		pointsOfInterestMenu.addSeparator();
+		addCheckboxMenuItem(pointsOfInterestMenu, "Show point of interest's name", KeyEvent.VK_P,
+				showPointOfInterestName, event -> hideOrShowPointOfInterestName());
+		pointsOfInterestMenu.addSeparator();
+		updatePointsOfInterestMenu();
+
+		JMenu calculationsMenu = new JMenu("Calculations");
+		menuBar.add(calculationsMenu);
+
+		addMenuItem(calculationsMenu, "Switch color model", KeyEvent.VK_C, event -> switchColorModel());
+		calculationsMenu.addSeparator();
+		threadsMenu = new JMenu("Threads to use");
+		calculationsMenu.add(threadsMenu);
+		for (int i = 1; i <= Runtime.getRuntime().availableProcessors(); i++) {
+			final int threadsToUse = i;
+			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, mandelbrotService.getNumberOfThreads() == i,
+					event -> setNumberOfThreads(threadsToUse));
+		}
+		calculationsMenu.addSeparator();
+		iterationsMenu = new JMenu("Max iterations");
+		for (int i = MandelbrotService.MIN_ITERATIONS_EXPONENT; i <= MandelbrotService.MAX_ITERATIONS_EXPONENT; i++) {
+			final int maxIterations = 1 << i;
+			addCheckboxMenuItem(iterationsMenu, String.valueOf(maxIterations), -1,
+					mandelbrotService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
+		}
+		calculationsMenu.add(iterationsMenu);
+	}
+
+	private void updateThreadsMenu() {
+		Component[] items = threadsMenu.getMenuComponents();
+		for (int i = 0; i < items.length; i++) {
+			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
+			item.setSelected(mandelbrotService.getNumberOfThreads() == i + 1);
+		}
+	}
+
+	private void updateIterationsMenu() {
+		Component[] items = iterationsMenu.getMenuComponents();
+		for (int i = 0; i < items.length; i++) {
+			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
+			final int maxIterations = 1 << i + MandelbrotService.MIN_ITERATIONS_EXPONENT;
+			item.setSelected(mandelbrotService.getMaxIterations() == maxIterations);
+		}
+	}
+
+	private void updatePointsOfInterestMenu() {
+		Component[] items = pointsOfInterestMenu.getMenuComponents();
+		for (int i = 5; i < items.length; i++) {
+			pointsOfInterestMenu.remove(items[i]);
+		}
+		List<PointOfInterest> elements = pointsOfInterestService.getElements();
+		for (int i = 0; i < elements.size(); i++) {
+			PointOfInterest pointOfInterest = elements.get(i);
+			final int index = i + 1;
+			int mnemonic = -1;
+			if (index < 9) {
+				mnemonic = KeyEvent.VK_0 + index;
+			}
+			if (index == 10) {
+				mnemonic = KeyEvent.VK_0;
+			}
+			addMenuItem(pointsOfInterestMenu,
+					index + " - " + pointOfInterest.getName() + " (" + pointOfInterest.getMaxIterations() + ")",
+					mnemonic, event -> setPointOfInterest(index));
+		}
+	}
+
+	private JMenuItem addCheckboxMenuItem(JMenu menu, String title, int mnemonic, boolean initialValue,
+			java.awt.event.ActionListener actionListener) {
+		JMenuItem menuItem = new JCheckBoxMenuItem(title);
+		if (actionListener != null) {
+			menuItem.addActionListener(actionListener);
+		}
+		if (mnemonic != -1) {
+			menuItem.setMnemonic(mnemonic);
+		}
+		menuItem.setSelected(initialValue);
+		menu.add(menuItem);
+		return menuItem;
+	}
+
+	private JMenuItem addMenuItem(JMenu menu, String title, int mnemonic,
+			java.awt.event.ActionListener actionListener) {
+		JMenuItem menuItem = new JMenuItem(title);
+		if (actionListener != null) {
+			menuItem.addActionListener(actionListener);
+		}
+		if (mnemonic != -1) {
+			menuItem.setMnemonic(mnemonic);
+		}
+		menu.add(menuItem);
+		return menuItem;
 	}
 
 }

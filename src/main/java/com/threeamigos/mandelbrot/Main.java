@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.WindowConstants;
 
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
@@ -59,12 +60,19 @@ public class Main {
 		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
 		pointsOfInterestService.setMessageNotifier(mandelbrotCanvas);
 
-		prepareFrame(mandelbrotCanvas);
-
 		pointsOfInterestService.loadPointsOfInterest();
+
+		JFrame jframe = prepareFrame(mandelbrotCanvas);
+
+		JMenuBar menuBar = prepareMenu(jframe);
+
+		mandelbrotCanvas.addMenus(menuBar);
+
+		jframe.setVisible(true);
+
 	}
 
-	private void prepareFrame(MandelbrotCanvas mandelbrotCanvas) {
+	private JFrame prepareFrame(MandelbrotCanvas mandelbrotCanvas) {
 
 		JFrame jframe = new JFrame("3AM Mandelbrot");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -82,7 +90,14 @@ public class Main {
 
 		jframe.setLocation((screenDimension.width - jframe.getSize().width) / 2,
 				(screenDimension.height - jframe.getSize().height) / 2);
-		jframe.setVisible(true);
+
+		return jframe;
+	}
+
+	public JMenuBar prepareMenu(JFrame jframe) {
+		JMenuBar menuBar = new JMenuBar();
+		jframe.setJMenuBar(menuBar);
+		return menuBar;
 	}
 
 	public static void main(String[] args) {

@@ -70,7 +70,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	}
 
 	@Override
-	public boolean incrementThreads() {
+	public boolean incrementNumberOfThreads() {
 		if (maxThreads < Runtime.getRuntime().availableProcessors()) {
 			maxThreads++;
 			return true;
@@ -79,9 +79,18 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	}
 
 	@Override
-	public boolean decrementThreads() {
+	public boolean decrementNumberOfThreads() {
 		if (maxThreads > 1) {
 			maxThreads--;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean setNumberOfThreads(int numberOfThreads) {
+		if (numberOfThreads <= Runtime.getRuntime().availableProcessors()) {
+			maxThreads = numberOfThreads;
 			return true;
 		}
 		return false;
