@@ -557,6 +557,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Save image", KeyEvent.VK_S, event -> saveImage());
 		fileMenu.addSeparator();
+		addMenuItem(fileMenu, "About", KeyEvent.VK_S,
+				event -> notify("3AM Mandelbrot by Stefano Reksten - stefano.reksten@gmail.com"));
+		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Quit", KeyEvent.VK_Q, event -> System.exit(0));
 
 		pointsOfInterestMenu = new JMenu("Points of interest");
