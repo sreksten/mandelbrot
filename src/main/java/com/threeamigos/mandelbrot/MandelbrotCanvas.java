@@ -39,6 +39,8 @@ import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
 
+	private static final String FONT_NAME = "Serif";
+
 	private static final long serialVersionUID = 1L;
 
 	private transient MandelbrotService mandelbrotService;
@@ -138,7 +140,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private int showInfo(Graphics2D graphics, int xCoord, int yCoord) {
 		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
-		Font font = new Font("Serif", Font.BOLD, fontHeight);
+		Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
 		graphics.setFont(font);
 
 		int vSpacing = fontHeight + 4;
@@ -180,7 +182,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private int showHelp(Graphics2D graphics, int xCoord, int yCoord) {
 		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
 		int vSpacing = fontHeight + 4;
-		Font font = new Font("Serif", Font.BOLD, fontHeight);
+		Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
 		graphics.setFont(font);
 		if (pointsOfInterestService.getCount() < 10) {
 			drawString(graphics, "A - add point of interest", xCoord, yCoord);
@@ -229,7 +231,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			PointOfInterest pointOfInterest = pointsOfInterestService.getElements()
 					.get(currentPointOfInterestIndex - 1);
 			int fontHeight = getHeight() / 20;
-			Font font = new Font("Serif", Font.BOLD | Font.ITALIC, fontHeight);
+			Font font = new Font(FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
 			graphics.setFont(font);
 			FontMetrics fontMetrics = graphics.getFontMetrics();
 			drawString(graphics, pointOfInterest.getName(),
