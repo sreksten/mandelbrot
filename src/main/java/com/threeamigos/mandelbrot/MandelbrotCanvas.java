@@ -477,12 +477,18 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private void deletePointOfInterest() {
 		if (currentPointOfInterestIndex != null) {
-			pointsOfInterestService.remove(currentPointOfInterestIndex - 1);
+			// We use a backup and operate using that because as soon as the notification
+			// window appears, a repaint would be triggered, finding an invalid index when
+			// deleting the last point of interest.
+			Integer backupOfCurrentPointOfInterestIndex = currentPointOfInterestIndex;
+			currentPointOfInterestIndex = null;
+			pointsOfInterestService.remove(backupOfCurrentPointOfInterestIndex - 1);
 			PersistResult result = pointsOfInterestService.savePointsOfInterest();
 			if (result.isSuccessful()) {
-				currentPointOfInterestIndex = null;
 				updatePointsOfInterestMenu();
 				repaint();
+			} else {
+				currentPointOfInterestIndex = backupOfCurrentPointOfInterestIndex;
 			}
 		}
 	}
