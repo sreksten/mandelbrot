@@ -165,9 +165,11 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		if (realCoordinateUnderPointer != null) {
 			Double imaginaryCoordinateUnderPointer = pointsInfo.getPointerImaginaryCoordinate();
 			if (imaginaryCoordinateUnderPointer != null) {
-				drawString(graphics, String.format("Current point: %1.14f,%1.14f",
-						realCoordinateUnderPointer.floatValue(), imaginaryCoordinateUnderPointer.floatValue()), xCoord,
-						yCoord);
+				drawString(graphics,
+						String.format("Current point: [%d,%d] [%1.14f,%1.14f]", pointsInfo.getPointerXCoordinate(),
+								pointsInfo.getPointerYCoordinate(), realCoordinateUnderPointer.floatValue(),
+								imaginaryCoordinateUnderPointer.floatValue()),
+						xCoord, yCoord);
 				yCoord += vSpacing;
 				drawString(graphics,
 						String.format("Current point iterations: %d", mandelbrotService
@@ -280,7 +282,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		if (e.getWheelRotation() < 0) {
 			pointsInfo.zoom(e.getX(), e.getY(), 0.9d);
 		} else {
-			pointsInfo.zoom(e.getX(), e.getY(), 1.10d);
+			pointsInfo.zoom(e.getX(), e.getY(), 1.11111111111d);
 		}
 		startCalculationThread();
 	}
