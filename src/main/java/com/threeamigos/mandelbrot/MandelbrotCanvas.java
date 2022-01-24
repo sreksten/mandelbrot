@@ -277,7 +277,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		mandelbrotService.interruptPreviousCalculation();
+		if (mandelbrotService.isCalculating()) {
+			mandelbrotService.interruptPreviousCalculation();
+		}
 		currentPointOfInterestIndex = null;
 		if (e.getWheelRotation() < 0) {
 			pointsInfo.zoom(e.getX(), e.getY(), 0.9d);

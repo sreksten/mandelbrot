@@ -212,6 +212,11 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	}
 
 	@Override
+	public boolean isCalculating() {
+		return running;
+	}
+
+	@Override
 	public long getDrawTime() {
 		return drawTime;
 	}

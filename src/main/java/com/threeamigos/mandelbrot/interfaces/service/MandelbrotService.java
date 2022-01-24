@@ -32,6 +32,8 @@ public interface MandelbrotService {
 
 	public void interruptPreviousCalculation();
 
+	public boolean isCalculating();
+
 	public long getDrawTime();
 
 	public int[] getIterations();
