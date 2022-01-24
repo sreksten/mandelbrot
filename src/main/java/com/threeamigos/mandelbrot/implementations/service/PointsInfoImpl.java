@@ -209,13 +209,13 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	@Override
-	public void zoom(int x, int y, double zoomFactor) {
+	public void zoom(int x, int y, double ratio) {
 
-		if (zoomCount >= 275 && zoomFactor < 1.0d || zoomCount <= -6 && zoomFactor > 1.0d) {
+		if (zoomCount >= 275 && ratio < 1.0d || zoomCount <= -6 && ratio > 1.0d) {
 			return;
 		}
 
-		if (zoomFactor > 1.0d) {
+		if (ratio > 1.0d) {
 			zoomCount--;
 		} else {
 			zoomCount++;
@@ -224,24 +224,21 @@ public class PointsInfoImpl implements PointsInfo {
 		this.zoomFactor = calculateZoomFactor(zoomCount);
 
 		double percentageX = (double) x / (double) width;
-		double intervalWidth = maxX - minX;
-		double pointRealCoord = minX + intervalWidth * percentageX;
-		double newIntervalWidth = intervalWidth * zoomFactor;
-		minX = pointRealCoord - newIntervalWidth * percentageX;
+		double newIntervalWidth = (startingMaxX - startingMinX) * this.zoomFactor;
+		minX = getRealCoordinate(x) - newIntervalWidth * percentageX;
 		maxX = minX + newIntervalWidth;
 		calculateStepX();
 
 		double percentageY = (double) y / (double) height;
-		double intervalHeight = maxY - minY;
-		double pointImaginaryCoord = minY + intervalHeight * percentageY;
-		double newIntervalHeight = intervalHeight * zoomFactor;
+		double newIntervalHeight = (startingMaxY - startingMinY) * this.zoomFactor;
+		double pointImaginaryCoord = minY + (maxY - minY) * percentageY;
 		minY = pointImaginaryCoord - newIntervalHeight * percentageY;
 		maxY = minY + newIntervalHeight;
 		calculateStepY();
 	}
 
 	private double calculateZoomFactor(int zoomCount) {
-		return zoomCount < 0 ? Math.pow(0.9d, -zoomCount) : Math.pow(1.1d, zoomCount);
+		return Math.pow(0.9d, zoomCount);
 	}
 
 	@Override
@@ -258,14 +255,14 @@ public class PointsInfoImpl implements PointsInfo {
 	}
 
 	private double getRealCoordinate(int x) {
-		double intervalX = maxX - minX;
 		double percentageX = (double) x / (double) width;
+		double intervalX = maxX - minX;
 		return minX + intervalX * percentageX;
 	}
 
 	private double getImaginaryCoordinate(int y) {
-		double intervalY = maxY - minY;
 		double percentageY = (double) y / (double) height;
+		double intervalY = maxY - minY;
 		return maxY - intervalY * percentageY;
 	}
 
