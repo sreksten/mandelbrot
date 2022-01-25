@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import com.threeamigos.mandelbrot.implementations.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
@@ -577,8 +578,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Save image", KeyEvent.VK_S, event -> saveImage());
 		fileMenu.addSeparator();
-		addMenuItem(fileMenu, "About", KeyEvent.VK_S,
-				event -> notify("3AM Mandelbrot by Stefano Reksten - stefano.reksten@gmail.com"));
+		addMenuItem(fileMenu, "About", KeyEvent.VK_S, event -> about());
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Quit", KeyEvent.VK_Q, event -> System.exit(0));
 
@@ -622,6 +622,10 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 					mandelbrotService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
 		}
 		calculationsMenu.add(iterationsMenu);
+	}
+
+	private void about() {
+		new AboutWindow().about(this);
 	}
 
 	private void updateColorModelsMenu() {
