@@ -7,7 +7,7 @@ import java.awt.image.MemoryImageSource;
 
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 
-class DirectColorModelImageProducer implements SingleColorModelImageProducer {
+class Mode1DirectColorModelImageProducer implements SingleColorModelImageProducer {
 
 	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT);
 
@@ -17,7 +17,7 @@ class DirectColorModelImageProducer implements SingleColorModelImageProducer {
 
 	private final int[] map;
 
-	public DirectColorModelImageProducer(int maxIterations) {
+	public Mode1DirectColorModelImageProducer(int maxIterations) {
 
 		this.maxIterations = maxIterations;
 

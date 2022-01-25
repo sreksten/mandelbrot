@@ -21,8 +21,8 @@ public class ImageProducerImpl implements ImageProducerService {
 	private void createImageProducers(int maxIterations) {
 		imageProducers = new SingleColorModelImageProducer[3];
 		imageProducers[0] = new IndexColorModelImageProducer();
-		imageProducers[1] = new DirectColorModelImageProducer(maxIterations);
-		imageProducers[2] = new AltDirectColorModelImageProducer(maxIterations);
+		imageProducers[1] = new Mode1DirectColorModelImageProducer(maxIterations);
+		imageProducers[2] = new Mode2DirectColorModelImageProducer(maxIterations);
 
 		currentImageProducer = 2;
 	}
