@@ -1,19 +1,18 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.awt.Image;
+import java.util.List;
 
 public interface ImageProducerService {
 
 	public Image produceImage(int width, int height, int[] pixels);
 
-	public boolean isUsingIndexColorModel();
+	public void cycleColorModel();
 
-	public boolean isUsingDirectColorModel();
+	public void switchColorModel(String modeName);
 
-	public void useIndexColorModel();
+	public List<String> getColorModeNames();
 
-	public void useDirectColorModel();
-
-	public void switchColorModel();
+	public String getCurrentColorModelName();
 
 }

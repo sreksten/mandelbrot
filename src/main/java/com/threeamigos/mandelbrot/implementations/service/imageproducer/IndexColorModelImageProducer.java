@@ -37,4 +37,8 @@ class IndexColorModelImageProducer implements SingleColorModelImageProducer {
 				.createImage(new MemoryImageSource(width, height, indexColorModel, pixels, 0, width));
 	}
 
+	@Override
+	public String getName() {
+		return "Indexed";
+	}
 }

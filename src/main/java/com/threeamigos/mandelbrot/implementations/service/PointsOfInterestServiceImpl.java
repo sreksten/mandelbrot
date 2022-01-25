@@ -61,7 +61,7 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 
 	@Override
 	public PersistResult add(PointOfInterest pointOfInterest) {
-		if (getCount() < 10) {
+		if (getCount() < 100) {
 			String name = messageNotifier.request("Give it a name:");
 			if (name != null && !name.isBlank()) {
 				pointOfInterest.setName(name);

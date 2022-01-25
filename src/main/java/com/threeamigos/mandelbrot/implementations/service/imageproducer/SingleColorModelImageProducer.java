@@ -6,4 +6,6 @@ public interface SingleColorModelImageProducer {
 
 	public Image produceImage(int width, int height, int[] pixels);
 
+	public String getName();
+
 }

@@ -63,6 +63,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private long lastDrawTime;
 
 	private JMenu pointsOfInterestMenu;
+	private JMenu colorModelsMenu;
 	private JMenu threadsMenu;
 	private JMenu iterationsMenu;
 
@@ -190,7 +191,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			drawString(graphics, "A - add point of interest", xCoord, yCoord);
 			yCoord += vSpacing;
 		}
-		drawString(graphics, "C - switch between indexed and direct color model", xCoord, yCoord);
+		drawString(graphics,
+				String.format("C - change color model (current: %s)", imageProducerService.getCurrentColorModelName()),
+				xCoord, yCoord);
 		yCoord += vSpacing;
 		if (currentPointOfInterestIndex != null) {
 			drawString(graphics, "D - delete current point of interest", xCoord, yCoord);
@@ -224,6 +227,10 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			}
 			index++;
 			yCoord += vSpacing;
+			if (index > 10) {
+				// Since we ran out of numeric keys..
+				break;
+			}
 		}
 		return yCoord;
 	}
@@ -355,7 +362,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			addPointOfInterest();
 			break;
 		case KeyEvent.VK_C:
-			switchColorModel();
+			cycleColorModel();
 			break;
 		case KeyEvent.VK_D:
 			deletePointOfInterest();
@@ -443,6 +450,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		}
 	}
 
+	private void switchColorModel(String colorModelName) {
+		imageProducerService.switchColorModel(colorModelName);
+		updateColorModelsMenu();
+		image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
+				mandelbrotService.getIterations());
+		repaint();
+	}
+
 	private void setNumberOfThreads(int numberOfThreads) {
 		if (mandelbrotService.setNumberOfThreads(numberOfThreads)) {
 			updateThreadsMenu();
@@ -474,8 +489,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		}
 	}
 
-	private void switchColorModel() {
-		imageProducerService.switchColorModel();
+	private void cycleColorModel() {
+		imageProducerService.cycleColorModel();
+		updateColorModelsMenu();
 		image = imageProducerService.produceImage(pointsInfo.getWidth(), pointsInfo.getHeight(),
 				mandelbrotService.getIterations());
 		repaint();
@@ -516,7 +532,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private void saveImage() {
 		snapshotService.saveSnapshot(pointsInfo, mandelbrotService.getMaxIterations(),
-				imageProducerService.isUsingDirectColorModel(), image, this);
+				imageProducerService.getCurrentColorModelName(), image, this);
 	}
 
 	private void setPointOfInterest(int pointIndex) {
@@ -581,7 +597,15 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		JMenu calculationsMenu = new JMenu("Calculations");
 		menuBar.add(calculationsMenu);
 
-		addMenuItem(calculationsMenu, "Switch color model", KeyEvent.VK_C, event -> switchColorModel());
+		addMenuItem(calculationsMenu, "Cycle color model", KeyEvent.VK_C, event -> cycleColorModel());
+		colorModelsMenu = new JMenu("Use color model");
+		for (String colorModelName : imageProducerService.getColorModeNames()) {
+			addCheckboxMenuItem(colorModelsMenu, colorModelName, -1,
+					imageProducerService.getCurrentColorModelName().equals(colorModelName),
+					event -> switchColorModel(colorModelName));
+		}
+		calculationsMenu.add(colorModelsMenu);
+
 		calculationsMenu.addSeparator();
 		threadsMenu = new JMenu("Threads to use");
 		calculationsMenu.add(threadsMenu);
@@ -598,6 +622,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 					mandelbrotService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
 		}
 		calculationsMenu.add(iterationsMenu);
+	}
+
+	private void updateColorModelsMenu() {
+		Component[] items = colorModelsMenu.getMenuComponents();
+		for (int i = 0; i < items.length; i++) {
+			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
+			item.setSelected(imageProducerService.getCurrentColorModelName().equals(item.getText()));
+		}
 	}
 
 	private void updateThreadsMenu() {

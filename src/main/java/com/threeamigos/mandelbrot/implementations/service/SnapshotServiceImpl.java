@@ -37,7 +37,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 	}
 
 	@Override
-	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, boolean usingDirectColorModel,
+	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, String colorModelName,
 			Image bufferedImage, Component parentComponent) {
 
 		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
@@ -56,9 +56,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 			tempCalculator.calculate(tempPointsInfo);
 			ImageProducerService tempImageProducer = imageProducerServiceFactory
 					.createInstance(tempCalculationParameters.getMaxIterations());
-			if (!usingDirectColorModel) {
-				tempImageProducer.useIndexColorModel();
-			}
+			tempImageProducer.switchColorModel(colorModelName);
 			imageToSave = tempImageProducer.produceImage(tempPointsInfo.getWidth(), tempPointsInfo.getHeight(),
 					tempCalculator.getIterations());
 		}

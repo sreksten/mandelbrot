@@ -29,7 +29,7 @@ class DirectColorModelImageProducer implements SingleColorModelImageProducer {
 		final int greenStartingPoint = MAX_ITERATIONS / 3;
 		final int blueStartingPoint = 2 * MAX_ITERATIONS / 3;
 
-		int third = MAX_ITERATIONS / 3;
+		int third = (MAX_ITERATIONS + 2) / 3;
 
 		for (int i = 0; i < third; i++) {
 			int value = 255 - (256 * i / third);
@@ -74,6 +74,11 @@ class DirectColorModelImageProducer implements SingleColorModelImageProducer {
 		}
 		return Toolkit.getDefaultToolkit()
 				.createImage(new MemoryImageSource(width, height, directColorModel, translatedValues, 0, width));
+	}
+
+	@Override
+	public String getName() {
+		return "Mode 1";
 	}
 
 }
