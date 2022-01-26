@@ -198,12 +198,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		if (currentPointOfInterestIndex != null) {
 			drawString(graphics, "D - delete current point of interest", xCoord, yCoord);
 			yCoord += vSpacing;
+			drawString(graphics, "P - show or hide point of interest's name", xCoord, yCoord);
+			yCoord += vSpacing;
 		}
 		drawString(graphics, "H - hide or show help", xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics, "I - hide or show info", xCoord, yCoord);
 		yCoord += vSpacing;
-		drawString(graphics, "S - save image", xCoord, yCoord);
+		drawString(graphics, "S - save snapshot", xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics, "Mouse wheel - zoom in/out", xCoord, yCoord);
 		yCoord += vSpacing;
@@ -575,7 +577,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, showInfo, event -> hideOrShowInfo());
 		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, showHelp, event -> hideOrShowHelp());
 		fileMenu.addSeparator();
-		addMenuItem(fileMenu, "Save image", KeyEvent.VK_S, event -> saveImage());
+		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveImage());
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "About", KeyEvent.VK_S, event -> about());
 		fileMenu.addSeparator();
