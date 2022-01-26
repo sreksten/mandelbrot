@@ -51,7 +51,7 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
-					if (!line.isBlank()) {
+					if (line.trim().length() > 0) {
 						PointOfInterest point = parsePointOfInterest(line);
 						points.add(point);
 					}
