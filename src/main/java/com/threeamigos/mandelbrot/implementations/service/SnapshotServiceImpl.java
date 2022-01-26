@@ -3,8 +3,11 @@ package com.threeamigos.mandelbrot.implementations.service;
 import java.awt.Component;
 import java.awt.Image;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.swing.JFileChooser;
 
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
@@ -27,6 +30,8 @@ public class SnapshotServiceImpl implements SnapshotService {
 	private ImagePersisterService imagePersisterService;
 	private MessageNotifier messageNotifier;
 
+	private final JFileChooser fileChooser;
+
 	public SnapshotServiceImpl(CalculationParametersRequester calculationParametersRequester,
 			MandelbrotServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
 			ImagePersisterService imageService) {
@@ -34,6 +39,11 @@ public class SnapshotServiceImpl implements SnapshotService {
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.imagePersisterService = imageService;
+
+		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select snapshot destination");
+		fileChooser.setApproveButtonText("Save");
+		fileChooser.setApproveButtonToolTipText("Saves the snapshot to the selected file");
 	}
 
 	@Override
@@ -61,11 +71,24 @@ public class SnapshotServiceImpl implements SnapshotService {
 					tempCalculator.getIterations());
 		}
 
-		String filename = new StringBuilder().append(System.getProperty("user.home")).append(File.separatorChar)
-				.append("3AM_Mandelbrot_").append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()))
-				.append(".png").toString();
+		String filename = new StringBuilder().append("3AM_Mandelbrot_")
+				.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())).append(".png").toString();
 
-		return imagePersisterService.saveImage(imageToSave, filename);
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		fileChooser.setSelectedFile(new File(filename));
+		int returnVal = fileChooser.showOpenDialog(parentComponent);
+
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			try {
+				filename = file.getCanonicalPath();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return imagePersisterService.saveImage(imageToSave, filename);
+		} else {
+			return null;
+		}
 	}
 
 }
