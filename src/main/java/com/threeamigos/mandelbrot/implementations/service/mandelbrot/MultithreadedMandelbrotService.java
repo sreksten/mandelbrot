@@ -26,7 +26,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
 		this.maxThreads = calculationParameters.getMaxThreads();
 		this.maxIterations = calculationParameters.getMaxIterations();
-		threads = new Thread[maxThreads];
+		threads = new Thread[Runtime.getRuntime().availableProcessors()];
 		calculators = new MandelbrotSliceCalculator[maxThreads];
 		deque = SliceDataDeque.getInstance();
 		propertyChangeSupport = new PropertyChangeSupport(this);
