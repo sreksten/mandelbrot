@@ -12,4 +12,6 @@ interface DataBuffer {
 
 	public int[] getPixels();
 
+	public void clear();
+
 }

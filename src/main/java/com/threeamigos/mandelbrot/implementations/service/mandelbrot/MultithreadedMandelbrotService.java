@@ -17,8 +17,8 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private Thread[] threads;
 	private MandelbrotSliceCalculator[] calculators;
 	private SliceDataDeque deque;
-	private DataBuffer dataBuffer;
 	private PropertyChangeSupport propertyChangeSupport;
+	private DataBuffer dataBuffer;
 
 	boolean running;
 	boolean interrupted;
@@ -31,6 +31,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		calculators = new MandelbrotSliceCalculator[cores];
 		deque = SliceDataDeque.getInstance();
 		propertyChangeSupport = new PropertyChangeSupport(this);
+		dataBuffer = new DataBufferImpl(calculationParameters.getResolution());
 	}
 
 	@Override
@@ -118,7 +119,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		running = true;
 		interrupted = false;
 
-		dataBuffer = new DataBufferImpl(width, height);
+		dataBuffer.clear();
 
 		prepareSlices(pointsInfo, width, height);
 

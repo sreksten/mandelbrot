@@ -70,6 +70,8 @@ public class Main {
 
 		jframe.setVisible(true);
 
+		mandelbrotCanvas.startCalculationThread();
+
 	}
 
 	private JFrame prepareFrame(MandelbrotCanvas mandelbrotCanvas) {

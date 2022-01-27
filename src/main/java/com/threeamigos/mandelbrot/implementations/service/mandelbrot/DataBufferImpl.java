@@ -2,6 +2,7 @@ package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
 import java.util.Arrays;
 
+import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 
 class DataBufferImpl implements DataBuffer {
@@ -10,11 +11,15 @@ class DataBufferImpl implements DataBuffer {
 	private int height;
 	private int[] pixels;
 
+	public DataBufferImpl(Resolution resolution) {
+		this(resolution.getWidth(), resolution.getHeight());
+	}
+
 	public DataBufferImpl(int width, int height) {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
-		Arrays.fill(pixels, MandelbrotService.ITERATION_NOT_CALCULATED);
+		clear();
 	}
 
 	@Override
@@ -40,6 +45,11 @@ class DataBufferImpl implements DataBuffer {
 	@Override
 	public int[] getPixels() {
 		return pixels;
+	}
+
+	@Override
+	public void clear() {
+		Arrays.fill(pixels, MandelbrotService.ITERATION_NOT_CALCULATED);
 	}
 
 }
