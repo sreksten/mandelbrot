@@ -72,7 +72,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService,
-			PointsInfo pointsInfo, CalculationParameters calculationParameters) {
+			PointsInfo pointsInfo, CalculationParameters calculationParameters,
+			CalculationThreadRunnerService calculationThreadRunnerService) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
@@ -81,7 +82,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		this.snapshotService = snapshotService;
 		this.pointsInfo = pointsInfo;
 
-		calculationThreadRunnerService = new CalculationThreadRunnerService(mandelbrotService, pointsInfo);
+		this.calculationThreadRunnerService = calculationThreadRunnerService;
 
 		setSize(pointsInfo.getWidth(), pointsInfo.getHeight());
 		setBackground(Color.YELLOW);
