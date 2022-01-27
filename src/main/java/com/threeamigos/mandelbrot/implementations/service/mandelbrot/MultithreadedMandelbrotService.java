@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 
+import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
@@ -12,6 +13,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	private long drawTime;
 
+	private Resolution resolution;
 	int maxThreads;
 	int maxIterations;
 	private Thread[] threads;
@@ -24,6 +26,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	boolean interrupted;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
+		this.resolution = calculationParameters.getResolution();
 		this.maxThreads = calculationParameters.getMaxThreads();
 		this.maxIterations = calculationParameters.getMaxIterations();
 		int cores = Runtime.getRuntime().availableProcessors();
@@ -31,7 +34,11 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		calculators = new MandelbrotSliceCalculator[cores];
 		deque = SliceDataDeque.getInstance();
 		propertyChangeSupport = new PropertyChangeSupport(this);
-		dataBuffer = new DataBufferImpl(calculationParameters.getResolution());
+		createDataBuffer();
+	}
+
+	private void createDataBuffer() {
+		dataBuffer = new DataBufferImpl(resolution);
 	}
 
 	@Override
@@ -119,7 +126,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		running = true;
 		interrupted = false;
 
-		dataBuffer.clear();
+		createDataBuffer();
 
 		prepareSlices(pointsInfo, width, height);
 

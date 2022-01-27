@@ -69,7 +69,10 @@ class Mode1DirectColorModelImageProducer implements SingleColorModelImageProduce
 			if (currentIterations == maxIterations || currentIterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
-				translatedValues[i] = map[currentIterations * multiplier];
+				int index = currentIterations * multiplier;
+				if (index < map.length) {
+					translatedValues[i] = map[currentIterations * multiplier];
+				}
 			}
 		}
 		return Toolkit.getDefaultToolkit()
