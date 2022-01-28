@@ -2,9 +2,9 @@ package com.threeamigos.mandelbrot.implementations.service;
 
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 
-public class PointsInfoImpl implements PointsInfo {
+public class PointsInfoImpl implements Points {
 
 	private int width;
 	private int height;
@@ -42,7 +42,7 @@ public class PointsInfoImpl implements PointsInfo {
 	private Double imaginaryCoordinateUnderPointer;
 
 	@Override
-	public PointsInfo adaptToResolution(Resolution resolution) {
+	public Points adaptToResolution(Resolution resolution) {
 		PointsInfoImpl newPoint = new PointsInfoImpl();
 		newPoint.width = resolution.getWidth();
 		newPoint.height = resolution.getHeight();

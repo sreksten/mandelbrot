@@ -17,7 +17,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
@@ -47,7 +47,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 	}
 
 	@Override
-	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, String colorModelName,
+	public PersistResult saveSnapshot(Points pointsInfo, int maxIterations, String colorModelName,
 			Image bufferedImage, Component parentComponent) {
 
 		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
@@ -62,7 +62,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 		if (tempResolution.getWidth() != bufferedImage.getWidth(null)
 				|| tempResolution.getHeight() != bufferedImage.getHeight(null)) {
 			MandelbrotService tempCalculator = mandelbrotServiceFactory.createInstance(tempCalculationParameters);
-			PointsInfo tempPointsInfo = pointsInfo.adaptToResolution(tempResolution);
+			Points tempPointsInfo = pointsInfo.adaptToResolution(tempResolution);
 			tempCalculator.calculate(tempPointsInfo);
 			ImageProducerService tempImageProducer = imageProducerServiceFactory
 					.createInstance(tempCalculationParameters.getMaxIterations());

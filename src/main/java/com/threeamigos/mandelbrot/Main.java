@@ -22,7 +22,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
@@ -38,7 +38,7 @@ public class Main {
 			return;
 		}
 
-		PointsInfo pointsInfo = new PointsInfoImpl();
+		Points pointsInfo = new PointsInfoImpl();
 		pointsInfo.setResolution(calculationParameters.getResolution());
 
 		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();

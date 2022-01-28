@@ -7,7 +7,7 @@ import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 
 public interface SnapshotService {
 
-	public PersistResult saveSnapshot(PointsInfo pointsInfo, int maxIterations, String colorModelName,
+	public PersistResult saveSnapshot(Points pointsInfo, int maxIterations, String colorModelName,
 			Image bufferedImage, Component parentComponent);
 
 }

@@ -2,9 +2,9 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import com.threeamigos.mandelbrot.Resolution;
 
-public interface PointsInfo {
+public interface Points {
 
-	PointsInfo adaptToResolution(Resolution resolution);
+	Points adaptToResolution(Resolution resolution);
 
 	void setResolution(Resolution resolution);
 

@@ -1,12 +1,12 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 class MandelbrotSliceCalculator implements Runnable {
 
 	private Thread mainThread;
-	private PointsInfo pointsInfo;
+	private Points pointsInfo;
 	private int startX;
 	private int startY;
 	private int endX;
@@ -16,7 +16,7 @@ class MandelbrotSliceCalculator implements Runnable {
 
 	private boolean running;
 
-	public MandelbrotSliceCalculator(Thread mainThread, PointsInfo pointsInfo, SliceData slice, DataBuffer dataBuffer,
+	public MandelbrotSliceCalculator(Thread mainThread, Points pointsInfo, SliceData slice, DataBuffer dataBuffer,
 			int maxIterations) {
 		this.mainThread = mainThread;
 		this.pointsInfo = pointsInfo;

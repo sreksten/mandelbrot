@@ -28,7 +28,7 @@ public interface MandelbrotService {
 
 	public boolean setNumberOfThreads(int numberOfThreads);
 
-	public void calculate(PointsInfo pointsInfo);
+	public void calculate(Points pointsInfo);
 
 	public void interruptPreviousCalculation();
 

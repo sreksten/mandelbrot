@@ -33,7 +33,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
@@ -50,7 +50,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private transient ImageProducerServiceFactory imageProducerServiceFactory;
 	private transient ImageProducerService imageProducerService;
 	private transient SnapshotService snapshotService;
-	private transient PointsInfo pointsInfo;
+	private transient Points pointsInfo;
 
 	private CalculationThreadRunnerService calculationThreadRunnerService;
 	private transient Thread paintingThread;
@@ -72,7 +72,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService,
-			PointsInfo pointsInfo, CalculationParameters calculationParameters,
+			Points pointsInfo, CalculationParameters calculationParameters,
 			CalculationThreadRunnerService calculationThreadRunnerService) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;

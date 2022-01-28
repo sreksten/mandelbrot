@@ -7,7 +7,7 @@ import java.util.Arrays;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.PointsInfo;
+import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 public class MultithreadedMandelbrotService implements MandelbrotService {
 
@@ -118,7 +118,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	}
 
 	@Override
-	public void calculate(PointsInfo pointsInfo) {
+	public void calculate(Points pointsInfo) {
 
 		int width = pointsInfo.getWidth();
 		int height = pointsInfo.getHeight();
@@ -167,7 +167,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		}
 	}
 
-	private void prepareSlices(PointsInfo pointsInfo, int width, int height) {
+	private void prepareSlices(Points pointsInfo, int width, int height) {
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
 
