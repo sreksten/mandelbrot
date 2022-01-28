@@ -47,7 +47,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 	}
 
 	@Override
-	public PersistResult saveSnapshot(Points pointsInfo, int maxIterations, String colorModelName,
+	public PersistResult saveSnapshot(Points points, int maxIterations, String colorModelName,
 			Image bufferedImage, Component parentComponent) {
 
 		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
@@ -62,12 +62,12 @@ public class SnapshotServiceImpl implements SnapshotService {
 		if (tempResolution.getWidth() != bufferedImage.getWidth(null)
 				|| tempResolution.getHeight() != bufferedImage.getHeight(null)) {
 			MandelbrotService tempCalculator = mandelbrotServiceFactory.createInstance(tempCalculationParameters);
-			Points tempPointsInfo = pointsInfo.adaptToResolution(tempResolution);
-			tempCalculator.calculate(tempPointsInfo);
+			Points tempPoints = points.adaptToResolution(tempResolution);
+			tempCalculator.calculate(tempPoints);
 			ImageProducerService tempImageProducer = imageProducerServiceFactory
 					.createInstance(tempCalculationParameters.getMaxIterations());
 			tempImageProducer.switchColorModel(colorModelName);
-			imageToSave = tempImageProducer.produceImage(tempPointsInfo.getWidth(), tempPointsInfo.getHeight(),
+			imageToSave = tempImageProducer.produceImage(tempPoints.getWidth(), tempPoints.getHeight(),
 					tempCalculator.getIterations());
 		}
 

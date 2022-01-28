@@ -9,12 +9,12 @@ public class CalculationThreadRunnerServiceImpl implements Runnable, Calculation
 	private MandelbrotService mandelbrotService;
 	private Thread calculationThread;
 	private boolean calculationThreadRunning = false;
-	private Points pointsInfo;
+	private Points points;
 	private long lastDrawTime;
 
-	public CalculationThreadRunnerServiceImpl(MandelbrotService mandelbrotService, Points pointsInfo) {
+	public CalculationThreadRunnerServiceImpl(MandelbrotService mandelbrotService, Points points) {
 		this.mandelbrotService = mandelbrotService;
-		this.pointsInfo = pointsInfo;
+		this.points = points;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CalculationThreadRunnerServiceImpl implements Runnable, Calculation
 
 	@Override
 	public void run() {
-		mandelbrotService.calculate(pointsInfo);
+		mandelbrotService.calculate(points);
 		lastDrawTime = mandelbrotService.getDrawTime();
 		calculationThreadRunning = false;
 	}

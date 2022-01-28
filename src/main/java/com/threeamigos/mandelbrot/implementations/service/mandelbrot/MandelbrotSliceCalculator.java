@@ -6,7 +6,7 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 class MandelbrotSliceCalculator implements Runnable {
 
 	private Thread mainThread;
-	private Points pointsInfo;
+	private Points points;
 	private int startX;
 	private int startY;
 	private int endX;
@@ -16,10 +16,10 @@ class MandelbrotSliceCalculator implements Runnable {
 
 	private boolean running;
 
-	public MandelbrotSliceCalculator(Thread mainThread, Points pointsInfo, SliceData slice, DataBuffer dataBuffer,
+	public MandelbrotSliceCalculator(Thread mainThread, Points points, SliceData slice, DataBuffer dataBuffer,
 			int maxIterations) {
 		this.mainThread = mainThread;
-		this.pointsInfo = pointsInfo;
+		this.points = points;
 		this.startX = slice.startX;
 		this.startY = slice.startY;
 		this.endX = slice.endX;
@@ -43,8 +43,8 @@ class MandelbrotSliceCalculator implements Runnable {
 		if (!running) {
 			return;
 		}
-		boolean cardioidVisible = pointsInfo.isCardioidVisible(fromX, toX, fromY, toY);
-		boolean period2BulbVisible = pointsInfo.isPeriod2BulbVisible(fromX, toX, fromY, toY);
+		boolean cardioidVisible = points.isCardioidVisible(fromX, toX, fromY, toY);
+		boolean period2BulbVisible = points.isPeriod2BulbVisible(fromX, toX, fromY, toY);
 		if (toX - fromX <= 5 || toY - fromY <= 5) {
 			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
 		} else {
@@ -132,8 +132,8 @@ class MandelbrotSliceCalculator implements Runnable {
 	private int calculateIterations(int x, int y, boolean cardioidVisible, boolean period2BulbVisible) {
 		int iterations = dataBuffer.getPixel(x, y);
 		if (iterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
-			double cReal = pointsInfo.toCReal(x);
-			double cImaginary = pointsInfo.toCImaginary(y);
+			double cReal = points.toCReal(x);
+			double cImaginary = points.toCImaginary(y);
 			iterations = calculateIterations(cReal, cImaginary, cardioidVisible, period2BulbVisible);
 			dataBuffer.setPixel(x, y, iterations);
 		}

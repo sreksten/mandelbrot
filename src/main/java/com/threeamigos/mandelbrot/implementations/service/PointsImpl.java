@@ -4,7 +4,7 @@ import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 
-public class PointsInfoImpl implements Points {
+public class PointsImpl implements Points {
 
 	private int width;
 	private int height;
@@ -43,7 +43,7 @@ public class PointsInfoImpl implements Points {
 
 	@Override
 	public Points adaptToResolution(Resolution resolution) {
-		PointsInfoImpl newPoint = new PointsInfoImpl();
+		PointsImpl newPoint = new PointsImpl();
 		newPoint.width = resolution.getWidth();
 		newPoint.height = resolution.getHeight();
 

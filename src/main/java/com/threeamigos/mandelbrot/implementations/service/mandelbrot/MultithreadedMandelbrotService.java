@@ -111,24 +111,21 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 				return false;
 			}
 		}
-		if (!deque.isEmpty()) {
-			return false;
-		}
-		return true;
+		return deque.isEmpty();
 	}
 
 	@Override
-	public void calculate(Points pointsInfo) {
+	public void calculate(Points points) {
 
-		int width = pointsInfo.getWidth();
-		int height = pointsInfo.getHeight();
+		int width = points.getWidth();
+		int height = points.getHeight();
 
 		running = true;
 		interrupted = false;
 
 		createDataBuffer();
 
-		prepareSlices(pointsInfo, width, height);
+		prepareSlices(width, height);
 
 		long startMillis = System.currentTimeMillis();
 
@@ -137,8 +134,8 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 				Thread thread = threads[i];
 				if (thread == null || !thread.isAlive()) {
 					SliceData slice = deque.remove();
-					calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), pointsInfo, slice,
-							dataBuffer, maxIterations);
+					calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), points, slice, dataBuffer,
+							maxIterations);
 					thread = new Thread(calculators[i]);
 					thread.setDaemon(true);
 					threads[i] = thread;
@@ -167,7 +164,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		}
 	}
 
-	private void prepareSlices(Points pointsInfo, int width, int height) {
+	private void prepareSlices(int width, int height) {
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
 

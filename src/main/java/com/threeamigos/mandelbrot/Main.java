@@ -12,7 +12,7 @@ import com.threeamigos.mandelbrot.implementations.service.CalculationThreadRunne
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.MandelbrotServiceFactoryImpl;
-import com.threeamigos.mandelbrot.implementations.service.PointsInfoImpl;
+import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
@@ -38,8 +38,8 @@ public class Main {
 			return;
 		}
 
-		Points pointsInfo = new PointsInfoImpl();
-		pointsInfo.setResolution(calculationParameters.getResolution());
+		Points points = new PointsImpl();
+		points.setResolution(calculationParameters.getResolution());
 
 		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
 
@@ -55,10 +55,10 @@ public class Main {
 		MandelbrotService mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
 
 		CalculationThreadRunnerService calculationThreadRunnerService = new CalculationThreadRunnerServiceImpl(
-				mandelbrotService, pointsInfo);
+				mandelbrotService, points);
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
-				imageProducerServiceFactory, snapshotService, pointsInfo, calculationParameters,
+				imageProducerServiceFactory, snapshotService, points, calculationParameters,
 				calculationThreadRunnerService);
 
 		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
