@@ -1,5 +1,7 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 class SliceDataDeque {
@@ -8,27 +10,43 @@ class SliceDataDeque {
 
 	private ConcurrentLinkedDeque<SliceData> deque = new ConcurrentLinkedDeque<>();
 
-	private SliceDataDeque() {
+	SliceDataDeque() {
 	}
 
-	public static final SliceDataDeque getInstance() {
+	static final SliceDataDeque getInstance() {
 		return instance;
 	}
 
-	public void add(SliceData dataSlice) {
-		deque.addFirst(dataSlice);
+	void add(SliceData dataSlice) {
+		synchronized (this) {
+			deque.addFirst(dataSlice);
+		}
 	}
 
-	public boolean isEmpty() {
-		return deque.isEmpty();
+	boolean isEmpty() {
+		synchronized (this) {
+			return deque.isEmpty();
+		}
 	}
 
-	public SliceData remove() {
-		return deque.remove();
+	SliceData remove() {
+		synchronized (this) {
+			return deque.remove();
+		}
 	}
 
-	public void clear() {
-		deque.clear();
+	void clear() {
+		synchronized (this) {
+			deque.clear();
+		}
+	}
+
+	List<SliceData> getDataSlices() {
+		List<SliceData> list = new ArrayList();
+		synchronized (this) {
+			deque.stream().forEach(list::add);
+		}
+		return list;
 	}
 
 }

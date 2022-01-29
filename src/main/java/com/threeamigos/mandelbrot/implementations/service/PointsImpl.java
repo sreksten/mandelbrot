@@ -209,10 +209,10 @@ public class PointsImpl implements Points {
 	}
 
 	@Override
-	public void zoom(int x, int y, double ratio) {
+	public boolean zoom(int x, int y, double ratio) {
 
 		if (zoomCount >= 275 && ratio < 1.0d || zoomCount <= -6 && ratio > 1.0d) {
-			return;
+			return false;
 		}
 
 		if (ratio > 1.0d) {
@@ -235,6 +235,8 @@ public class PointsImpl implements Points {
 		minY = pointImaginaryCoord - newIntervalHeight * percentageY;
 		maxY = minY + newIntervalHeight;
 		calculateStepY();
+
+		return true;
 	}
 
 	private double calculateZoomFactor(int zoomCount) {

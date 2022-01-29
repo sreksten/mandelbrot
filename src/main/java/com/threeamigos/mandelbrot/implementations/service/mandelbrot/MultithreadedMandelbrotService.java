@@ -11,29 +11,30 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 public class MultithreadedMandelbrotService implements MandelbrotService {
 
-	private long drawTime;
+	private final Resolution resolution;
+	private final Thread[] threads;
+	private final MandelbrotSliceCalculator[] calculators;
+	private final SliceDataDeque deque;
+	private final PropertyChangeSupport propertyChangeSupport;
 
-	private Resolution resolution;
 	int maxThreads;
 	int maxIterations;
-	private Thread[] threads;
-	private MandelbrotSliceCalculator[] calculators;
-	private SliceDataDeque deque;
-	private PropertyChangeSupport propertyChangeSupport;
 	private DataBuffer dataBuffer;
 
+	private long drawTime;
 	boolean running;
 	boolean interrupted;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
-		this.resolution = calculationParameters.getResolution();
-		this.maxThreads = calculationParameters.getMaxThreads();
-		this.maxIterations = calculationParameters.getMaxIterations();
+		resolution = calculationParameters.getResolution();
 		int cores = Runtime.getRuntime().availableProcessors();
 		threads = new Thread[cores];
 		calculators = new MandelbrotSliceCalculator[cores];
 		deque = SliceDataDeque.getInstance();
 		propertyChangeSupport = new PropertyChangeSupport(this);
+
+		maxThreads = calculationParameters.getMaxThreads();
+		maxIterations = calculationParameters.getMaxIterations();
 		createDataBuffer();
 	}
 
@@ -105,7 +106,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		return false;
 	}
 
-	boolean finished() {
+	private boolean finished() {
 		for (Thread t : threads) {
 			if (t != null && t.isAlive()) {
 				return false;
@@ -117,45 +118,32 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public void calculate(Points points) {
 
-		int width = points.getWidth();
-		int height = points.getHeight();
-
 		running = true;
 		interrupted = false;
 
 		createDataBuffer();
+
+		int width = points.getWidth();
+		int height = points.getHeight();
+
+		PercentageTracker percentageTracker = new PercentageTracker(width, height);
 
 		prepareSlices(width, height);
 
 		long startMillis = System.currentTimeMillis();
 
 		while (running && !finished()) {
-			for (int i = 0; i < maxThreads && !deque.isEmpty(); i++) {
-				Thread thread = threads[i];
-				if (thread == null || !thread.isAlive()) {
-					SliceData slice = deque.remove();
-					calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), points, slice, dataBuffer,
-							maxIterations);
-					thread = new Thread(calculators[i]);
-					thread.setDaemon(true);
-					threads[i] = thread;
-					thread.start();
-				}
+			if (percentageTracker.shouldUpdatePercentage()) {
+				propertyChangeSupport.firePropertyChange(CALCULATION_IN_PROGRESS_PROPERTY_CHANGE, null,
+						percentageTracker.getPercentage(deque));
 			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// Thread.currentThread().interrupt();
-			}
+			createNewThreadIfPossible(points);
+			waitForAnyThreadToFinish();
 		}
 
 		joinThreads();
 
 		long endMillis = System.currentTimeMillis();
-
-		for (int i = 0; i < maxThreads; i++) {
-			threads[i] = null;
-		}
 
 		drawTime = (endMillis - startMillis);
 
@@ -164,7 +152,34 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		}
 	}
 
+	private void createNewThreadIfPossible(Points points) {
+		for (int i = 0; i < maxThreads && !deque.isEmpty(); i++) {
+			Thread thread = threads[i];
+			if (thread == null || !thread.isAlive()) {
+				SliceData slice = deque.remove();
+				calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), points, slice, dataBuffer,
+						maxIterations);
+				thread = new Thread(calculators[i]);
+				thread.setDaemon(true);
+				threads[i] = thread;
+				thread.start();
+			}
+		}
+	}
+
+	private void waitForAnyThreadToFinish() {
+		// Any thread that finishes will interrupt the main thread (this).
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
 	private void prepareSlices(int width, int height) {
+
+		deque.clear();
+
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
 
@@ -194,7 +209,6 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	@Override
 	public void interruptPreviousCalculation() {
-		running = false;
 		interrupted = true;
 		for (MandelbrotSliceCalculator calculator : calculators) {
 			if (calculator != null) {
@@ -202,7 +216,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 			}
 		}
 		joinThreads();
-		Arrays.fill(threads, null);
+		running = false;
 	}
 
 	private void joinThreads() {
@@ -215,6 +229,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 				}
 			}
 		}
+		Arrays.fill(threads, null);
 	}
 
 	@Override

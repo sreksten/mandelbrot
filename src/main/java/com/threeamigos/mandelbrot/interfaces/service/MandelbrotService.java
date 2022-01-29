@@ -4,6 +4,8 @@ import java.beans.PropertyChangeListener;
 
 public interface MandelbrotService {
 
+	public static final String CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Calculation in progress";
+
 	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
 
 	public static final int MIN_ITERATIONS_EXPONENT = 5;

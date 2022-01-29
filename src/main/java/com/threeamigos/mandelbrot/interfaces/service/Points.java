@@ -38,7 +38,7 @@ public interface Points {
 
 	void changeCenterTo(int x, int y);
 
-	void zoom(int x, int y, double zoomFactor);
+	boolean zoom(int x, int y, double zoomFactor);
 
 	int getZoomCount();
 
