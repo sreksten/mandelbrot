@@ -5,17 +5,17 @@ import java.util.Arrays;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 
-class DataBufferImpl implements DataBuffer {
+class PixelBufferImpl implements PixelBuffer {
 
 	private int width;
 	private int height;
 	private int[] pixels;
 
-	public DataBufferImpl(Resolution resolution) {
+	public PixelBufferImpl(Resolution resolution) {
 		this(resolution.getWidth(), resolution.getHeight());
 	}
 
-	public DataBufferImpl(int width, int height) {
+	public PixelBufferImpl(int width, int height) {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];

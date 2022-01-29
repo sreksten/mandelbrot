@@ -28,7 +28,7 @@ public class ImageProducerImpl implements ImageProducerService {
 	}
 
 	private void createImageProducerNames() {
-		imageProducerNames = new ArrayList();
+		imageProducerNames = new ArrayList<>();
 		for (SingleColorModelImageProducer imageProducer : imageProducers) {
 			imageProducerNames.add(imageProducer.getName());
 		}

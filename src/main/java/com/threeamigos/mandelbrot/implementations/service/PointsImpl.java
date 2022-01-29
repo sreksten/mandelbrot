@@ -332,4 +332,20 @@ public class PointsImpl implements Points {
 		return firstEnd >= secondStart && firstStart <= secondEnd;
 
 	}
+
+	@Override
+	public Points copy() {
+		PointsImpl copy = new PointsImpl();
+		copy.height = height;
+		copy.maxX = maxX;
+		copy.maxY = maxY;
+		copy.minX = minX;
+		copy.minY = minY;
+		copy.stepX = stepX;
+		copy.stepY = stepY;
+		copy.width = width;
+		copy.zoomCount = zoomCount;
+		copy.zoomFactor = zoomFactor;
+		return copy;
+	}
 }

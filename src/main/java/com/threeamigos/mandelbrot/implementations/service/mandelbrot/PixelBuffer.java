@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-interface DataBuffer {
+interface PixelBuffer {
 
 	public int getWidth();
 

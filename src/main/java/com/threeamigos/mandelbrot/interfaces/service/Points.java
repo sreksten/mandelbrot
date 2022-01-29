@@ -65,4 +65,6 @@ public interface Points {
 	public boolean isPeriod2BulbVisible();
 
 	public boolean isPeriod2BulbVisible(int fromX, int toX, int fromY, int toY);
+
+	public Points copy();
 }

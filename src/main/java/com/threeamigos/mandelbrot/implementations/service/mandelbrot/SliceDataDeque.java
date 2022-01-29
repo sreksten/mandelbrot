@@ -6,44 +6,27 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 class SliceDataDeque {
 
-	private static final SliceDataDeque instance = new SliceDataDeque();
-
 	private ConcurrentLinkedDeque<SliceData> deque = new ConcurrentLinkedDeque<>();
 
-	SliceDataDeque() {
-	}
-
-	static final SliceDataDeque getInstance() {
-		return instance;
-	}
-
 	void add(SliceData dataSlice) {
-		synchronized (this) {
-			deque.addFirst(dataSlice);
-		}
+		deque.addFirst(dataSlice);
 	}
 
 	boolean isEmpty() {
-		synchronized (this) {
-			return deque.isEmpty();
-		}
+		return deque.isEmpty();
 	}
 
 	SliceData remove() {
-		synchronized (this) {
-			return deque.remove();
-		}
+		return deque.remove();
 	}
 
 	void clear() {
-		synchronized (this) {
-			deque.clear();
-		}
+		deque.clear();
 	}
 
 	List<SliceData> getDataSlices() {
-		List<SliceData> list = new ArrayList();
-		synchronized (this) {
+		List<SliceData> list = new ArrayList<>();
+		synchronized (deque) {
 			deque.stream().forEach(list::add);
 		}
 		return list;

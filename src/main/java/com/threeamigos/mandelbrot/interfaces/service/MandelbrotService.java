@@ -32,7 +32,7 @@ public interface MandelbrotService {
 
 	public void calculate(Points points);
 
-	public void interruptPreviousCalculation();
+	public void interruptCalculation();
 
 	public boolean isCalculating();
 
