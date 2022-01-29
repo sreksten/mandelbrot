@@ -94,6 +94,13 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private void stopCalculationThread() {
 		if (mandelbrotService.isCalculating()) {
 			mandelbrotService.interruptPreviousCalculation();
+			while (mandelbrotService.isCalculating()) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}
 		}
 	}
 
