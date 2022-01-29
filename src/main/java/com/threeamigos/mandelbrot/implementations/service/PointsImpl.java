@@ -6,9 +6,6 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 public class PointsImpl implements Points {
 
-	private int width;
-	private int height;
-
 	private static final double JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB = -0.75d;
 
 	private static final double DEFAULT_MIN_X = -2.0d;
@@ -16,6 +13,12 @@ public class PointsImpl implements Points {
 
 	private static final double DEFAULT_MIN_Y = -1.12d;
 	private static final double DEFAULT_MAX_Y = 1.12d;
+
+	private static final double ZOOM_OUT_FACTOR = 1.1111111d;
+	private static final double ZOOM_IN_FACTOR = 0.9d;
+
+	private int width;
+	private int height;
 
 	private double startingMinX;
 	private double startingMaxX;
@@ -209,7 +212,21 @@ public class PointsImpl implements Points {
 	}
 
 	@Override
-	public boolean zoom(int x, int y, double ratio) {
+	public int zoomOutSegmentInPixel(int length) {
+		return (int) (length * ZOOM_IN_FACTOR);
+	}
+
+	@Override
+	public boolean zoomIn(int x, int y) {
+		return zoom(x, y, ZOOM_IN_FACTOR);
+	}
+
+	@Override
+	public boolean zoomOut(int x, int y) {
+		return zoom(x, y, ZOOM_OUT_FACTOR);
+	}
+
+	private boolean zoom(int x, int y, double ratio) {
 
 		if (zoomCount >= 275 && ratio < 1.0d || zoomCount <= -6 && ratio > 1.0d) {
 			return false;
@@ -240,12 +257,12 @@ public class PointsImpl implements Points {
 	}
 
 	private double calculateZoomFactor(int zoomCount) {
-		return Math.pow(0.9d, zoomCount);
+		return Math.pow(ZOOM_IN_FACTOR, zoomCount);
 	}
 
 	@Override
 	public void updatePointerCoordinates(Integer x, Integer y) {
-		if (x == null || y == null) {
+		if (x == null || x < 0 || x >= width || y == null || y < 0 || y >= height) {
 			realCoordinateUnderPointer = null;
 			imaginaryCoordinateUnderPointer = null;
 		} else {

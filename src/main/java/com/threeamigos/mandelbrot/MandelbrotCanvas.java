@@ -57,6 +57,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private boolean showProgress = true;
 	private Integer percentage = null;
 
+	private transient ZoomBox zoomBox;
+
 	private transient Thread paintingThread;
 
 	private Integer currentPointOfInterestIndex;
@@ -87,6 +89,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 		this.mandelbrotService = mandelbrotService;
 
+		this.zoomBox = new ZoomBox(points);
+
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -94,20 +98,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	public void startCalculationThread() {
-		if (paintingThread == null) {
-			paintingThread = new Thread(this);
-			paintingThread.setDaemon(true);
-			paintingThread.start();
-		} else if (!paintingThread.isAlive()) {
-			try {
-				paintingThread.join();
-			} catch (InterruptedException e) {
-
-			}
-			paintingThread = new Thread(this);
-			paintingThread.setDaemon(true);
-			paintingThread.start();
-		}
+		paintingThread = new Thread(this);
+		paintingThread.setDaemon(true);
+		paintingThread.start();
 	}
 
 	@Override
@@ -137,6 +130,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			showPointOfInterestName(graphics);
 		}
 
+		zoomBox.draw(graphics);
 	}
 
 	private int showInfo(Graphics2D graphics, int xCoord, int yCoord) {
@@ -216,7 +210,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		yCoord += vSpacing;
 		drawString(graphics, "Mouse wheel - zoom in/out", xCoord, yCoord);
 		yCoord += vSpacing;
-		drawString(graphics, "Mouse click - change center", xCoord, yCoord);
+		drawString(graphics, "Mouse click - change center (or drag to zoom, ESC to quit)", xCoord, yCoord);
 		yCoord += vSpacing;
 		drawString(graphics, "Double click - back to zoom level 0", xCoord, yCoord);
 		yCoord += vSpacing;
@@ -296,9 +290,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		currentPointOfInterestIndex = null;
 		boolean shouldRestart;
 		if (e.getWheelRotation() < 0) {
-			shouldRestart = points.zoom(e.getX(), e.getY(), 0.9d);
+			shouldRestart = points.zoomIn(e.getX(), e.getY());
 		} else {
-			shouldRestart = points.zoom(e.getX(), e.getY(), 1.11111111111d);
+			shouldRestart = points.zoomOut(e.getX(), e.getY());
 		}
 		if (shouldRestart) {
 			startCalculationThread();
@@ -316,17 +310,21 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		}
 		startCalculationThread();
 		repaint();
-//		requestFocusInWindow();
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// We won't follow this
+		if (zoomBox.mousePressed(e)) {
+			repaint();
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// We won't follow this
+		if (zoomBox.mouseReleased(e)) {
+			currentPointOfInterestIndex = null;
+			startCalculationThread();
+		}
 	}
 
 	@Override
@@ -342,6 +340,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		zoomBox.mouseDragged(e);
 		updatePointerCoordinates(e);
 	}
 
@@ -367,6 +366,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		boolean needRepainting = zoomBox.keyTyped(e);
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_A:
 			addPointOfInterest();
@@ -436,6 +436,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			break;
 		default:
 			break;
+		}
+		if (needRepainting) {
+			repaint();
 		}
 	}
 
