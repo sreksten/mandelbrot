@@ -41,8 +41,6 @@ import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
 
-	private static final String FONT_NAME = "Serif";
-
 	private static final long serialVersionUID = 1L;
 
 	private transient MandelbrotService mandelbrotService;

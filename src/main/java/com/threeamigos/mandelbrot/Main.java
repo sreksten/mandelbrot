@@ -33,38 +33,51 @@ import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 
 public class Main {
 
+	private CalculationParametersRequester calculationParametersRequester;
+	private CalculationParameters calculationParameters;
+	private Resolution resolution;
+	private Points points;
+	private MandelbrotServiceFactory mandelbrotServiceFactory;
+	private ImageProducerServiceFactory imageProducerServiceFactory;
+	private ImagePersisterService imagePersisterService;
+	private PointsOfInterestService pointsOfInterestService;
+	private SnapshotService snapshotService;
+	private MandelbrotService mandelbrotService;
+	private ShowInfo showInfo;
+	private ShowHelp showHelp;
+	private ShowPointOfInterestName showPointOfInterestName;
+
 	public Main() {
 
-		CalculationParametersRequester calculationParametersRequester = new CalculationParametersRequesterImpl();
+		calculationParametersRequester = new CalculationParametersRequesterImpl();
 
-		CalculationParameters calculationParameters = calculationParametersRequester.getCalculationParameters(null);
+		calculationParameters = calculationParametersRequester.getCalculationParameters(null);
 		if (calculationParameters == null) {
 			return;
 		}
 
-		Resolution resolution = calculationParameters.getResolution();
+		resolution = calculationParameters.getResolution();
 
-		Points points = new PointsImpl(resolution);
+		points = new PointsImpl(resolution);
 
-		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
+		mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
 
-		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
+		imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
 
-		ImagePersisterService imagePersisterService = new ImagePersisterServiceImpl();
+		imagePersisterService = new ImagePersisterServiceImpl();
 
-		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
+		pointsOfInterestService = new PointsOfInterestServiceImpl();
 
-		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester,
-				mandelbrotServiceFactory, imageProducerServiceFactory, imagePersisterService);
+		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, mandelbrotServiceFactory,
+				imageProducerServiceFactory, imagePersisterService);
 
-		MandelbrotService mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
+		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
 
-		ShowInfo showInfo = new ShowInfoImpl(resolution, mandelbrotService, points);
+		showInfo = new ShowInfoImpl(resolution, mandelbrotService, points);
 
-		ShowHelp showHelp = new ShowHelpImpl(resolution, pointsOfInterestService);
+		showHelp = new ShowHelpImpl(resolution, pointsOfInterestService);
 
-		ShowPointOfInterestName showPointOfInterestName = new ShowPointOfInterestNameImpl(resolution,
-				pointsOfInterestService);
+		showPointOfInterestName = new ShowPointOfInterestNameImpl(resolution, pointsOfInterestService);
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, showInfo, showHelp,
