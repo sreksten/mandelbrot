@@ -2,8 +2,6 @@ package com.threeamigos.mandelbrot;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -36,6 +34,9 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 
 public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
@@ -51,17 +52,16 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private transient SnapshotService snapshotService;
 	private transient Points points;
 
-	private boolean showInfo = true;
-	private boolean showHelp = true;
-	private boolean showPointOfInterestName = true;
+	private transient ShowInfo showInfo;
+	private transient ShowHelp showHelp;
+	private transient ShowPointOfInterestName showPointOfInterestName;
+	private Integer currentPointOfInterestIndex = null;
+
 	private boolean showProgress = true;
-	private Integer percentage = null;
 
 	private transient ZoomBox zoomBox;
 
 	private transient Thread paintingThread;
-
-	private Integer currentPointOfInterestIndex;
 
 	private transient Image image;
 
@@ -73,12 +73,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			CalculationParameters calculationParameters) {
+			CalculationParameters calculationParameters, ShowInfo showInfo, ShowHelp showHelp,
+			ShowPointOfInterestName showPointOfInterestName) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.imageProducerService = imageProducerServiceFactory
 				.createInstance(calculationParameters.getMaxIterations());
+		showHelp.setImageProducerService(imageProducerService);
 		this.snapshotService = snapshotService;
 		this.points = points;
 
@@ -88,6 +90,9 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		setDoubleBuffered(true);
 
 		this.mandelbrotService = mandelbrotService;
+		this.showInfo = showInfo;
+		this.showHelp = showHelp;
+		this.showPointOfInterestName = showPointOfInterestName;
 
 		this.zoomBox = new ZoomBox(points);
 
@@ -118,176 +123,21 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		int xCoord = 50;
 		int yCoord = 50;
 
-		if (showInfo) {
-			yCoord = showInfo(graphics, xCoord, yCoord);
-		}
-
-		if (showHelp) {
-			showHelp(graphics, xCoord, yCoord);
-		}
-
-		if (showPointOfInterestName) {
-			showPointOfInterestName(graphics);
-		}
-
+		yCoord = showInfo.paint(graphics, xCoord, yCoord);
+		showHelp.paint(graphics, xCoord, yCoord);
+		showPointOfInterestName.paint(graphics, -1, -1);
 		zoomBox.draw(graphics);
 	}
 
-	private int showInfo(Graphics2D graphics, int xCoord, int yCoord) {
-		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
-		Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
-		graphics.setFont(font);
-
-		int vSpacing = fontHeight + 4;
-		drawString(graphics,
-				String.format("Zoom factor: %.2f - count: %d", 1.0d / points.getZoomFactor(), points.getZoomCount()),
-				xCoord, yCoord);
-		yCoord += vSpacing;
-		if (percentage != null) {
-			drawString(graphics,
-					String.format("Percentage: %d (%d threads, %d iterations max)", percentage,
-							mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
-					xCoord, yCoord);
-		} else {
-			drawString(graphics,
-					String.format("Draw time: %d ms (%d threads, %d iterations max)", mandelbrotService.getDrawTime(),
-							mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
-					xCoord, yCoord);
-		}
-		yCoord += vSpacing;
-		drawString(graphics, String.format("Real interval: [%1.14f,%1.14f]", points.getMinX(), points.getMaxX()),
-				xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, String.format("Imaginary interval: [%1.14f,%1.14f]", points.getMinY(), points.getMaxY()),
-				xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, String.format("Optimizations: %s", getOptimizationsDescription()), xCoord, yCoord);
-		yCoord += vSpacing;
-		Double realCoordinateUnderPointer = points.getPointerRealcoordinate();
-		if (realCoordinateUnderPointer != null) {
-			Double imaginaryCoordinateUnderPointer = points.getPointerImaginaryCoordinate();
-			if (imaginaryCoordinateUnderPointer != null) {
-				drawString(graphics,
-						String.format("Current point: [%d,%d] [%1.14f,%1.14f]", points.getPointerXCoordinate(),
-								points.getPointerYCoordinate(), realCoordinateUnderPointer.floatValue(),
-								imaginaryCoordinateUnderPointer.floatValue()),
-						xCoord, yCoord);
-				yCoord += vSpacing;
-				drawString(graphics,
-						String.format("Current point iterations: %d", mandelbrotService
-								.getIterations(points.getPointerXCoordinate(), points.getPointerYCoordinate())),
-						xCoord, yCoord);
-				yCoord += vSpacing;
-			}
-		}
-		return yCoord;
-	}
-
-	private int showHelp(Graphics2D graphics, int xCoord, int yCoord) {
-		int fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
-		int vSpacing = fontHeight + 4;
-		Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
-		graphics.setFont(font);
-		if (pointsOfInterestService.getCount() < 10) {
-			drawString(graphics, "A - add point of interest", xCoord, yCoord);
-			yCoord += vSpacing;
-		}
-		drawString(graphics,
-				String.format("C - change color model (current: %s)", imageProducerService.getCurrentColorModelName()),
-				xCoord, yCoord);
-		yCoord += vSpacing;
-		if (currentPointOfInterestIndex != null) {
-			drawString(graphics, "D - delete current point of interest", xCoord, yCoord);
-			yCoord += vSpacing;
-			drawString(graphics, "P - show or hide point of interest's name", xCoord, yCoord);
-			yCoord += vSpacing;
-		}
-		drawString(graphics, "H - hide or show help", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "I - hide or show info", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "S - save snapshot", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "Mouse wheel - zoom in/out", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "Mouse click - change center (or drag to zoom, ESC to quit)", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "Double click - back to zoom level 0", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "Arrow up/down - double/halve max iterations", xCoord, yCoord);
-		yCoord += vSpacing;
-		drawString(graphics, "Arrow left/right - more/less threads", xCoord, yCoord);
-		yCoord += vSpacing;
-
-		int index = 1;
-		for (PointOfInterest pointOfInterest : pointsOfInterestService.getElements()) {
-			String description = String.format("%d - %s (%d)", index == 10 ? 0 : index, pointOfInterest.getName(),
-					pointOfInterest.getMaxIterations());
-			if (currentPointOfInterestIndex != null && currentPointOfInterestIndex == index) {
-				drawString(graphics, description, xCoord, yCoord, Color.YELLOW);
-			} else {
-				drawString(graphics, description, xCoord, yCoord);
-			}
-			index++;
-			yCoord += vSpacing;
-			if (index > 10) {
-				// Since we ran out of numeric keys..
-				break;
-			}
-		}
-		return yCoord;
-	}
-
-	private void showPointOfInterestName(Graphics2D graphics) {
-		if (currentPointOfInterestIndex != null) {
-			PointOfInterest pointOfInterest = pointsOfInterestService.getElements()
-					.get(currentPointOfInterestIndex - 1);
-			int fontHeight = getHeight() / 20;
-			Font font = new Font(FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
-			graphics.setFont(font);
-			FontMetrics fontMetrics = graphics.getFontMetrics();
-			drawString(graphics, pointOfInterest.getName(),
-					getWidth() - 40 - fontMetrics.stringWidth(pointOfInterest.getName()), getHeight() - 40 - fontHeight,
-					Color.YELLOW);
-		}
-	}
-
-	private String getOptimizationsDescription() {
-		String optimizations;
-		if (points.isCardioidVisible()) {
-			if (points.isPeriod2BulbVisible()) {
-				optimizations = "Cardioid, Period2Bulb, Period";
-			} else {
-				optimizations = "Cardioid, Period";
-			}
-		} else {
-			if (points.isPeriod2BulbVisible()) {
-				optimizations = "Period2Bulb, Period";
-			} else {
-				optimizations = "Period";
-			}
-		}
-		return optimizations;
-	}
-
-	private void drawString(Graphics2D graphics, String s, int x, int y) {
-		drawString(graphics, s, x, y, Color.WHITE);
-	}
-
-	private void drawString(Graphics2D graphics, String s, int x, int y, Color color) {
-		graphics.setColor(Color.BLACK);
-		for (int i = x - 1; i <= x + 1; i++) {
-			for (int j = y - 1; j <= y + 1; j++) {
-				graphics.drawString(s, i, j);
-			}
-		}
-		graphics.setColor(color);
-		graphics.drawString(s, x, y);
+	private void setCurrentPointOfInterestIndex(Integer currentPointOfInterestIndex) {
+		this.currentPointOfInterestIndex = currentPointOfInterestIndex;
+		showHelp.setCurrentPointOfInterestIndex(currentPointOfInterestIndex);
+		showPointOfInterestName.setCurrentPointOfInterestIndex(currentPointOfInterestIndex);
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		currentPointOfInterestIndex = null;
+		setCurrentPointOfInterestIndex(null);
 		boolean shouldRestart;
 		if (e.getWheelRotation() < 0) {
 			shouldRestart = points.zoomIn(e.getX(), e.getY());
@@ -302,7 +152,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		currentPointOfInterestIndex = null;
+		setCurrentPointOfInterestIndex(null);
 		if (e.getClickCount() == 1) {
 			points.changeCenterTo(e.getX(), e.getY());
 		} else {
@@ -322,7 +172,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (zoomBox.mouseReleased(e)) {
-			currentPointOfInterestIndex = null;
+			setCurrentPointOfInterestIndex(null);
 			startCalculationThread();
 		}
 	}
@@ -499,7 +349,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		PersistResult persistResult = pointsOfInterestService
 				.add(points.getPointOfInterest(mandelbrotService.getMaxIterations()));
 		if (persistResult != null && persistResult.isSuccessful()) {
-			currentPointOfInterestIndex = pointsOfInterestService.getCount();
+			setCurrentPointOfInterestIndex(pointsOfInterestService.getCount());
 			updatePointsOfInterestMenu();
 			repaint();
 		}
@@ -519,30 +369,30 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			// window appears, a repaint would be triggered, finding an invalid index when
 			// deleting the last point of interest.
 			Integer backupOfCurrentPointOfInterestIndex = currentPointOfInterestIndex;
-			currentPointOfInterestIndex = null;
+			setCurrentPointOfInterestIndex(null);
 			pointsOfInterestService.remove(backupOfCurrentPointOfInterestIndex - 1);
 			PersistResult result = pointsOfInterestService.savePointsOfInterest();
 			if (result.isSuccessful()) {
 				updatePointsOfInterestMenu();
 				repaint();
 			} else {
-				currentPointOfInterestIndex = backupOfCurrentPointOfInterestIndex;
+				setCurrentPointOfInterestIndex(backupOfCurrentPointOfInterestIndex);
 			}
 		}
 	}
 
 	private void hideOrShowHelp() {
-		showHelp = !showHelp;
+		showHelp.toggleActive();
 		repaint();
 	}
 
 	private void hideOrShowInfo() {
-		showInfo = !showInfo;
+		showInfo.toggleActive();
 		repaint();
 	}
 
 	private void hideOrShowPointOfInterestName() {
-		showPointOfInterestName = !showPointOfInterestName;
+		showPointOfInterestName.toggleActive();
 		repaint();
 	}
 
@@ -558,7 +408,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private void setPointOfInterest(int pointIndex) {
 		if (pointsOfInterestService.getCount() >= pointIndex) {
-			currentPointOfInterestIndex = pointIndex;
+			setCurrentPointOfInterestIndex(pointIndex);
 			PointOfInterest pointOfInterest = pointsOfInterestService.getElements().get(pointIndex - 1);
 			points.setPointOfInterest(pointOfInterest);
 			if (pointOfInterest.getMaxIterations() != mandelbrotService.getMaxIterations()) {
@@ -584,10 +434,10 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	public void propertyChange(PropertyChangeEvent event) {
 		boolean shouldRepaint = false;
 		if (MandelbrotService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
-			percentage = (Integer) event.getNewValue();
+			showInfo.setPercentage((Integer) event.getNewValue());
 			shouldRepaint = showProgress;
 		} else if (MandelbrotService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
-			percentage = null;
+			showInfo.setPercentage(null);
 			shouldRepaint = true;
 		}
 		if (shouldRepaint) {
@@ -601,8 +451,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 
-		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, showInfo, event -> hideOrShowInfo());
-		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, showHelp, event -> hideOrShowHelp());
+		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, showInfo.isActive(), event -> hideOrShowInfo());
+		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, showHelp.isActive(), event -> hideOrShowHelp());
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveImage());
 		fileMenu.addSeparator();
@@ -618,7 +468,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 				event -> deletePointOfInterest());
 		pointsOfInterestMenu.addSeparator();
 		addCheckboxMenuItem(pointsOfInterestMenu, "Show point of interest's name", KeyEvent.VK_P,
-				showPointOfInterestName, event -> hideOrShowPointOfInterestName());
+				showPointOfInterestName.isActive(), event -> hideOrShowPointOfInterestName());
 		pointsOfInterestMenu.addSeparator();
 		updatePointsOfInterestMenu();
 
@@ -741,5 +591,6 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		String currentColorModelName = imageProducerService.getCurrentColorModelName();
 		imageProducerService = imageProducerServiceFactory.createInstance(maxIterations);
 		imageProducerService.switchColorModel(currentColorModelName);
+		showHelp.setImageProducerService(imageProducerService);
 	}
 }

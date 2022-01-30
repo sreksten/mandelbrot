@@ -44,6 +44,13 @@ public class PointsImpl implements Points {
 	private Double realCoordinateUnderPointer;
 	private Double imaginaryCoordinateUnderPointer;
 
+	private PointsImpl() {
+	}
+
+	public PointsImpl(Resolution resolution) {
+		setResolution(resolution);
+	}
+
 	@Override
 	public Points adaptToResolution(Resolution resolution) {
 		PointsImpl newPoint = new PointsImpl();

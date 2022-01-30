@@ -15,6 +15,9 @@ import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
+import com.threeamigos.mandelbrot.implementations.ui.ShowHelpImpl;
+import com.threeamigos.mandelbrot.implementations.ui.ShowInfoImpl;
+import com.threeamigos.mandelbrot.implementations.ui.ShowPointOfInterestNameImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
@@ -24,6 +27,9 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
+import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 
 public class Main {
 
@@ -36,8 +42,9 @@ public class Main {
 			return;
 		}
 
-		Points points = new PointsImpl();
-		points.setResolution(calculationParameters.getResolution());
+		Resolution resolution = calculationParameters.getResolution();
+
+		Points points = new PointsImpl(resolution);
 
 		MandelbrotServiceFactory mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
 
@@ -52,8 +59,16 @@ public class Main {
 
 		MandelbrotService mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
 
+		ShowInfo showInfo = new ShowInfoImpl(resolution, mandelbrotService, points);
+
+		ShowHelp showHelp = new ShowHelpImpl(resolution, pointsOfInterestService);
+
+		ShowPointOfInterestName showPointOfInterestName = new ShowPointOfInterestNameImpl(resolution,
+				pointsOfInterestService);
+
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
-				imageProducerServiceFactory, snapshotService, points, calculationParameters);
+				imageProducerServiceFactory, snapshotService, points, calculationParameters, showInfo, showHelp,
+				showPointOfInterestName);
 
 		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
 
