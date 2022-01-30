@@ -19,7 +19,7 @@ import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 
 public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister {
 
-	public static final String POINTS_OF_INTEREST_FILENAME = "points_of_interest.txt";
+	private static final String POINTS_OF_INTEREST_FILENAME = "points_of_interest.txt";
 
 	private static final String SEPARATOR = "|";
 
