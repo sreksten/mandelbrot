@@ -15,7 +15,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	int maxIterations;
 
 	private long drawTime;
-	private CalculationService data;
+	private CalculationService calculationService;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
 		propertyChangeSupport = new PropertyChangeSupport(this);
@@ -90,18 +90,18 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public void calculate(Points points) {
 
-		if (data != null) {
-			data.stopCalculation();
+		if (calculationService != null) {
+			calculationService.stopCalculation();
 		}
 
-		data = new CalculationService(maxThreads, maxIterations, points.copy());
+		calculationService = new CalculationService(maxThreads, maxIterations, points.copy());
 
-		data.startCalculation();
+		calculationService.startCalculation();
 
-		while (data.isRunning()) {
-			if (data.shouldUpdatePercentage()) {
+		while (calculationService.isRunning()) {
+			if (calculationService.shouldUpdatePercentage()) {
 				propertyChangeSupport.firePropertyChange(CALCULATION_IN_PROGRESS_PROPERTY_CHANGE, null,
-						data.getPercentage());
+						calculationService.getPercentage());
 			}
 			try {
 				Thread.sleep(5);
@@ -110,21 +110,21 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 			}
 		}
 
-		drawTime = data.getCalculationTime();
+		drawTime = calculationService.getCalculationTime();
 
-		if (!data.isInterrupted()) {
+		if (!calculationService.isInterrupted()) {
 			propertyChangeSupport.firePropertyChange(CALCULATION_COMPLETE_PROPERTY_CHANGE, null, this);
 		}
 	}
 
 	@Override
 	public void interruptCalculation() {
-		data.globalRunning = false;
+		calculationService.globalRunning = false;
 	}
 
 	@Override
 	public boolean isCalculating() {
-		return data.isRunning();
+		return calculationService.isRunning();
 	}
 
 	@Override
@@ -134,12 +134,12 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	@Override
 	public int[] getIterations() {
-		return data.pixelBuffer.getPixels();
+		return calculationService.pixelBuffer.getPixels();
 	}
 
 	@Override
 	public int getIterations(int x, int y) {
-		return data.pixelBuffer.getPixel(x, y);
+		return calculationService.pixelBuffer.getPixel(x, y);
 	}
 
 	@Override

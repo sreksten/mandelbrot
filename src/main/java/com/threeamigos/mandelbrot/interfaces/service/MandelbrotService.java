@@ -14,21 +14,21 @@ public interface MandelbrotService {
 
 	public static final int ITERATION_NOT_CALCULATED = -1;
 
+	public boolean setNumberOfThreads(int numberOfThreads);
+
 	public int getNumberOfThreads();
+
+	public boolean incrementNumberOfThreads();
+
+	public boolean decrementNumberOfThreads();
+
+	public boolean setMaxIterations(int maxIterations);
 
 	public int getMaxIterations();
 
 	public boolean doubleUpMaxIterations();
 
 	public boolean halveMaxIterations();
-
-	public boolean setMaxIterations(int maxIterations);
-
-	public boolean decrementNumberOfThreads();
-
-	public boolean incrementNumberOfThreads();
-
-	public boolean setNumberOfThreads(int numberOfThreads);
 
 	public void calculate(Points points);
 
