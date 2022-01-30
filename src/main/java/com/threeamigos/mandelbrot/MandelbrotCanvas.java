@@ -37,6 +37,7 @@ import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
 import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
 import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
+import com.threeamigos.mandelbrot.interfaces.ui.ZoomBox;
 
 public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
@@ -71,7 +72,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			CalculationParameters calculationParameters, ShowInfo showInfo, ShowHelp showHelp,
+			CalculationParameters calculationParameters, ZoomBox zoomBox, ShowInfo showInfo, ShowHelp showHelp,
 			ShowPointOfInterestName showPointOfInterestName) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;
@@ -92,7 +93,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		this.showHelp = showHelp;
 		this.showPointOfInterestName = showPointOfInterestName;
 
-		this.zoomBox = new ZoomBox(points);
+		this.zoomBox = zoomBox;
 
 		addMouseWheelListener(this);
 		addMouseListener(this);

@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot;
+package com.threeamigos.mandelbrot.implementations.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,8 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.ui.ZoomBox;
 
-public class ZoomBox {
+public class ZoomBoxImpl implements ZoomBox {
 
 	final Points points;
 	final int maxWidth;
@@ -27,13 +28,14 @@ public class ZoomBox {
 
 	boolean hasValidRectangle = false;
 
-	public ZoomBox(Points points) {
+	public ZoomBoxImpl(Points points) {
 		this.points = points;
 		maxWidth = points.getWidth();
 		maxHeight = points.getHeight();
 		ratio = (double) maxWidth / (double) maxHeight;
 	}
 
+	@Override
 	public boolean mousePressed(MouseEvent e) {
 		startX = e.getX();
 		startY = e.getY();
@@ -41,6 +43,7 @@ public class ZoomBox {
 		return false;
 	}
 
+	@Override
 	public boolean mouseDragged(MouseEvent e) {
 		if (dragging) {
 			endX = e.getX();
@@ -127,6 +130,7 @@ public class ZoomBox {
 		}
 	}
 
+	@Override
 	public boolean mouseReleased(MouseEvent e) {
 		mouseDragged(e);
 		dragging = false;
@@ -152,16 +156,19 @@ public class ZoomBox {
 
 	}
 
+	@Override
 	public void reset() {
 		startX = endX = startY = endY = rectangleWidth = rectangleHeight = 0;
 		dragging = false;
 		hasValidRectangle = false;
 	}
 
+	@Override
 	public boolean hasValidRectangle() {
 		return hasValidRectangle;
 	}
 
+	@Override
 	public void draw(Graphics2D graphics) {
 		if (hasValidRectangle) {
 			graphics.setColor(Color.WHITE);
@@ -169,6 +176,7 @@ public class ZoomBox {
 		}
 	}
 
+	@Override
 	public boolean keyTyped(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			reset();
