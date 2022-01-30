@@ -12,12 +12,10 @@ public interface ZoomBox {
 
 	boolean mouseReleased(MouseEvent e);
 
+	boolean keyTyped(KeyEvent e);
+
 	void reset();
 
-	boolean hasValidRectangle();
-
 	void draw(Graphics2D graphics);
-
-	boolean keyTyped(KeyEvent e);
 
 }

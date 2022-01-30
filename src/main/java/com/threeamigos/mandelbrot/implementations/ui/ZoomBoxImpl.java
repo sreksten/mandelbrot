@@ -46,88 +46,79 @@ public class ZoomBoxImpl implements ZoomBox {
 	@Override
 	public boolean mouseDragged(MouseEvent e) {
 		if (dragging) {
-			endX = e.getX();
-			if (endX < 0) {
-				endX = 0;
-			} else if (endX >= maxWidth - 1) {
-				endX = maxWidth - 1;
-			}
-			endY = e.getY();
-			if (endY < 0) {
-				endY = 0;
-			} else if (endY >= maxHeight - 1) {
-				endY = maxHeight - 1;
-			}
+			endX = checkWidthBoundaries(e.getX());
+			endY = checkHeightBoundaries(e.getY());
 
 			if (startX < endX) {
-
 				rectangleStartX = startX;
 				rectangleWidth = endX - startX;
-
 				if (startY < endY) {
-
-					rectangleStartY = startY;
-					rectangleHeight = (int) (rectangleWidth / ratio);
-					int maxRectangleHeight = maxHeight - startY;
-					if (rectangleHeight > maxRectangleHeight) {
-						rectangleHeight = maxRectangleHeight;
-						rectangleWidth = (int) (rectangleHeight * ratio);
-					}
-
+					checkRectangleLowerRight();
 				} else {
-
-					rectangleHeight = (int) (rectangleWidth / ratio);
-					int maxRectangleHeight = startY;
-					if (rectangleHeight > maxRectangleHeight) {
-						rectangleHeight = maxRectangleHeight;
-						rectangleWidth = (int) (rectangleHeight * ratio);
-					}
-
-					rectangleStartY = startY - rectangleHeight;
+					checkRectangleUpperRight();
 				}
-
 			} else {
-
 				rectangleStartX = endX;
 				rectangleWidth = startX - endX;
-
 				if (startY < endY) {
-
-					rectangleStartY = startY;
-					rectangleHeight = (int) (rectangleWidth / ratio);
-					int maxRectangleHeight = maxHeight - startY;
-					if (rectangleHeight > maxRectangleHeight) {
-						rectangleHeight = maxRectangleHeight;
-						rectangleWidth = (int) (rectangleHeight * ratio);
-					}
-
+					checkRectangleLowerRight();
 				} else {
-
-					rectangleHeight = (int) (rectangleWidth / ratio);
-					int maxRectangleHeight = startY;
-					if (rectangleHeight > maxRectangleHeight) {
-						rectangleHeight = maxRectangleHeight;
-						rectangleWidth = (int) (rectangleHeight * ratio);
-					}
-
-					rectangleStartY = startY - rectangleHeight;
-
+					checkRectangleUpperRight();
 				}
-
 				rectangleStartX = startX - rectangleWidth;
-
 			}
 
-			if (rectangleWidth > 10 || rectangleHeight > 10) {
-				hasValidRectangle = true;
-			}
-
+			checkIfHasValidRectangle();
 			return true;
 
 		} else {
 			reset();
 			return false;
 		}
+	}
+
+	private void checkRectangleUpperRight() {
+		rectangleHeight = (int) (rectangleWidth / ratio);
+		int maxRectangleHeight = startY;
+		if (rectangleHeight > maxRectangleHeight) {
+			rectangleHeight = maxRectangleHeight;
+			rectangleWidth = (int) (rectangleHeight * ratio);
+		}
+		rectangleStartY = startY - rectangleHeight;
+	}
+
+	private void checkRectangleLowerRight() {
+		rectangleStartY = startY;
+		rectangleHeight = (int) (rectangleWidth / ratio);
+		int maxRectangleHeight = maxHeight - startY;
+		if (rectangleHeight > maxRectangleHeight) {
+			rectangleHeight = maxRectangleHeight;
+			rectangleWidth = (int) (rectangleHeight * ratio);
+		}
+	}
+
+	private void checkIfHasValidRectangle() {
+		if (rectangleWidth > 10 || rectangleHeight > 10) {
+			hasValidRectangle = true;
+		}
+	}
+
+	private int checkWidthBoundaries(int x) {
+		if (x < 0) {
+			x = 0;
+		} else if (x >= maxWidth - 1) {
+			x = maxWidth - 1;
+		}
+		return x;
+	}
+
+	private int checkHeightBoundaries(int y) {
+		if (y < 0) {
+			y = 0;
+		} else if (y >= maxHeight - 1) {
+			y = maxHeight - 1;
+		}
+		return y;
 	}
 
 	@Override
@@ -161,11 +152,6 @@ public class ZoomBoxImpl implements ZoomBox {
 		startX = endX = startY = endY = rectangleWidth = rectangleHeight = 0;
 		dragging = false;
 		hasValidRectangle = false;
-	}
-
-	@Override
-	public boolean hasValidRectangle() {
-		return hasValidRectangle;
 	}
 
 	@Override
