@@ -19,7 +19,7 @@ import com.threeamigos.mandelbrot.implementations.ui.ShowHelpImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ShowInfoImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ShowPointOfInterestNameImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorComposerServiceImpl;
-import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxImpl;
+import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxServiceImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
@@ -33,7 +33,7 @@ import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
 import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
 import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorComposerService;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBox;
+import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
 public class Main {
 
@@ -51,7 +51,7 @@ public class Main {
 	private ShowInfo showInfo;
 	private ShowHelp showHelp;
 	private ShowPointOfInterestName showPointOfInterestName;
-	private ZoomBox zoomBox;
+	private ZoomBoxService zoomBox;
 
 	public Main() {
 
@@ -83,7 +83,7 @@ public class Main {
 				new ShowHelpImpl(resolution, pointsOfInterestService),
 				new ShowPointOfInterestNameImpl(resolution, pointsOfInterestService));
 
-		zoomBox = new ZoomBoxImpl(points);
+		zoomBox = new ZoomBoxServiceImpl(points);
 
 		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, zoomBox,

@@ -35,7 +35,7 @@ import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorComposerService;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBox;
+import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
 public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
@@ -48,7 +48,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private transient ImageProducerService imageProducerService;
 	private transient SnapshotService snapshotService;
 	private transient Points points;
-	private transient ZoomBox zoomBox;
+	private transient ZoomBoxService zoomBox;
 	private transient WindowDecoratorComposerService windowDecoratorComposerService;
 	private Integer currentPointOfInterestIndex = null;
 
@@ -64,7 +64,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			CalculationParameters calculationParameters, ZoomBox zoomBox,
+			CalculationParameters calculationParameters, ZoomBoxService zoomBox,
 			WindowDecoratorComposerService windowDecoratorService) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;

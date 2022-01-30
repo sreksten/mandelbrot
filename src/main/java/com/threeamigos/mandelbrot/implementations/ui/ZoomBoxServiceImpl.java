@@ -6,9 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBox;
+import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
-public class ZoomBoxImpl implements ZoomBox {
+public class ZoomBoxServiceImpl implements ZoomBoxService {
 
 	final Points points;
 	final int maxWidth;
@@ -28,7 +28,7 @@ public class ZoomBoxImpl implements ZoomBox {
 
 	boolean hasValidRectangle = false;
 
-	public ZoomBoxImpl(Points points) {
+	public ZoomBoxServiceImpl(Points points) {
 		this.points = points;
 		maxWidth = points.getWidth();
 		maxHeight = points.getHeight();
