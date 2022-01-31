@@ -63,7 +63,7 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 	public PersistResult add(PointOfInterest pointOfInterest) {
 		if (getCount() < 100) {
 			String name = messageNotifier.request("Give it a name:");
-			if (name != null && !name.isBlank()) {
+			if (name != null && name.trim().length() > 0) {
 				pointOfInterest.setName(name);
 				pointsOfInterest.add(pointOfInterest);
 				return savePointsOfInterest();
