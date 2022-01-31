@@ -6,18 +6,24 @@ import java.beans.PropertyChangeSupport;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
 public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	private final PropertyChangeSupport propertyChangeSupport;
 
-	int maxThreads;
-	int maxIterations;
+	private final SchedulerService schedulerService;
+	private final int priority;
+	private int maxThreads;
+	private int maxIterations;
 
 	private long drawTime;
 	private CalculationService calculationService;
 
-	public MultithreadedMandelbrotService(CalculationParameters calculationParameters) {
+	public MultithreadedMandelbrotService(CalculationParameters calculationParameters,
+			SchedulerService schedulerService, int priority) {
+		this.schedulerService = schedulerService;
+		this.priority = priority;
 		propertyChangeSupport = new PropertyChangeSupport(this);
 		maxThreads = calculationParameters.getMaxThreads();
 		maxIterations = calculationParameters.getMaxIterations();
@@ -94,7 +100,8 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 			calculationService.stopCalculation();
 		}
 
-		calculationService = new CalculationService(maxThreads, maxIterations, points.copy());
+		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), schedulerService,
+				priority);
 
 		calculationService.startCalculation();
 

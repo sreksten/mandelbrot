@@ -18,6 +18,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
@@ -29,16 +30,18 @@ public class SnapshotServiceImpl implements SnapshotService {
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
 	private MessageNotifier messageNotifier;
+	private SchedulerService schedulerService;
 
 	private final JFileChooser fileChooser;
 
 	public SnapshotServiceImpl(CalculationParametersRequester calculationParametersRequester,
 			MandelbrotServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
-			ImagePersisterService imageService) {
+			ImagePersisterService imageService, SchedulerService schedulerService) {
 		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.imagePersisterService = imageService;
+		this.schedulerService = schedulerService;
 
 		fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Select snapshot destination");
@@ -47,8 +50,8 @@ public class SnapshotServiceImpl implements SnapshotService {
 	}
 
 	@Override
-	public PersistResult saveSnapshot(Points points, int maxIterations, String colorModelName,
-			Image bufferedImage, Component parentComponent) {
+	public PersistResult saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
+			Component parentComponent) {
 
 		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
 				maxIterations, parentComponent);
@@ -61,7 +64,8 @@ public class SnapshotServiceImpl implements SnapshotService {
 		Resolution tempResolution = tempCalculationParameters.getResolution();
 		if (tempResolution.getWidth() != bufferedImage.getWidth(null)
 				|| tempResolution.getHeight() != bufferedImage.getHeight(null)) {
-			MandelbrotService tempCalculator = mandelbrotServiceFactory.createInstance(tempCalculationParameters);
+			MandelbrotService tempCalculator = mandelbrotServiceFactory.createInstance(tempCalculationParameters,
+					schedulerService, 5);
 			Points tempPoints = points.adaptToResolution(tempResolution);
 			tempCalculator.calculate(tempPoints);
 			ImageProducerService tempImageProducer = imageProducerServiceFactory

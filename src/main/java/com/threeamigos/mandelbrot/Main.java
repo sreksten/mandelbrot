@@ -14,6 +14,8 @@ import com.threeamigos.mandelbrot.implementations.service.MandelbrotServiceFacto
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
+import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ShowHelpImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ShowInfoImpl;
@@ -27,11 +29,9 @@ import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorComposerService;
 import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
@@ -41,6 +41,7 @@ public class Main {
 	private CalculationParameters calculationParameters;
 	private Resolution resolution;
 	private Points points;
+	private SchedulerService schedulerService;
 	private MandelbrotServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
@@ -48,9 +49,6 @@ public class Main {
 	private SnapshotService snapshotService;
 	private MandelbrotService mandelbrotService;
 	private WindowDecoratorComposerService windowDecoratorService;
-	private ShowInfo showInfo;
-	private ShowHelp showHelp;
-	private ShowPointOfInterestName showPointOfInterestName;
 	private ZoomBoxService zoomBox;
 
 	public Main() {
@@ -68,6 +66,8 @@ public class Main {
 
 		mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
 
+		schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
+
 		imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
 
 		imagePersisterService = new ImagePersisterServiceImpl();
@@ -75,11 +75,12 @@ public class Main {
 		pointsOfInterestService = new PointsOfInterestServiceImpl();
 
 		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, mandelbrotServiceFactory,
-				imageProducerServiceFactory, imagePersisterService);
+				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
-		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters);
+		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters, schedulerService, 10);
 
-		windowDecoratorService = new WindowDecoratorComposerServiceImpl(new ShowInfoImpl(resolution, mandelbrotService, points),
+		windowDecoratorService = new WindowDecoratorComposerServiceImpl(
+				new ShowInfoImpl(resolution, mandelbrotService, points),
 				new ShowHelpImpl(resolution, pointsOfInterestService),
 				new ShowPointOfInterestNameImpl(resolution, pointsOfInterestService));
 

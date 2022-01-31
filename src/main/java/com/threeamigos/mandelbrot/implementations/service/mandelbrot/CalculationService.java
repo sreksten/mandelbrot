@@ -1,11 +1,14 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
 class CalculationService implements Runnable {
 
 	private static int requestCounter = 0;
 
+	private final SchedulerService schedulerService;
+	private final int priority;
 	final int requestNumber;
 	final int maxThreads;
 	final int maxIterations;
@@ -19,7 +22,10 @@ class CalculationService implements Runnable {
 	private boolean interrupted = false;
 	private long calculationTime = -1;
 
-	CalculationService(int maxThreads, int maxIterations, Points points) {
+	CalculationService(int maxThreads, int maxIterations, Points points, SchedulerService schedulerService,
+			int priority) {
+		this.schedulerService = schedulerService;
+		this.priority = priority;
 		this.requestNumber = ++requestCounter;
 		this.maxThreads = maxThreads;
 		this.maxIterations = maxIterations;
@@ -34,7 +40,7 @@ class CalculationService implements Runnable {
 		prepareSlices(width, height);
 
 		this.pixelBuffer = new PixelBufferImpl(width, height);
-		calculators = new MandelbrotSliceCalculator[Runtime.getRuntime().availableProcessors()];
+		calculators = new MandelbrotSliceCalculator[maxThreads];
 		globalRunning = true;
 	}
 
@@ -78,7 +84,6 @@ class CalculationService implements Runnable {
 	public void stopCalculation() {
 		globalRunning = false;
 		interrupted = true;
-		joinCalculationThreads();
 	}
 
 	public boolean isRunning() {
@@ -97,8 +102,6 @@ class CalculationService implements Runnable {
 			createNewCalculatorIfPossible();
 			waitForAnyCalculatorToFinish();
 		}
-
-		joinCalculationThreads();
 
 		globalRunning = false;
 
@@ -130,8 +133,10 @@ class CalculationService implements Runnable {
 			MandelbrotSliceCalculator calculator = calculators[i];
 			if (calculator == null || !calculator.isAlive()) {
 				SliceData slice = deque.remove();
-				calculators[i] = new MandelbrotSliceCalculator(Thread.currentThread(), points, slice, this,
-						maxIterations, "R" + requestNumber + "-T" + i);
+				String name = "R" + requestNumber + "-T" + i;
+				calculator = new MandelbrotSliceCalculator(points, slice, this, maxIterations);
+				calculators[i] = calculator;
+				schedulerService.schedule(Thread.currentThread(), calculator, priority, true, name);
 			}
 		}
 	}
@@ -142,19 +147,6 @@ class CalculationService implements Runnable {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-		}
-	}
-
-	void joinCalculationThreads() {
-		for (int i = 0; i < calculators.length; i++) {
-			MandelbrotSliceCalculator calculator = calculators[i];
-			if (calculator != null) {
-				try {
-					calculator.join();
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}
 		}
 	}
 

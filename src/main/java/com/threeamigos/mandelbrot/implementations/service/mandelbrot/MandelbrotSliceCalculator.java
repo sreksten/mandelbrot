@@ -5,44 +5,31 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 class MandelbrotSliceCalculator implements Runnable {
 
-	private Thread mainThread;
-	private Thread thread;
 	private Points points;
 	private int startX;
 	private int startY;
 	private int endX;
 	private int endY;
-	private CalculationService data;
+	private CalculationService calculationService;
 	private PixelBuffer dataBuffer;
 	private SliceDataDeque deque;
 	private int maxIterations;
 	private String name;
 	private boolean localRunning;
 
-	public MandelbrotSliceCalculator(Thread mainThread, Points points, SliceData slice, CalculationService data,
-			int maxIterations, String name) {
-		this.mainThread = mainThread;
+	public MandelbrotSliceCalculator(Points points, SliceData slice, CalculationService calculationService,
+			int maxIterations) {
 		this.points = points;
 		this.startX = slice.startX;
 		this.startY = slice.startY;
 		this.endX = slice.endX;
 		this.endY = slice.endY;
-		this.data = data;
-		this.dataBuffer = data.pixelBuffer;
-		this.deque = data.deque;
+		this.calculationService = calculationService;
+		this.dataBuffer = calculationService.pixelBuffer;
+		this.deque = calculationService.deque;
 		this.maxIterations = maxIterations;
-		this.name = name;
 
 		localRunning = true;
-
-		thread = new Thread(this);
-		thread.setDaemon(true);
-		thread.setName(name);
-		thread.start();
-	}
-
-	public void join() throws InterruptedException {
-		thread.join();
 	}
 
 	public String getName() {
@@ -56,14 +43,11 @@ class MandelbrotSliceCalculator implements Runnable {
 	@Override
 	public void run() {
 		calculateSliceRecursively(startX, endX, startY, endY);
-		if (data.globalRunning) {
-			mainThread.interrupt();
-		}
 		localRunning = false;
 	}
 
 	private void calculateSliceRecursively(int fromX, int toX, int fromY, int toY) {
-		if (!data.globalRunning) {
+		if (!calculationService.globalRunning) {
 			return;
 		}
 		boolean cardioidVisible = points.isCardioidVisible(fromX, toX, fromY, toY);
@@ -74,7 +58,7 @@ class MandelbrotSliceCalculator implements Runnable {
 			int uniqueValue = MandelbrotService.ITERATION_NOT_CALCULATED;
 			boolean hasUniqueValue = true;
 
-			for (int x = fromX; x < toX && data.globalRunning; x++) {
+			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
 				int iterations = calculateIterations(x, fromY, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
@@ -83,7 +67,7 @@ class MandelbrotSliceCalculator implements Runnable {
 				}
 			}
 
-			for (int y = fromY; y < toY && data.globalRunning; y++) {
+			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
 				int iterations = calculateIterations(fromX, y, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
@@ -92,7 +76,7 @@ class MandelbrotSliceCalculator implements Runnable {
 				}
 			}
 
-			for (int x = fromX; x < toX && data.globalRunning; x++) {
+			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
 				int iterations = calculateIterations(x, toY - 1, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
@@ -101,7 +85,7 @@ class MandelbrotSliceCalculator implements Runnable {
 				}
 			}
 
-			for (int y = fromY; y < toY && data.globalRunning; y++) {
+			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
 				int iterations = calculateIterations(toX - 1, y, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
@@ -110,7 +94,7 @@ class MandelbrotSliceCalculator implements Runnable {
 				}
 			}
 
-			if (data.globalRunning) {
+			if (calculationService.globalRunning) {
 				if (hasUniqueValue) {
 					setEveryPixel(fromX + 1, toX - 1, fromY + 1, toY - 1, uniqueValue);
 				} else {
@@ -136,8 +120,8 @@ class MandelbrotSliceCalculator implements Runnable {
 
 	private void calculateEveryPixel(int fromX, int toX, int fromY, int toY, boolean cardioidVisible,
 			boolean period2BulbVisible) {
-		for (int x = fromX; x < toX && data.globalRunning; x++) {
-			for (int y = fromY; y < toY && data.globalRunning; y++) {
+		for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
+			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
 				calculateIterations(x, y, cardioidVisible, period2BulbVisible);
 			}
 		}
@@ -198,7 +182,7 @@ class MandelbrotSliceCalculator implements Runnable {
 		double imaginaryOld = 0.0d;
 		int period = 0;
 
-		for (int iteration = 0; iteration < maxIterations && data.globalRunning; iteration++) {
+		for (int iteration = 0; iteration < maxIterations && calculationService.globalRunning; iteration++) {
 			real2 = real * real;
 			imaginary2 = imaginary * imaginary;
 
