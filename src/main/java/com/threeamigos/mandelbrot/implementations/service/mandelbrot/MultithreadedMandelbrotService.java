@@ -96,9 +96,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public void calculate(Points points) {
 
-		if (calculationService != null) {
-			calculationService.stopCalculation();
-		}
+		interruptCalculation();
 
 		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), schedulerService,
 				priority);
@@ -126,7 +124,9 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 
 	@Override
 	public void interruptCalculation() {
-		calculationService.globalRunning = false;
+		if (calculationService != null) {
+			calculationService.stopCalculation();
+		}
 	}
 
 	@Override
