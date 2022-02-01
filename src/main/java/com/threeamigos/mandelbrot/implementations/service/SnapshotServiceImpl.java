@@ -21,7 +21,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
@@ -127,7 +127,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 				SnapshotJob snapshot = queuedSnapshots.remove();
 				CalculationParameters bkgParameters = snapshot.calculationParameters;
 				bkgCalculator = mandelbrotServiceFactory.createInstance(bkgParameters, schedulerService,
-						MandelbrotServiceTypeEnum.BACKGROUND);
+						CalculationType.BACKGROUND);
 				for (PropertyChangeListener propertyChangeListener : propertyChangeSupport
 						.getPropertyChangeListeners()) {
 					bkgCalculator.addPropertyChangeListener(propertyChangeListener);

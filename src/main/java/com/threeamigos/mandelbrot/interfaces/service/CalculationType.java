@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
-public enum MandelbrotServiceTypeEnum {
+public enum CalculationType {
 
 	FOREGROUND(
 			MandelbrotService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE,
@@ -15,7 +15,7 @@ public enum MandelbrotServiceTypeEnum {
 	private String calculationCompleteEvent;
 	private int priority;
 
-	private MandelbrotServiceTypeEnum(String calculationInProgressEvent, String calculationCompleteEvent,
+	private CalculationType(String calculationInProgressEvent, String calculationCompleteEvent,
 			int priority) {
 		this.calculationInProgressEvent = calculationInProgressEvent;
 		this.calculationCompleteEvent = calculationCompleteEvent;

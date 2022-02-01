@@ -5,7 +5,7 @@ import java.beans.PropertyChangeSupport;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
@@ -14,7 +14,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	private final SchedulerService schedulerService;
-	private final MandelbrotServiceTypeEnum serviceType;
+	private final CalculationType serviceType;
 	private int maxThreads;
 	private int maxIterations;
 
@@ -22,7 +22,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private CalculationService calculationService;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters,
-			SchedulerService schedulerService, MandelbrotServiceTypeEnum serviceType) {
+			SchedulerService schedulerService, CalculationType serviceType) {
 		this.schedulerService = schedulerService;
 		this.serviceType = serviceType;
 		propertyChangeSupport = new PropertyChangeSupport(this);

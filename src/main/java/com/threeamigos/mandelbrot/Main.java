@@ -28,7 +28,7 @@ import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
@@ -80,7 +80,7 @@ public class Main {
 				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
 		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters, schedulerService,
-				MandelbrotServiceTypeEnum.FOREGROUND);
+				CalculationType.FOREGROUND);
 
 		windowDecoratorService = new WindowDecoratorServiceImpl(
 				new WindowDecoratorInfoFragmentImpl(resolution, mandelbrotService, points),

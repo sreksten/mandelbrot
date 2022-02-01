@@ -4,14 +4,14 @@ import com.threeamigos.mandelbrot.implementations.service.mandelbrot.Multithread
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
 public class MandelbrotServiceFactoryImpl implements MandelbrotServiceFactory {
 
 	@Override
 	public MandelbrotService createInstance(CalculationParameters calculationParameters,
-			SchedulerService schedulerService, MandelbrotServiceTypeEnum serviceType) {
+			SchedulerService schedulerService, CalculationType serviceType) {
 		return new MultithreadedMandelbrotService(calculationParameters, schedulerService, serviceType);
 	}
 
