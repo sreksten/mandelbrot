@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.interfaces.ui;
 
-public interface ShowPointOfInterestName extends ShowSomething {
+public interface WindowDecoratorPointOfInterestNameFragment extends WindowDecoratorFragment {
 
 	void setCurrentPointOfInterestIndex(Integer currentPointOfInterestIndex);
 

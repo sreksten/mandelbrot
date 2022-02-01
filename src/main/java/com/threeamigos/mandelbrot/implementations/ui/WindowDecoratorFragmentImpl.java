@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.Resolution;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowSomething;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorFragment;
 
-abstract class ShowSomethingImpl implements ShowSomething {
+abstract class WindowDecoratorFragmentImpl implements WindowDecoratorFragment {
 
 	protected static final String FONT_NAME = "Serif";
 
@@ -15,7 +15,7 @@ abstract class ShowSomethingImpl implements ShowSomething {
 	private int width;
 	private int height;
 
-	ShowSomethingImpl(Resolution resolution) {
+	WindowDecoratorFragmentImpl(Resolution resolution) {
 		width = resolution.getWidth();
 		height = resolution.getHeight();
 	}

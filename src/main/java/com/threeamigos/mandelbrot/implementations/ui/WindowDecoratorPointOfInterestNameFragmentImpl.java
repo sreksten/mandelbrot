@@ -8,15 +8,15 @@ import java.awt.Graphics2D;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorPointOfInterestNameFragment;
 
-public class ShowPointOfInterestNameImpl extends ShowSomethingImpl implements ShowPointOfInterestName {
+public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorPointOfInterestNameFragment {
 
 	private final PointsOfInterestService pointsOfInterestService;
 
 	private Integer currentPointOfInterestIndex;
 
-	public ShowPointOfInterestNameImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
+	public WindowDecoratorPointOfInterestNameFragmentImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
 	}

@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.ui;
 
 import java.awt.Graphics2D;
 
-public interface ShowSomething {
+public interface WindowDecoratorFragment {
 
 	void setActive(boolean active);
 

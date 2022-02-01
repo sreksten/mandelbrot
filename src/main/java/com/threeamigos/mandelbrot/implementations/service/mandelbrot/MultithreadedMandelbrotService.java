@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
@@ -13,7 +14,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	private final SchedulerService schedulerService;
-	private final int priority;
+	private final MandelbrotServiceTypeEnum serviceType;
 	private int maxThreads;
 	private int maxIterations;
 
@@ -21,9 +22,9 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private CalculationService calculationService;
 
 	public MultithreadedMandelbrotService(CalculationParameters calculationParameters,
-			SchedulerService schedulerService, int priority) {
+			SchedulerService schedulerService, MandelbrotServiceTypeEnum serviceType) {
 		this.schedulerService = schedulerService;
-		this.priority = priority;
+		this.serviceType = serviceType;
 		propertyChangeSupport = new PropertyChangeSupport(this);
 		maxThreads = calculationParameters.getMaxThreads();
 		maxIterations = calculationParameters.getMaxIterations();
@@ -99,13 +100,13 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		interruptCalculation();
 
 		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), schedulerService,
-				priority);
+				serviceType.getPriority());
 
 		calculationService.startCalculation();
 
 		while (calculationService.isRunning()) {
 			if (calculationService.shouldUpdatePercentage()) {
-				propertyChangeSupport.firePropertyChange(CALCULATION_IN_PROGRESS_PROPERTY_CHANGE, null,
+				propertyChangeSupport.firePropertyChange(serviceType.getCalculationInProgressEvent(), null,
 						calculationService.getPercentage());
 			}
 			try {
@@ -118,7 +119,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 		drawTime = calculationService.getCalculationTime();
 
 		if (!calculationService.isInterrupted()) {
-			propertyChangeSupport.firePropertyChange(CALCULATION_COMPLETE_PROPERTY_CHANGE, null, this);
+			propertyChangeSupport.firePropertyChange(serviceType.getCalculationCompleteEvent(), null, this);
 		}
 	}
 
@@ -132,6 +133,11 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	@Override
 	public boolean isCalculating() {
 		return calculationService.isRunning();
+	}
+
+	@Override
+	public int getPercentage() {
+		return calculationService.getPercentage();
 	}
 
 	@Override

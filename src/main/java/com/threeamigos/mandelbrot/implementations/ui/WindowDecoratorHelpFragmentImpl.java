@@ -8,15 +8,15 @@ import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorHelpFragment;
 
-public class ShowHelpImpl extends ShowSomethingImpl implements ShowHelp {
+public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorHelpFragment {
 
 	private PointsOfInterestService pointsOfInterestService;
 	private ImageProducerService imageProducerService;
 	private Integer currentPointOfInterestIndex;
 
-	public ShowHelpImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
+	public WindowDecoratorHelpFragmentImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
 	}

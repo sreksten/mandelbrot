@@ -8,6 +8,10 @@ public interface MandelbrotService {
 
 	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
 
+	public static final String BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Background calculation in progress";
+
+	public static final String BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE = "Background calculation complete";
+
 	public static final int MIN_ITERATIONS_EXPONENT = 5;
 
 	public static final int MAX_ITERATIONS_EXPONENT = 15;
@@ -35,6 +39,8 @@ public interface MandelbrotService {
 	public void interruptCalculation();
 
 	public boolean isCalculating();
+
+	public int getPercentage();
 
 	public long getDrawTime();
 

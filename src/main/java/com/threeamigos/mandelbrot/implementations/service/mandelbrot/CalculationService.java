@@ -112,11 +112,11 @@ class CalculationService implements Runnable {
 	}
 
 	boolean shouldUpdatePercentage() {
-		return percentageTracker.shouldUpdatePercentage();
+		return percentageTracker.shouldUpdatePercentage(deque);
 	}
 
 	int getPercentage() {
-		return percentageTracker.getPercentage(deque);
+		return percentageTracker.getPercentage();
 	}
 
 	boolean finished() {

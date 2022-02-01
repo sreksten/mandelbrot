@@ -3,22 +3,25 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowHelp;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowPointOfInterestName;
-import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorComposerService;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorHelpFragment;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorPointOfInterestNameFragment;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorSnapshotServiceFragment;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
-public class WindowDecoratorComposerServiceImpl implements WindowDecoratorComposerService {
+public class WindowDecoratorServiceImpl implements WindowDecoratorService {
 
-	private ShowInfo showInfo;
-	private ShowHelp showHelp;
-	private ShowPointOfInterestName showPointOfInterestName;
+	private final WindowDecoratorInfoFragment showInfo;
+	private final WindowDecoratorHelpFragment showHelp;
+	private final WindowDecoratorPointOfInterestNameFragment showPointOfInterestName;
+	private final WindowDecoratorSnapshotServiceFragment showSnapshotServiceStatus;
 
-	public WindowDecoratorComposerServiceImpl(ShowInfo showInfo, ShowHelp showHelp,
-			ShowPointOfInterestName showPointOfInterestName) {
+	public WindowDecoratorServiceImpl(WindowDecoratorInfoFragment showInfo, WindowDecoratorHelpFragment showHelp,
+			WindowDecoratorPointOfInterestNameFragment showPointOfInterestName, WindowDecoratorSnapshotServiceFragment showSnapshotServiceStatus) {
 		this.showInfo = showInfo;
 		this.showHelp = showHelp;
 		this.showPointOfInterestName = showPointOfInterestName;
+		this.showSnapshotServiceStatus = showSnapshotServiceStatus;
 	}
 
 	@Override
@@ -68,8 +71,19 @@ public class WindowDecoratorComposerServiceImpl implements WindowDecoratorCompos
 	}
 
 	@Override
+	public void toggleShowSnapshotServiceStatus() {
+		showSnapshotServiceStatus.toggleActive();
+	}
+
+	@Override
+	public boolean isShowSnapshotServiceStatusActive() {
+		return showSnapshotServiceStatus.isActive();
+	}
+
+	@Override
 	public void paint(Graphics2D graphics, int x, int y) {
 		y = showInfo.paint(graphics, x, y);
+		y = showSnapshotServiceStatus.paint(graphics, x, y);
 		showHelp.paint(graphics, x, y);
 		showPointOfInterestName.paint(graphics, -1, -1);
 	}

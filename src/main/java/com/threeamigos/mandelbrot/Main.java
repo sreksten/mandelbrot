@@ -17,22 +17,24 @@ import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
-import com.threeamigos.mandelbrot.implementations.ui.ShowHelpImpl;
-import com.threeamigos.mandelbrot.implementations.ui.ShowInfoImpl;
-import com.threeamigos.mandelbrot.implementations.ui.ShowPointOfInterestNameImpl;
-import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorComposerServiceImpl;
+import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
+import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorInfoFragmentImpl;
+import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorPointOfInterestNameFragmentImpl;
+import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorServiceImpl;
+import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorSnapshotServiceFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxServiceImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceTypeEnum;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
-import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorComposerService;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
 public class Main {
@@ -48,7 +50,7 @@ public class Main {
 	private PointsOfInterestService pointsOfInterestService;
 	private SnapshotService snapshotService;
 	private MandelbrotService mandelbrotService;
-	private WindowDecoratorComposerService windowDecoratorService;
+	private WindowDecoratorService windowDecoratorService;
 	private ZoomBoxService zoomBox;
 
 	public Main() {
@@ -77,12 +79,14 @@ public class Main {
 		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, mandelbrotServiceFactory,
 				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
-		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters, schedulerService, 10);
+		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters, schedulerService,
+				MandelbrotServiceTypeEnum.FOREGROUND);
 
-		windowDecoratorService = new WindowDecoratorComposerServiceImpl(
-				new ShowInfoImpl(resolution, mandelbrotService, points),
-				new ShowHelpImpl(resolution, pointsOfInterestService),
-				new ShowPointOfInterestNameImpl(resolution, pointsOfInterestService));
+		windowDecoratorService = new WindowDecoratorServiceImpl(
+				new WindowDecoratorInfoFragmentImpl(resolution, mandelbrotService, points),
+				new WindowDecoratorHelpFragmentImpl(resolution, pointsOfInterestService),
+				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, pointsOfInterestService),
+				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, snapshotService));
 
 		zoomBox = new ZoomBoxServiceImpl(points);
 
@@ -91,6 +95,7 @@ public class Main {
 				windowDecoratorService);
 
 		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
+		snapshotService.addPropertyChangeListener(mandelbrotCanvas);
 
 		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
 		pointsOfInterestService.setMessageNotifier(mandelbrotCanvas);

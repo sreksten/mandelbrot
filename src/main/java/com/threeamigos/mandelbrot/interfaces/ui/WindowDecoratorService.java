@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 
-public interface WindowDecoratorComposerService {
+public interface WindowDecoratorService {
 
 	void setPercentage(Integer percentage);
 
@@ -23,6 +23,10 @@ public interface WindowDecoratorComposerService {
 	public void toggleShowPointOfInterestName();
 
 	public boolean isShowPointOfInterestNameActive();
+
+	public void toggleShowSnapshotServiceStatus();
+
+	public boolean isShowSnapshotServiceStatusActive();
 
 	public void paint(Graphics2D graphics, int x, int y);
 

@@ -6,14 +6,14 @@ import java.util.List;
 
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 
-public class ImageProducerImpl implements ImageProducerService {
+public class ImageProducerServiceImpl implements ImageProducerService {
 
 	private SingleColorModelImageProducer[] imageProducers;
 	private List<String> imageProducerNames;
 
 	private int currentImageProducer;
 
-	public ImageProducerImpl(int maxIterations) {
+	public ImageProducerServiceImpl(int maxIterations) {
 		createImageProducers(maxIterations);
 		createImageProducerNames();
 	}

@@ -2,12 +2,19 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.awt.Component;
 import java.awt.Image;
-
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import java.beans.PropertyChangeListener;
 
 public interface SnapshotService {
 
-	public PersistResult saveSnapshot(Points points, int maxIterations, String colorModelName,
-			Image bufferedImage, Component parentComponent);
+	public void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
+			Component parentComponent);
+
+	public int getQueuedSnapshots();
+
+	public Integer getCurrentSnapshotPercentage();
+
+	public void addPropertyChangeListener(PropertyChangeListener pcl);
+
+	public void removePropertyChangeListener(PropertyChangeListener pcl);
 
 }

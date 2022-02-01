@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.interfaces.ui;
 
-public interface ShowInfo extends ShowSomething {
+public interface WindowDecoratorInfoFragment extends WindowDecoratorFragment {
 
 	void setPercentage(Integer percentage);
 

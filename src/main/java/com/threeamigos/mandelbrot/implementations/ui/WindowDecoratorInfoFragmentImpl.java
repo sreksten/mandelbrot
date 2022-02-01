@@ -6,15 +6,15 @@ import java.awt.Graphics2D;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.ui.ShowInfo;
+import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
-public class ShowInfoImpl extends ShowSomethingImpl implements ShowInfo {
+public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorInfoFragment {
 
 	private MandelbrotService mandelbrotService;
 	private Points points;
 	private Integer percentage;
 
-	public ShowInfoImpl(Resolution resolution, MandelbrotService mandelbrotService, Points points) {
+	public WindowDecoratorInfoFragmentImpl(Resolution resolution, MandelbrotService mandelbrotService, Points points) {
 		super(resolution);
 		this.mandelbrotService = mandelbrotService;
 		this.points = points;
