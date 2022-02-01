@@ -23,7 +23,7 @@ public class SchedulerServiceImpl implements SchedulerService, Runnable {
 		waitingRunnables = new ConcurrentSkipListSet<>(comparator);
 
 		running.set(true);
-		mainThread = new Thread(this);
+		mainThread = new Thread(null, this, "SchedulerService");
 		mainThread.setDaemon(true);
 		mainThread.start();
 	}

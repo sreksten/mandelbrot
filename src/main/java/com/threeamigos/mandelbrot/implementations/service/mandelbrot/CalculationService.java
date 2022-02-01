@@ -76,7 +76,7 @@ class CalculationService implements Runnable {
 	}
 
 	public void startCalculation() {
-		Thread thread = new Thread(this);
+		Thread thread = new Thread(null, this, "CalculationService-" + requestNumber);
 		thread.setDaemon(true);
 		thread.start();
 	}

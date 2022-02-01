@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Runner implements Runnable {
 
+	private static int runnerCounter;
+
 	private final Thread thread;
 	private final AtomicBoolean running;
 
@@ -11,7 +13,8 @@ public class Runner implements Runnable {
 
 	public Runner(AtomicBoolean running) {
 		this.running = running;
-		thread = new Thread(this);
+		runnerCounter++;
+		thread = new Thread(null, this, "Runner-" + runnerCounter);
 		thread.setDaemon(true);
 		thread.start();
 	}

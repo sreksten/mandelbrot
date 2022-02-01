@@ -93,7 +93,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	public void startCalculationThread() {
-		Thread paintingThread = new Thread(this);
+		Thread paintingThread = new Thread(null, this, "UIThread");
 		paintingThread.setDaemon(true);
 		paintingThread.start();
 	}

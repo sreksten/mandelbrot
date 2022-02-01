@@ -59,9 +59,8 @@ class PrioritizedRunnable implements Runnable {
 	}
 
 	public void start() {
-		thread = new Thread(this);
+		thread = new Thread(null, this, threadName);
 		thread.setDaemon(true);
-		thread.setName(threadName);
 		thread.start();
 	}
 
