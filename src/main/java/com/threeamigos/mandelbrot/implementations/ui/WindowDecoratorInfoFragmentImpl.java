@@ -8,7 +8,8 @@ import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
-public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorInfoFragment {
+public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
+		implements WindowDecoratorInfoFragment {
 
 	private MandelbrotService mandelbrotService;
 	private Points points;
@@ -56,8 +57,6 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 					String.format("Imaginary interval: [%1.14f,%1.14f]", points.getMinY(), points.getMaxY()), xCoord,
 					yCoord);
 			yCoord += vSpacing;
-			drawString(graphics, String.format("Optimizations: %s", getOptimizationsDescription()), xCoord, yCoord);
-			yCoord += vSpacing;
 			Double realCoordinateUnderPointer = points.getPointerRealcoordinate();
 			if (realCoordinateUnderPointer != null) {
 				Double imaginaryCoordinateUnderPointer = points.getPointerImaginaryCoordinate();
@@ -77,24 +76,6 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 			}
 		}
 		return yCoord;
-	}
-
-	private final String getOptimizationsDescription() {
-		String optimizations;
-		if (points.isCardioidVisible()) {
-			if (points.isPeriod2BulbVisible()) {
-				optimizations = "Cardioid, Period2Bulb, Period";
-			} else {
-				optimizations = "Cardioid, Period";
-			}
-		} else {
-			if (points.isPeriod2BulbVisible()) {
-				optimizations = "Period2Bulb, Period";
-			} else {
-				optimizations = "Period";
-			}
-		}
-		return optimizations;
 	}
 
 }

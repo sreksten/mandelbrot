@@ -323,41 +323,6 @@ public class PointsImpl implements Points {
 	}
 
 	@Override
-	public boolean isCardioidVisible() {
-		return intervalsOverlap(minX, maxX, -0.75d, 0.375d) && intervalsOverlap(minY, maxY, -0.65d, 0.65d);
-	}
-
-	@Override
-	public boolean isCardioidVisible(int fromX, int toX, int fromY, int toY) {
-		double fromCReal = toCReal(fromX);
-		double toCReal = toCReal(toX);
-		double fromCImaginary = toCImaginary(fromY);
-		double toCImaginary = toCImaginary(toY);
-		return intervalsOverlap(fromCReal, toCReal, -0.75d, 0.375d)
-				&& intervalsOverlap(fromCImaginary, toCImaginary, -0.65d, 0.65d);
-	}
-
-	@Override
-	public boolean isPeriod2BulbVisible() {
-		return intervalsOverlap(minX, maxX, -1.25d, -0.75d) && intervalsOverlap(minY, maxY, -0.25d, 0.25d);
-	}
-
-	@Override
-	public boolean isPeriod2BulbVisible(int fromX, int toX, int fromY, int toY) {
-		double fromCReal = toCReal(fromX);
-		double toCReal = toCReal(toX);
-		double fromCImaginary = toCImaginary(fromY);
-		double toCImaginary = toCImaginary(toY);
-		return intervalsOverlap(fromCReal, toCReal, -1.25d, -0.75d)
-				&& intervalsOverlap(fromCImaginary, toCImaginary, -0.25d, 0.25d);
-	}
-
-	private boolean intervalsOverlap(double firstStart, double firstEnd, double secondStart, double secondEnd) {
-		return firstEnd >= secondStart && firstStart <= secondEnd;
-
-	}
-
-	@Override
 	public Points copy() {
 		PointsImpl copy = new PointsImpl();
 		copy.height = height;

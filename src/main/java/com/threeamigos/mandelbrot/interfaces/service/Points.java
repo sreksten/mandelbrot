@@ -62,13 +62,5 @@ public interface Points {
 
 	public double toCImaginary(int y);
 
-	public boolean isCardioidVisible();
-
-	public boolean isCardioidVisible(int fromX, int toX, int fromY, int toY);
-
-	public boolean isPeriod2BulbVisible();
-
-	public boolean isPeriod2BulbVisible(int fromX, int toX, int fromY, int toY);
-
 	public Points copy();
 }

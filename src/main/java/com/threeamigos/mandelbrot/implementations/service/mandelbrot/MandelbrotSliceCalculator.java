@@ -50,8 +50,8 @@ class MandelbrotSliceCalculator implements Runnable {
 		if (!calculationService.globalRunning) {
 			return;
 		}
-		boolean cardioidVisible = points.isCardioidVisible(fromX, toX, fromY, toY);
-		boolean period2BulbVisible = points.isPeriod2BulbVisible(fromX, toX, fromY, toY);
+		boolean cardioidVisible = isCardioidVisible(fromX, toX, fromY, toY);
+		boolean period2BulbVisible = isPeriod2BulbVisible(fromX, toX, fromY, toY);
 		if (toX - fromX <= 5 || toY - fromY <= 5) {
 			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
 		} else {
@@ -208,6 +208,29 @@ class MandelbrotSliceCalculator implements Runnable {
 		}
 
 		return maxIterations;
+
+	}
+
+	private boolean isCardioidVisible(int fromX, int toX, int fromY, int toY) {
+		double fromCReal = points.toCReal(fromX);
+		double toCReal = points.toCReal(toX);
+		double fromCImaginary = points.toCImaginary(fromY);
+		double toCImaginary = points.toCImaginary(toY);
+		return intervalsOverlap(fromCReal, toCReal, -0.75d, 0.375d)
+				&& intervalsOverlap(fromCImaginary, toCImaginary, -0.65d, 0.65d);
+	}
+
+	private boolean isPeriod2BulbVisible(int fromX, int toX, int fromY, int toY) {
+		double fromCReal = points.toCReal(fromX);
+		double toCReal = points.toCReal(toX);
+		double fromCImaginary = points.toCImaginary(fromY);
+		double toCImaginary = points.toCImaginary(toY);
+		return intervalsOverlap(fromCReal, toCReal, -1.25d, -0.75d)
+				&& intervalsOverlap(fromCImaginary, toCImaginary, -0.25d, 0.25d);
+	}
+
+	private boolean intervalsOverlap(double firstStart, double firstEnd, double secondStart, double secondEnd) {
+		return firstEnd >= secondStart && firstStart <= secondEnd;
 
 	}
 
