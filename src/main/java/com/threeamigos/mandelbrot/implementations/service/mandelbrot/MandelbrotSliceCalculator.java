@@ -3,7 +3,7 @@ package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 
-class MandelbrotSliceCalculator implements Runnable {
+class MandelbrotSliceCalculator implements SliceCalculator {
 
 	private Points points;
 	private int startX;
@@ -36,6 +36,7 @@ class MandelbrotSliceCalculator implements Runnable {
 		return name;
 	}
 
+	@Override
 	public boolean isAlive() {
 		return localRunning;
 	}

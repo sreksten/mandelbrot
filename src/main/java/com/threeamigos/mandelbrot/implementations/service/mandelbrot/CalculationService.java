@@ -15,7 +15,7 @@ class CalculationService implements Runnable {
 	final Points points;
 	final SliceDataDeque deque;
 	final PixelBuffer pixelBuffer;
-	final MandelbrotSliceCalculator[] calculators;
+	final SliceCalculator[] calculators;
 	final PercentageTracker percentageTracker;
 
 	boolean globalRunning;
@@ -40,7 +40,7 @@ class CalculationService implements Runnable {
 		prepareSlices(width, height);
 
 		this.pixelBuffer = new PixelBufferImpl(width, height);
-		calculators = new MandelbrotSliceCalculator[maxThreads];
+		calculators = new SliceCalculator[maxThreads];
 		globalRunning = true;
 	}
 
@@ -120,7 +120,7 @@ class CalculationService implements Runnable {
 	}
 
 	boolean finished() {
-		for (MandelbrotSliceCalculator calculator : calculators) {
+		for (SliceCalculator calculator : calculators) {
 			if (calculator != null && calculator.isAlive()) {
 				return false;
 			}
@@ -130,7 +130,7 @@ class CalculationService implements Runnable {
 
 	void createNewCalculatorIfPossible() {
 		for (int i = 0; i < maxThreads && !deque.isEmpty(); i++) {
-			MandelbrotSliceCalculator calculator = calculators[i];
+			SliceCalculator calculator = calculators[i];
 			if (calculator == null || !calculator.isAlive()) {
 				SliceData slice = deque.remove();
 				String name = "R" + requestNumber + "-T" + i;
