@@ -20,8 +20,8 @@ import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
@@ -32,7 +32,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	private CalculationParametersRequester calculationParametersRequester;
-	private MandelbrotServiceFactory mandelbrotServiceFactory;
+	private FractalServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
 	private SchedulerService schedulerService;
@@ -40,12 +40,12 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	private final JFileChooser fileChooser;
 
 	private Queue<SnapshotJob> queuedSnapshots;
-	private MandelbrotService bkgCalculator;
+	private FractalService bkgCalculator;
 	private Thread queuedSnapshotsThread;
 	private AtomicBoolean running;
 
 	public SnapshotServiceImpl(CalculationParametersRequester calculationParametersRequester,
-			MandelbrotServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
+			FractalServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
 			ImagePersisterService imageService, SchedulerService schedulerService) {
 		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
@@ -160,7 +160,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
 	@Override
 	public Integer getCurrentSnapshotPercentage() {
-		MandelbrotService current = bkgCalculator;
+		FractalService current = bkgCalculator;
 		if (current != null) {
 			return current.getPercentage();
 		}

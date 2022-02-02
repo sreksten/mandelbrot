@@ -28,7 +28,7 @@ import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
@@ -42,7 +42,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private static final long serialVersionUID = 1L;
 
-	private transient MandelbrotService mandelbrotService;
+	private transient FractalService mandelbrotService;
 	private transient PointsOfInterestService pointsOfInterestService;
 	private transient ImageProducerServiceFactory imageProducerServiceFactory;
 	private transient ImageProducerService imageProducerService;
@@ -63,7 +63,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	private JMenu iterationsMenu;
 	private JCheckBoxMenuItem showProgressMenuItem;
 
-	public MandelbrotCanvas(MandelbrotService mandelbrotService, PointsOfInterestService pointsOfInterestService,
+	public MandelbrotCanvas(FractalService mandelbrotService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
 			CalculationParameters calculationParameters, ZoomBoxService zoomBox,
 			WindowDecoratorService windowDecoratorService) {
@@ -427,20 +427,20 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		boolean shouldRepaint = false;
-		if (MandelbrotService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
+		if (FractalService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage((Integer) event.getNewValue());
 			shouldRepaint = showProgress;
 			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
 					mandelbrotService.getIterations());
-		} else if (MandelbrotService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
+		} else if (FractalService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage(null);
 			shouldRepaint = true;
 			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
 					mandelbrotService.getIterations());
-		} else if (MandelbrotService.BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE
+		} else if (FractalService.BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE
 				.equals(event.getPropertyName())) {
 			shouldRepaint = showSnapshotProgress;
-		} else if (MandelbrotService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
+		} else if (FractalService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			shouldRepaint = showSnapshotProgress;
 		}
 		if (shouldRepaint) {
@@ -502,7 +502,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		}
 		calculationsMenu.addSeparator();
 		iterationsMenu = new JMenu("Max iterations");
-		for (int i = MandelbrotService.MIN_ITERATIONS_EXPONENT; i <= MandelbrotService.MAX_ITERATIONS_EXPONENT; i++) {
+		for (int i = FractalService.MIN_ITERATIONS_EXPONENT; i <= FractalService.MAX_ITERATIONS_EXPONENT; i++) {
 			final int maxIterations = 1 << i;
 			addCheckboxMenuItem(iterationsMenu, String.valueOf(maxIterations), -1,
 					mandelbrotService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
@@ -541,7 +541,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		Component[] items = iterationsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			final int maxIterations = 1 << i + MandelbrotService.MIN_ITERATIONS_EXPONENT;
+			final int maxIterations = 1 << i + FractalService.MIN_ITERATIONS_EXPONENT;
 			item.setSelected(mandelbrotService.getMaxIterations() == maxIterations);
 		}
 	}

@@ -12,7 +12,7 @@ import javax.swing.JSlider;
 
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 
 public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
@@ -65,13 +65,13 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		int defaultMaxIterations;
 
 		if (maxIterations == MAX_ITERATIONS_NOT_SPECIFIED) {
-			defaultMaxIterationsExponent = MandelbrotService.MAX_ITERATIONS_EXPONENT
-					- MandelbrotService.MIN_ITERATIONS_EXPONENT - 2;
-			int actualExponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
+			defaultMaxIterationsExponent = FractalService.MAX_ITERATIONS_EXPONENT
+					- FractalService.MIN_ITERATIONS_EXPONENT - 2;
+			int actualExponent = FractalService.MIN_ITERATIONS_EXPONENT + defaultMaxIterationsExponent;
 			defaultMaxIterations = (int) Math.pow(2, actualExponent);
 		} else {
 			defaultMaxIterationsExponent = ((int) (Math.log(maxIterations) / Math.log(2)))
-					- MandelbrotService.MIN_ITERATIONS_EXPONENT;
+					- FractalService.MIN_ITERATIONS_EXPONENT;
 			defaultMaxIterations = maxIterations;
 		}
 
@@ -80,14 +80,14 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		panel.add(iterationsLabel);
 
 		JSlider iterationsSlider = new JSlider(0,
-				MandelbrotService.MAX_ITERATIONS_EXPONENT - MandelbrotService.MIN_ITERATIONS_EXPONENT,
+				FractalService.MAX_ITERATIONS_EXPONENT - FractalService.MIN_ITERATIONS_EXPONENT,
 				defaultMaxIterationsExponent);
 		iterationsSlider.setMajorTickSpacing(4);
 		iterationsSlider.setMinorTickSpacing(2);
 		iterationsSlider.setPaintTicks(true);
 		iterationsSlider.addChangeListener(event -> {
 			JSlider source = (JSlider) event.getSource();
-			int exponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + source.getValue();
+			int exponent = FractalService.MIN_ITERATIONS_EXPONENT + source.getValue();
 			iterationsLabel.setText("Max iterations: " + (int) Math.pow(2, exponent));
 		});
 		iterationsSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -98,7 +98,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		if (result == JOptionPane.OK_OPTION) {
 			Resolution resolution = Resolution.values()[resolutionComboBox.getSelectedIndex()];
 			int maxThreads = threadsSlider.getValue();
-			int exponent = MandelbrotService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
+			int exponent = FractalService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
 			return new CalculationParametersImpl(resolution, maxThreads, (int) Math.pow(2, exponent));
 		}
 

@@ -3,7 +3,7 @@ package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 import java.util.Arrays;
 
 import com.threeamigos.mandelbrot.Resolution;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 
 class PixelBufferImpl implements PixelBuffer {
 
@@ -49,7 +49,7 @@ class PixelBufferImpl implements PixelBuffer {
 
 	@Override
 	public void clear() {
-		Arrays.fill(pixels, MandelbrotService.ITERATION_NOT_CALCULATED);
+		Arrays.fill(pixels, FractalService.ITERATION_NOT_CALCULATED);
 	}
 
 }

@@ -5,11 +5,11 @@ import java.awt.Toolkit;
 import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
 
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 
 class Mode1DirectColorModelImageProducer implements SingleColorModelImageProducer {
 
-	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT);
+	private static final int MAX_ITERATIONS = (int) Math.pow(2, FractalService.MAX_ITERATIONS_EXPONENT);
 
 	private final DirectColorModel directColorModel;
 
@@ -63,10 +63,10 @@ class Mode1DirectColorModelImageProducer implements SingleColorModelImageProduce
 	public Image produceImage(int width, int height, int[] pixels) {
 		int[] translatedValues = new int[pixels.length];
 		int length = pixels.length;
-		int multiplier = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT) / maxIterations;
+		int multiplier = (int) Math.pow(2, FractalService.MAX_ITERATIONS_EXPONENT) / maxIterations;
 		for (int i = 0; i < length; i++) {
 			int currentIterations = pixels[i];
-			if (currentIterations == maxIterations || currentIterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
+			if (currentIterations == maxIterations || currentIterations == FractalService.ITERATION_NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
 				int index = currentIterations * multiplier;

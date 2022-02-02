@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.beans.PropertyChangeListener;
 
-public interface MandelbrotService {
+public interface FractalService {
 
 	public static final String CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Calculation in progress";
 

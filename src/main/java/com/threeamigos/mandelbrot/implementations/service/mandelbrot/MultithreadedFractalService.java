@@ -4,12 +4,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
-public class MultithreadedMandelbrotService implements MandelbrotService {
+public class MultithreadedFractalService implements FractalService {
 
 	private final PropertyChangeSupport propertyChangeSupport;
 
@@ -21,7 +21,7 @@ public class MultithreadedMandelbrotService implements MandelbrotService {
 	private long drawTime;
 	private CalculationService calculationService;
 
-	public MultithreadedMandelbrotService(CalculationParameters calculationParameters,
+	public MultithreadedFractalService(CalculationParameters calculationParameters,
 			SchedulerService schedulerService, CalculationType serviceType) {
 		this.schedulerService = schedulerService;
 		this.serviceType = serviceType;

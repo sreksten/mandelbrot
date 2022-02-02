@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 
 class MandelbrotSliceCalculator implements SliceCalculator {
@@ -56,12 +56,12 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 		if (toX - fromX <= 5 || toY - fromY <= 5) {
 			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
 		} else {
-			int uniqueValue = MandelbrotService.ITERATION_NOT_CALCULATED;
+			int uniqueValue = FractalService.ITERATION_NOT_CALCULATED;
 			boolean hasUniqueValue = true;
 
 			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
 				int iterations = calculateIterations(x, fromY, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
+				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -70,7 +70,7 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
 				int iterations = calculateIterations(fromX, y, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
+				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -79,7 +79,7 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
 				int iterations = calculateIterations(x, toY - 1, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
+				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -88,7 +88,7 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
 				int iterations = calculateIterations(toX - 1, y, cardioidVisible, period2BulbVisible);
-				if (uniqueValue == MandelbrotService.ITERATION_NOT_CALCULATED) {
+				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
 					hasUniqueValue = false;
@@ -138,7 +138,7 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 	private int calculateIterations(int x, int y, boolean cardioidVisible, boolean period2BulbVisible) {
 		int iterations = dataBuffer.getPixel(x, y);
-		if (iterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
+		if (iterations == FractalService.ITERATION_NOT_CALCULATED) {
 			double cReal = points.toCReal(x);
 			double cImaginary = points.toCImaginary(y);
 			iterations = calculateIterations(cReal, cImaginary, cardioidVisible, period2BulbVisible);

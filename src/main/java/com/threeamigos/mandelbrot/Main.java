@@ -10,7 +10,7 @@ import javax.swing.WindowConstants;
 
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
-import com.threeamigos.mandelbrot.implementations.service.MandelbrotServiceFactoryImpl;
+import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
@@ -26,8 +26,8 @@ import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxServiceImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
@@ -44,12 +44,12 @@ public class Main {
 	private Resolution resolution;
 	private Points points;
 	private SchedulerService schedulerService;
-	private MandelbrotServiceFactory mandelbrotServiceFactory;
+	private FractalServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
 	private PointsOfInterestService pointsOfInterestService;
 	private SnapshotService snapshotService;
-	private MandelbrotService mandelbrotService;
+	private FractalService mandelbrotService;
 	private WindowDecoratorService windowDecoratorService;
 	private ZoomBoxService zoomBox;
 
@@ -66,7 +66,7 @@ public class Main {
 
 		points = new PointsImpl(resolution);
 
-		mandelbrotServiceFactory = new MandelbrotServiceFactoryImpl();
+		mandelbrotServiceFactory = new FractalServiceFactoryImpl();
 
 		schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
 

@@ -5,11 +5,11 @@ import java.awt.Toolkit;
 import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
 
-import com.threeamigos.mandelbrot.interfaces.service.MandelbrotService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 
 class Mode2DirectColorModelImageProducer implements SingleColorModelImageProducer {
 
-	private static final int MAX_ITERATIONS = (int) Math.pow(2, MandelbrotService.MAX_ITERATIONS_EXPONENT);
+	private static final int MAX_ITERATIONS = (int) Math.pow(2, FractalService.MAX_ITERATIONS_EXPONENT);
 
 	private final DirectColorModel directColorModel;
 
@@ -25,8 +25,8 @@ class Mode2DirectColorModelImageProducer implements SingleColorModelImageProduce
 		int[] gg = new int[MAX_ITERATIONS];
 		int[] gb = new int[MAX_ITERATIONS];
 
-		for (int iteration = MandelbrotService.MIN_ITERATIONS_EXPONENT; iteration <= MandelbrotService.MAX_ITERATIONS_EXPONENT; iteration++) {
-			int minValue = (iteration == MandelbrotService.MIN_ITERATIONS_EXPONENT ? 0
+		for (int iteration = FractalService.MIN_ITERATIONS_EXPONENT; iteration <= FractalService.MAX_ITERATIONS_EXPONENT; iteration++) {
+			int minValue = (iteration == FractalService.MIN_ITERATIONS_EXPONENT ? 0
 					: (int) Math.pow(2, iteration - 1));
 			int maxValue = (int) Math.pow(2, iteration) - 1;
 
@@ -84,7 +84,7 @@ class Mode2DirectColorModelImageProducer implements SingleColorModelImageProduce
 		int length = pixels.length;
 		for (int i = 0; i < length; i++) {
 			int currentIterations = pixels[i];
-			if (currentIterations == maxIterations || currentIterations == MandelbrotService.ITERATION_NOT_CALCULATED) {
+			if (currentIterations == maxIterations || currentIterations == FractalService.ITERATION_NOT_CALCULATED) {
 				translatedValues[i] = 0;
 			} else {
 				if (currentIterations < map.length) {
