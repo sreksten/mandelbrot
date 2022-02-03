@@ -177,7 +177,13 @@ public class PointsImpl implements Points {
 
 	@Override
 	public PointOfInterest getPointOfInterest(int maxIterations) {
-		return new PointOfInterestImpl("New point", getMinY(), getMaxY(), getCentralX(), getZoomCount(), maxIterations);
+		if (fractalType == FractalType.MANDELBROT) {
+			return new PointOfInterestImpl("New point", getMinY(), getMaxY(), getCentralX(), getZoomCount(),
+					maxIterations);
+		} else {
+			return new PointOfInterestImpl("New point", getMinY(), getMaxY(), getCentralX(), getZoomCount(),
+					maxIterations, juliaCReal, juliaCImaginary);
+		}
 	}
 
 	@Override
