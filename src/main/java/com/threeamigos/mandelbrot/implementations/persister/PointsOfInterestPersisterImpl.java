@@ -15,6 +15,7 @@ import java.util.StringTokenizer;
 import com.threeamigos.mandelbrot.implementations.service.PointOfInterestImpl;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
+import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 
 public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister {
@@ -107,14 +108,26 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 		double centralReal = Double.parseDouble(st.nextToken());
 		int zoomCount = Integer.parseInt(st.nextToken());
 		int maxIterations = Integer.parseInt(st.nextToken());
-		return new PointOfInterestImpl(name, minImaginary, maxImaginary, centralReal, zoomCount, maxIterations);
+		if (!st.hasMoreTokens()) {
+			return new PointOfInterestImpl(name, minImaginary, maxImaginary, centralReal, zoomCount, maxIterations);
+		} else {
+			double juliaCReal = Double.parseDouble(st.nextToken());
+			double juliaCImaginary = Double.parseDouble(st.nextToken());
+			return new PointOfInterestImpl(name, minImaginary, maxImaginary, centralReal, zoomCount, maxIterations,
+					juliaCReal, juliaCImaginary);
+		}
 	}
 
 	private final String toString(PointOfInterest pointOfInterest) {
-		return new StringBuilder(pointOfInterest.getName()).append(SEPARATOR).append(pointOfInterest.getMinImaginary())
-				.append(SEPARATOR).append(pointOfInterest.getMaxImaginary()).append(SEPARATOR)
-				.append(pointOfInterest.getCentralReal()).append(SEPARATOR).append(pointOfInterest.getZoomCount())
-				.append(SEPARATOR).append(pointOfInterest.getMaxIterations()).toString();
+		StringBuilder sb = new StringBuilder(pointOfInterest.getName()).append(SEPARATOR)
+				.append(pointOfInterest.getMinImaginary()).append(SEPARATOR).append(pointOfInterest.getMaxImaginary())
+				.append(SEPARATOR).append(pointOfInterest.getCentralReal()).append(SEPARATOR)
+				.append(pointOfInterest.getZoomCount()).append(SEPARATOR).append(pointOfInterest.getMaxIterations());
+		if (pointOfInterest.getFractalType() == FractalType.JULIA) {
+			sb.append(SEPARATOR).append(pointOfInterest.getJuliaCReal()).append(SEPARATOR)
+					.append(pointOfInterest.getJuliaCImaginary());
+		}
+		return sb.toString();
 	}
 
 }

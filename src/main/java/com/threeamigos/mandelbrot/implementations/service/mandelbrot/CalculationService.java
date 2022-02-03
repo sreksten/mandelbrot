@@ -1,5 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
 
+import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 
@@ -17,6 +18,7 @@ class CalculationService implements Runnable {
 	final PixelBuffer pixelBuffer;
 	final SliceCalculator[] calculators;
 	final PercentageTracker percentageTracker;
+	final FractalType fractalType;
 
 	boolean globalRunning;
 	private boolean interrupted = false;
@@ -31,6 +33,7 @@ class CalculationService implements Runnable {
 		this.maxIterations = maxIterations;
 		this.points = points;
 		this.deque = new SliceDataDeque();
+		this.fractalType = points.getFractalType();
 
 		int width = points.getWidth();
 		int height = points.getHeight();
@@ -134,7 +137,7 @@ class CalculationService implements Runnable {
 			if (calculator == null || !calculator.isAlive()) {
 				SliceData slice = deque.remove();
 				String name = "R" + requestNumber + "-T" + i;
-				calculator = new MandelbrotSliceCalculator(points, slice, this, maxIterations);
+				calculator = createSliceCalculator(slice);
 				calculators[i] = calculator;
 				schedulerService.schedule(Thread.currentThread(), calculator, priority, true, name);
 			}
@@ -150,7 +153,16 @@ class CalculationService implements Runnable {
 		}
 	}
 
+	private SliceCalculator createSliceCalculator(SliceData slice) {
+		if (fractalType == FractalType.JULIA) {
+			return new JuliaSliceCalculator(points, slice, this, maxIterations);
+		} else {
+			return new MandelbrotSliceCalculator(points, slice, this, maxIterations);
+		}
+	}
+
 	long getCalculationTime() {
 		return calculationTime;
 	}
+
 }

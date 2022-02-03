@@ -26,9 +26,10 @@ import javax.swing.event.MouseInputListener;
 import com.threeamigos.mandelbrot.implementations.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
@@ -37,12 +38,12 @@ import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
-public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
+public class FractalCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
 		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient FractalService mandelbrotService;
+	private transient FractalService fractalService;
 	private transient PointsOfInterestService pointsOfInterestService;
 	private transient ImageProducerServiceFactory imageProducerServiceFactory;
 	private transient ImageProducerService imageProducerService;
@@ -57,13 +58,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private transient Image image;
 
+	private JMenu fractalTypeMenu;
 	private JMenu pointsOfInterestMenu;
 	private JMenu colorModelsMenu;
 	private JMenu threadsMenu;
 	private JMenu iterationsMenu;
 	private JCheckBoxMenuItem showProgressMenuItem;
 
-	public MandelbrotCanvas(FractalService mandelbrotService, PointsOfInterestService pointsOfInterestService,
+	public FractalCanvas(FractalService fractalService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
 			CalculationParameters calculationParameters, ZoomBoxService zoomBox,
 			WindowDecoratorService windowDecoratorService) {
@@ -81,7 +83,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		setFocusable(true);
 		setDoubleBuffered(true);
 
-		this.mandelbrotService = mandelbrotService;
+		this.fractalService = fractalService;
 		this.windowDecoratorComposerService = windowDecoratorService;
 
 		this.zoomBox = zoomBox;
@@ -100,7 +102,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	@Override
 	public void run() {
-		mandelbrotService.calculate(points);
+		fractalService.calculate(points);
 	}
 
 	@Override
@@ -215,6 +217,12 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		case KeyEvent.VK_I:
 			hideOrShowInfo();
 			break;
+		case KeyEvent.VK_J:
+			setFractalType(FractalType.JULIA);
+			break;
+		case KeyEvent.VK_M:
+			setFractalType(FractalType.MANDELBROT);
+			break;
 		case KeyEvent.VK_P:
 			hideOrShowPointOfInterestName();
 			break;
@@ -275,24 +283,24 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private void setMaxIterations(int maxIterations) {
-		if (mandelbrotService.setMaxIterations(maxIterations)) {
-			updateImageProducer(mandelbrotService.getMaxIterations());
+		if (fractalService.setMaxIterations(maxIterations)) {
+			updateImageProducer(fractalService.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void doubleUpMaxIterations() {
-		if (mandelbrotService.doubleUpMaxIterations()) {
-			updateImageProducer(mandelbrotService.getMaxIterations());
+		if (fractalService.doubleUpMaxIterations()) {
+			updateImageProducer(fractalService.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void halveMaxIterations() {
-		if (mandelbrotService.halveMaxIterations()) {
-			updateImageProducer(mandelbrotService.getMaxIterations());
+		if (fractalService.halveMaxIterations()) {
+			updateImageProducer(fractalService.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
@@ -302,26 +310,26 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		imageProducerService.switchColorModel(colorModelName);
 		updateColorModelsMenu();
 		image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
-				mandelbrotService.getIterations());
+				fractalService.getIterations());
 		repaint();
 	}
 
 	private void setNumberOfThreads(int numberOfThreads) {
-		if (mandelbrotService.setNumberOfThreads(numberOfThreads)) {
+		if (fractalService.setNumberOfThreads(numberOfThreads)) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void incrementThreads() {
-		if (mandelbrotService.incrementNumberOfThreads()) {
+		if (fractalService.incrementNumberOfThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void decrementThreads() {
-		if (mandelbrotService.decrementNumberOfThreads()) {
+		if (fractalService.decrementNumberOfThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
@@ -329,7 +337,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 
 	private void addPointOfInterest() {
 		PersistResult persistResult = pointsOfInterestService
-				.add(points.getPointOfInterest(mandelbrotService.getMaxIterations()));
+				.add(points.getPointOfInterest(fractalService.getMaxIterations()));
 		if (persistResult != null && persistResult.isSuccessful()) {
 			setCurrentPointOfInterestIndex(pointsOfInterestService.getCount());
 			updatePointsOfInterestMenu();
@@ -341,7 +349,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		imageProducerService.cycleColorModel();
 		updateColorModelsMenu();
 		image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
-				mandelbrotService.getIterations());
+				fractalService.getIterations());
 		repaint();
 	}
 
@@ -389,7 +397,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 	}
 
 	private void saveImage() {
-		snapshotService.saveSnapshot(points, mandelbrotService.getMaxIterations(),
+		snapshotService.saveSnapshot(points, fractalService.getMaxIterations(),
 				imageProducerService.getCurrentColorModelName(), image, this);
 	}
 
@@ -398,11 +406,22 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			setCurrentPointOfInterestIndex(pointIndex);
 			PointOfInterest pointOfInterest = pointsOfInterestService.getElements().get(pointIndex - 1);
 			points.setPointOfInterest(pointOfInterest);
-			if (pointOfInterest.getMaxIterations() != mandelbrotService.getMaxIterations()) {
+			points.setFractalType(pointOfInterest.getFractalType());
+			updateFractalTypeMenu();
+			if (pointOfInterest.getMaxIterations() != fractalService.getMaxIterations()) {
 				updateImageProducer(pointOfInterest.getMaxIterations());
-				mandelbrotService.setMaxIterations(pointOfInterest.getMaxIterations());
+				fractalService.setMaxIterations(pointOfInterest.getMaxIterations());
 				updateIterationsMenu();
 			}
+			startCalculationThread();
+		}
+	}
+
+	private void setFractalType(FractalType fractalType) {
+		if (points.getFractalType() != fractalType) {
+			points.setFractalType(fractalType);
+			setCurrentPointOfInterestIndex(null);
+			updateFractalTypeMenu();
 			startCalculationThread();
 		}
 	}
@@ -431,14 +450,13 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 			windowDecoratorComposerService.setPercentage((Integer) event.getNewValue());
 			shouldRepaint = showProgress;
 			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
-					mandelbrotService.getIterations());
+					fractalService.getIterations());
 		} else if (FractalService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage(null);
 			shouldRepaint = true;
 			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
-					mandelbrotService.getIterations());
-		} else if (FractalService.BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE
-				.equals(event.getPropertyName())) {
+					fractalService.getIterations());
+		} else if (FractalService.BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			shouldRepaint = showSnapshotProgress;
 		} else if (FractalService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			shouldRepaint = showSnapshotProgress;
@@ -467,6 +485,18 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Quit", KeyEvent.VK_Q, event -> System.exit(0));
 
+		// -----
+
+		fractalTypeMenu = new JMenu("Fractal type");
+		menuBar.add(fractalTypeMenu);
+
+		addCheckboxMenuItem(fractalTypeMenu, FractalType.JULIA.getDescription(), KeyEvent.VK_J,
+				points.getFractalType() == FractalType.JULIA, event -> setFractalType(FractalType.JULIA));
+		addCheckboxMenuItem(fractalTypeMenu, FractalType.MANDELBROT.getDescription(), KeyEvent.VK_M,
+				points.getFractalType() == FractalType.MANDELBROT, event -> setFractalType(FractalType.MANDELBROT));
+
+		// -----
+
 		pointsOfInterestMenu = new JMenu("Points of interest");
 		menuBar.add(pointsOfInterestMenu);
 
@@ -479,6 +509,8 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 				event -> hideOrShowPointOfInterestName());
 		pointsOfInterestMenu.addSeparator();
 		updatePointsOfInterestMenu();
+
+		// -----
 
 		JMenu calculationsMenu = new JMenu("Calculations");
 		menuBar.add(calculationsMenu);
@@ -497,7 +529,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		calculationsMenu.add(threadsMenu);
 		for (int i = 1; i <= Runtime.getRuntime().availableProcessors(); i++) {
 			final int threadsToUse = i;
-			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, mandelbrotService.getNumberOfThreads() == i,
+			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, fractalService.getNumberOfThreads() == i,
 					event -> setNumberOfThreads(threadsToUse));
 		}
 		calculationsMenu.addSeparator();
@@ -505,7 +537,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		for (int i = FractalService.MIN_ITERATIONS_EXPONENT; i <= FractalService.MAX_ITERATIONS_EXPONENT; i++) {
 			final int maxIterations = 1 << i;
 			addCheckboxMenuItem(iterationsMenu, String.valueOf(maxIterations), -1,
-					mandelbrotService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
+					fractalService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
 		}
 		calculationsMenu.add(iterationsMenu);
 
@@ -521,6 +553,14 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		new AboutWindow().about(this);
 	}
 
+	private void updateFractalTypeMenu() {
+		Component[] items = fractalTypeMenu.getMenuComponents();
+		for (int i = 0; i < items.length; i++) {
+			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
+			item.setSelected(points.getFractalType().getDescription().equals(item.getText()));
+		}
+	}
+
 	private void updateColorModelsMenu() {
 		Component[] items = colorModelsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
@@ -533,7 +573,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		Component[] items = threadsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			item.setSelected(mandelbrotService.getNumberOfThreads() == i + 1);
+			item.setSelected(fractalService.getNumberOfThreads() == i + 1);
 		}
 	}
 
@@ -542,7 +582,7 @@ public class MandelbrotCanvas extends JPanel implements Runnable, MouseWheelList
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
 			final int maxIterations = 1 << i + FractalService.MIN_ITERATIONS_EXPONENT;
-			item.setSelected(mandelbrotService.getMaxIterations() == maxIterations);
+			item.setSelected(fractalService.getMaxIterations() == maxIterations);
 		}
 	}
 

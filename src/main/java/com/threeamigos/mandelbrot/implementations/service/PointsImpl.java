@@ -1,6 +1,7 @@
 package com.threeamigos.mandelbrot.implementations.service;
 
 import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 
@@ -43,6 +44,11 @@ public class PointsImpl implements Points {
 
 	private Double realCoordinateUnderPointer;
 	private Double imaginaryCoordinateUnderPointer;
+
+	private FractalType fractalType = FractalType.MANDELBROT;
+
+	private double juliaCReal = 0.3d;
+	private double juliaCImaginary = -0.01;
 
 	private PointsImpl() {
 	}
@@ -185,8 +191,13 @@ public class PointsImpl implements Points {
 		maxX = pointOfInterest.getCentralReal() + halfWidth;
 		calculateStepX();
 
-		this.zoomCount = pointOfInterest.getZoomCount();
-		this.zoomFactor = calculateZoomFactor(zoomCount);
+		zoomCount = pointOfInterest.getZoomCount();
+		zoomFactor = calculateZoomFactor(zoomCount);
+
+		fractalType = pointOfInterest.getFractalType();
+
+		juliaCReal = pointOfInterest.getJuliaCReal();
+		juliaCImaginary = pointOfInterest.getJuliaCImaginary();
 	}
 
 	@Override
@@ -335,6 +346,36 @@ public class PointsImpl implements Points {
 		copy.width = width;
 		copy.zoomCount = zoomCount;
 		copy.zoomFactor = zoomFactor;
+		copy.fractalType = fractalType;
+		copy.juliaCReal = juliaCReal;
+		copy.juliaCImaginary = juliaCImaginary;
 		return copy;
 	}
+
+	@Override
+	public void setFractalType(FractalType fractalType) {
+		this.fractalType = fractalType;
+	}
+
+	@Override
+	public FractalType getFractalType() {
+		return fractalType;
+	}
+
+	@Override
+	public void setJuliaC(double juliaCReal, double juliaCImaginary) {
+		this.juliaCReal = juliaCReal;
+		this.juliaCImaginary = juliaCImaginary;
+	}
+
+	@Override
+	public double getJuliaCReal() {
+		return juliaCReal;
+	}
+
+	@Override
+	public double getJuliaCImaginary() {
+		return juliaCImaginary;
+	}
+
 }

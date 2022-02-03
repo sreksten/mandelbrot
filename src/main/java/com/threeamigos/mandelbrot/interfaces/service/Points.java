@@ -63,4 +63,15 @@ public interface Points {
 	public double toCImaginary(int y);
 
 	public Points copy();
+
+	public void setFractalType(FractalType fractalType);
+
+	public FractalType getFractalType();
+
+	public void setJuliaC(double juliaCReal, double juliaCImaginary);
+
+	public double getJuliaCReal();
+
+	public double getJuliaCImaginary();
+
 }

@@ -16,4 +16,10 @@ public interface PointOfInterest {
 
 	public int getMaxIterations();
 
+	public FractalType getFractalType();
+
+	public double getJuliaCReal();
+
+	public double getJuliaCImaginary();
+
 }

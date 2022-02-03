@@ -8,9 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.WindowConstants;
 
+import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
-import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
@@ -24,11 +24,11 @@ import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorSnapshotServiceFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxServiceImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
-import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
+import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
+import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
+import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
@@ -44,12 +44,12 @@ public class Main {
 	private Resolution resolution;
 	private Points points;
 	private SchedulerService schedulerService;
-	private FractalServiceFactory mandelbrotServiceFactory;
+	private FractalServiceFactory fractalServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
 	private PointsOfInterestService pointsOfInterestService;
 	private SnapshotService snapshotService;
-	private FractalService mandelbrotService;
+	private FractalService fractalService;
 	private WindowDecoratorService windowDecoratorService;
 	private ZoomBoxService zoomBox;
 
@@ -66,7 +66,7 @@ public class Main {
 
 		points = new PointsImpl(resolution);
 
-		mandelbrotServiceFactory = new FractalServiceFactoryImpl();
+		fractalServiceFactory = new FractalServiceFactoryImpl();
 
 		schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
 
@@ -76,25 +76,25 @@ public class Main {
 
 		pointsOfInterestService = new PointsOfInterestServiceImpl();
 
-		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, mandelbrotServiceFactory,
+		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, fractalServiceFactory,
 				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
-		mandelbrotService = mandelbrotServiceFactory.createInstance(calculationParameters, schedulerService,
+		fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
 				CalculationType.FOREGROUND);
 
 		windowDecoratorService = new WindowDecoratorServiceImpl(
-				new WindowDecoratorInfoFragmentImpl(resolution, mandelbrotService, points),
+				new WindowDecoratorInfoFragmentImpl(resolution, fractalService, points),
 				new WindowDecoratorHelpFragmentImpl(resolution, pointsOfInterestService),
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, snapshotService));
 
 		zoomBox = new ZoomBoxServiceImpl(points);
 
-		MandelbrotCanvas mandelbrotCanvas = new MandelbrotCanvas(mandelbrotService, pointsOfInterestService,
+		FractalCanvas mandelbrotCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, zoomBox,
 				windowDecoratorService);
 
-		mandelbrotService.addPropertyChangeListener(mandelbrotCanvas);
+		fractalService.addPropertyChangeListener(mandelbrotCanvas);
 		snapshotService.addPropertyChangeListener(mandelbrotCanvas);
 
 		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
@@ -114,7 +114,7 @@ public class Main {
 
 	}
 
-	private JFrame prepareFrame(MandelbrotCanvas mandelbrotCanvas) {
+	private JFrame prepareFrame(FractalCanvas mandelbrotCanvas) {
 
 		JFrame jframe = new JFrame("3AM Mandelbrot");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

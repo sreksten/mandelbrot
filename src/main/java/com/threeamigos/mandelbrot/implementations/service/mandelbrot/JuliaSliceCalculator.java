@@ -16,10 +16,14 @@ class JuliaSliceCalculator implements SliceCalculator {
 	private int maxIterations;
 	private String name;
 	private boolean localRunning;
+	private double cr;
+	private double ci;
 
 	public JuliaSliceCalculator(Points points, SliceData slice, CalculationService calculationService,
 			int maxIterations) {
 		this.points = points;
+		this.cr = points.getJuliaCReal();
+		this.ci = points.getJuliaCImaginary();
 		this.startX = slice.startX;
 		this.startY = slice.startY;
 		this.endX = slice.endX;
@@ -100,9 +104,6 @@ class JuliaSliceCalculator implements SliceCalculator {
 		}
 		return iterations;
 	}
-
-	private double cr = 0.3d;
-	private double ci = -0.01d;
 
 	private int calculateIterationsImpl(double cReal, double cImaginary) {
 		double real = cReal;
