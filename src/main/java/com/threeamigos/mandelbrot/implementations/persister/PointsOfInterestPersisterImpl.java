@@ -33,6 +33,7 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 			for (PointOfInterest pointOfInterest : pointsOfInterest) {
 				printWriter.println(toString(pointOfInterest));
 			}
+			printWriter.println("");
 			PersistResultImpl result = new PersistResultImpl();
 			result.setFilename(filename);
 			return result;
