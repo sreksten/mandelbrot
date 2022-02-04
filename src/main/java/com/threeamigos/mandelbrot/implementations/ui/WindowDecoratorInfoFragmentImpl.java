@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
@@ -57,12 +58,17 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 					String.format("Imaginary interval: [%1.14f,%1.14f]", points.getMinY(), points.getMaxY()), xCoord,
 					yCoord);
 			yCoord += vSpacing;
+			if (points.getFractalType() == FractalType.JULIA) {
+				drawString(graphics, String.format("Julia - c = (%1.3f,%1.3fi)", points.getJuliaCReal(),
+						points.getJuliaCImaginary()), xCoord, yCoord);
+				yCoord += vSpacing;
+			}
 			Double realCoordinateUnderPointer = points.getPointerRealcoordinate();
 			if (realCoordinateUnderPointer != null) {
 				Double imaginaryCoordinateUnderPointer = points.getPointerImaginaryCoordinate();
 				if (imaginaryCoordinateUnderPointer != null) {
 					drawString(graphics,
-							String.format("Current point: [%d,%d] [%1.14f,%1.14f]", points.getPointerXCoordinate(),
+							String.format("Current point: (%d,%d) (%1.14f,%1.14f)", points.getPointerXCoordinate(),
 									points.getPointerYCoordinate(), realCoordinateUnderPointer.floatValue(),
 									imaginaryCoordinateUnderPointer.floatValue()),
 							xCoord, yCoord);
