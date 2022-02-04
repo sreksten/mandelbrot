@@ -1,5 +1,7 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
+import java.beans.PropertyChangeListener;
+
 import com.threeamigos.mandelbrot.Resolution;
 
 public interface Points {
@@ -73,5 +75,11 @@ public interface Points {
 	public double getJuliaCReal();
 
 	public double getJuliaCImaginary();
+
+	public void addPropertyChangeListener(PropertyChangeListener pcl);
+
+	public void removePropertyChangeListener(PropertyChangeListener pcl);
+
+	public void requestRecalculation();
 
 }

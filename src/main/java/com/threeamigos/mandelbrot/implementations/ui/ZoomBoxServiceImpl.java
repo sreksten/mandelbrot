@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
+import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
 
-public class ZoomBoxServiceImpl implements ZoomBoxService {
+public class ZoomBoxServiceImpl implements RenderableConsumer {
 
 	final Points points;
 	final int maxWidth;
@@ -36,45 +37,54 @@ public class ZoomBoxServiceImpl implements ZoomBoxService {
 	}
 
 	@Override
-	public boolean mousePressed(MouseEvent e) {
-		startX = e.getX();
-		startY = e.getY();
-		dragging = true;
-		return false;
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// We won't follow this event
 	}
 
 	@Override
-	public boolean mouseDragged(MouseEvent e) {
-		if (dragging) {
-			endX = checkWidthBoundaries(e.getX());
-			endY = checkHeightBoundaries(e.getY());
+	public void mouseClicked(MouseEvent e) {
+		// We won't follow this event
+	}
 
-			if (startX < endX) {
-				rectangleStartX = startX;
-				rectangleWidth = endX - startX;
-				if (startY < endY) {
-					checkRectangleLowerRight();
-				} else {
-					checkRectangleUpperRight();
-				}
-			} else {
-				rectangleStartX = endX;
-				rectangleWidth = startX - endX;
-				if (startY < endY) {
-					checkRectangleLowerRight();
-				} else {
-					checkRectangleUpperRight();
-				}
-				rectangleStartX = startX - rectangleWidth;
-			}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		startX = e.getX();
+		startY = e.getY();
+		dragging = true;
+		e.consume();
+	}
 
-			checkIfHasValidRectangle();
-			return true;
-
-		} else {
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if (!dragging) {
 			reset();
-			return false;
+			return;
 		}
+
+		endX = checkWidthBoundaries(e.getX());
+		endY = checkHeightBoundaries(e.getY());
+
+		if (startX < endX) {
+			rectangleStartX = startX;
+			rectangleWidth = endX - startX;
+			if (startY < endY) {
+				checkRectangleLowerRight();
+			} else {
+				checkRectangleUpperRight();
+			}
+		} else {
+			rectangleStartX = endX;
+			rectangleWidth = startX - endX;
+			if (startY < endY) {
+				checkRectangleLowerRight();
+			} else {
+				checkRectangleUpperRight();
+			}
+			rectangleStartX = startX - rectangleWidth;
+		}
+
+		checkIfHasValidRectangle();
+		e.consume();
 	}
 
 	private void checkRectangleUpperRight() {
@@ -122,7 +132,7 @@ public class ZoomBoxServiceImpl implements ZoomBoxService {
 	}
 
 	@Override
-	public boolean mouseReleased(MouseEvent e) {
+	public void mouseReleased(MouseEvent e) {
 		mouseDragged(e);
 		dragging = false;
 		if (hasValidRectangle) {
@@ -139,36 +149,57 @@ public class ZoomBoxServiceImpl implements ZoomBoxService {
 			for (int i = points.getZoomCount(); i < zoomCount; i++) {
 				points.zoomIn(maxWidth / 2, maxHeight / 2);
 			}
+			points.requestRecalculation();
 			reset();
-			return true;
-		} else {
-			return false;
+			e.consume();
 		}
-
 	}
 
-	@Override
-	public void reset() {
+	private void reset() {
 		startX = endX = startY = endY = rectangleWidth = rectangleHeight = 0;
 		dragging = false;
 		hasValidRectangle = false;
 	}
 
 	@Override
-	public void draw(Graphics2D graphics) {
-		if (hasValidRectangle) {
-			graphics.setColor(Color.WHITE);
-			graphics.drawRect(rectangleStartX, rectangleStartY, rectangleWidth, rectangleHeight);
+	public void mouseEntered(MouseEvent e) {
+		// We won't follow this event
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// We won't follow this event
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// We won't follow this event
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			reset();
+			e.consume();
 		}
 	}
 
 	@Override
-	public boolean keyTyped(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			reset();
-			return true;
+	public void keyPressed(KeyEvent e) {
+		// We won't follow this event
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// We won't follow this event
+	}
+
+	@Override
+	public void paint(Graphics2D graphics) {
+		if (hasValidRectangle) {
+			graphics.setColor(Color.WHITE);
+			graphics.drawRect(rectangleStartX, rectangleStartY, rectangleWidth, rectangleHeight);
 		}
-		return false;
 	}
 
 }

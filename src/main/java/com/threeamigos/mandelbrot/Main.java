@@ -17,6 +17,7 @@ import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
+import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorInfoFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorPointOfInterestNameFragmentImpl;
@@ -35,7 +36,6 @@ import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
 public class Main {
 
@@ -51,7 +51,6 @@ public class Main {
 	private SnapshotService snapshotService;
 	private FractalService fractalService;
 	private WindowDecoratorService windowDecoratorService;
-	private ZoomBoxService zoomBox;
 
 	public Main() {
 
@@ -88,12 +87,13 @@ public class Main {
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, snapshotService));
 
-		zoomBox = new ZoomBoxServiceImpl(points);
-
 		FractalCanvas mandelbrotCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
-				imageProducerServiceFactory, snapshotService, points, calculationParameters, zoomBox,
-				windowDecoratorService);
+				imageProducerServiceFactory, snapshotService, points, calculationParameters, windowDecoratorService);
 
+		mandelbrotCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
+		mandelbrotCanvas.addRenderableConsumer(new JuliaBoundariesServiceImpl(points, pointsOfInterestService));
+
+		points.addPropertyChangeListener(mandelbrotCanvas);
 		fractalService.addPropertyChangeListener(mandelbrotCanvas);
 		snapshotService.addPropertyChangeListener(mandelbrotCanvas);
 

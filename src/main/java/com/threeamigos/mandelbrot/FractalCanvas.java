@@ -6,13 +6,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -21,7 +19,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.event.MouseInputListener;
 
 import com.threeamigos.mandelbrot.implementations.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
@@ -34,12 +31,12 @@ import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
+import com.threeamigos.mandelbrot.interfaces.ui.InputConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
+import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
-import com.threeamigos.mandelbrot.interfaces.ui.ZoomBoxService;
 
-public class FractalCanvas extends JPanel implements Runnable, MouseWheelListener, MouseInputListener,
-		MouseMotionListener, KeyListener, MessageNotifier, PropertyChangeListener {
+public class FractalCanvas extends JPanel implements Runnable, InputConsumer, MessageNotifier, PropertyChangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,9 +46,10 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 	private transient ImageProducerService imageProducerService;
 	private transient SnapshotService snapshotService;
 	private transient Points points;
-	private transient ZoomBoxService zoomBox;
 	private transient WindowDecoratorService windowDecoratorComposerService;
 	private Integer currentPointOfInterestIndex = null;
+
+	private List<RenderableConsumer> renderableConsumers = new ArrayList<>();
 
 	private boolean showProgress = true;
 	private boolean showSnapshotProgress = true;
@@ -67,8 +65,7 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 
 	public FractalCanvas(FractalService fractalService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			CalculationParameters calculationParameters, ZoomBoxService zoomBox,
-			WindowDecoratorService windowDecoratorService) {
+			CalculationParameters calculationParameters, WindowDecoratorService windowDecoratorService) {
 		super();
 		this.pointsOfInterestService = pointsOfInterestService;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
@@ -86,12 +83,14 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 		this.fractalService = fractalService;
 		this.windowDecoratorComposerService = windowDecoratorService;
 
-		this.zoomBox = zoomBox;
-
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
+	}
+
+	public void addRenderableConsumer(RenderableConsumer inputConsumer) {
+		renderableConsumers.add(inputConsumer);
 	}
 
 	public void startCalculationThread() {
@@ -111,7 +110,7 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 		Graphics2D graphics = (Graphics2D) gfx;
 		graphics.drawImage(image, 0, 0, null);
 		windowDecoratorComposerService.paint(graphics, 50, 50);
-		zoomBox.draw(graphics);
+		renderableConsumers.stream().forEach(r -> r.paint(graphics));
 	}
 
 	private void setCurrentPointOfInterestIndex(Integer currentPointOfInterestIndex) {
@@ -121,65 +120,129 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		setCurrentPointOfInterestIndex(null);
-		boolean shouldRestart;
-		if (e.getWheelRotation() < 0) {
-			shouldRestart = points.zoomIn(e.getX(), e.getY());
-		} else {
-			shouldRestart = points.zoomOut(e.getX(), e.getY());
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseWheelMoved(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
 		}
-		if (shouldRestart) {
-			startCalculationThread();
+		if (!e.isConsumed()) {
+			setCurrentPointOfInterestIndex(null);
+			boolean shouldRestart;
+			if (e.getWheelRotation() < 0) {
+				shouldRestart = points.zoomIn(e.getX(), e.getY());
+			} else {
+				shouldRestart = points.zoomOut(e.getX(), e.getY());
+			}
+			if (shouldRestart) {
+				startCalculationThread();
+				shouldRepaint = true;
+			}
+		}
+		if (shouldRepaint) {
 			repaint();
 		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		setCurrentPointOfInterestIndex(null);
-		if (e.getClickCount() == 1) {
-			points.changeCenterTo(e.getX(), e.getY());
-		} else {
-			points.reset();
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseClicked(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
 		}
-		startCalculationThread();
-		repaint();
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if (zoomBox.mousePressed(e)) {
+		if (!e.isConsumed()) {
+			setCurrentPointOfInterestIndex(null);
+			if (e.getClickCount() == 1) {
+				points.changeCenterTo(e.getX(), e.getY());
+			} else {
+				points.reset();
+			}
+			startCalculationThread();
+			shouldRepaint = true;
+		}
+		if (shouldRepaint) {
 			repaint();
 		}
 	}
 
 	@Override
+	public void mousePressed(MouseEvent e) {
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mousePressed(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
+		}
+		if (shouldRepaint) {
+			repaint();
+		}
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseDragged(e);
+			if (e.isConsumed()) {
+				break;
+			}
+		}
+		updatePointerCoordinates(e);
+	}
+
+	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (zoomBox.mouseReleased(e)) {
-			setCurrentPointOfInterestIndex(null);
-			startCalculationThread();
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseReleased(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
+		}
+		if (shouldRepaint) {
+			repaint();
 		}
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseEntered(e);
+			if (e.isConsumed()) {
+				break;
+			}
+		}
 		updatePointerCoordinates(e);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseExited(e);
+			if (e.isConsumed()) {
+				break;
+			}
+		}
 		points.updatePointerCoordinates(null, null);
 		repaint();
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		zoomBox.mouseDragged(e);
-		updatePointerCoordinates(e);
-	}
-
-	@Override
 	public void mouseMoved(MouseEvent e) {
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.mouseMoved(e);
+			if (e.isConsumed()) {
+				break;
+			}
+		}
 		updatePointerCoordinates(e);
 	}
 
@@ -190,94 +253,123 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// We won't follow this
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// We won't follow this
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.keyTyped(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
+		}
+		if (shouldRepaint) {
+			repaint();
+		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		boolean needRepainting = zoomBox.keyTyped(e);
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_A:
-			addPointOfInterest();
-			break;
-		case KeyEvent.VK_C:
-			cycleColorModel();
-			break;
-		case KeyEvent.VK_D:
-			deletePointOfInterest();
-			break;
-		case KeyEvent.VK_H:
-			hideOrShowHelp();
-			break;
-		case KeyEvent.VK_I:
-			hideOrShowInfo();
-			break;
-		case KeyEvent.VK_J:
-			setFractalType(FractalType.JULIA);
-			break;
-		case KeyEvent.VK_M:
-			setFractalType(FractalType.MANDELBROT);
-			break;
-		case KeyEvent.VK_P:
-			hideOrShowPointOfInterestName();
-			break;
-		case KeyEvent.VK_R:
-			hideOrShowProgress();
-			break;
-		case KeyEvent.VK_S:
-			saveImage();
-			break;
-		case KeyEvent.VK_1:
-			setPointOfInterest(1);
-			break;
-		case KeyEvent.VK_2:
-			setPointOfInterest(2);
-			break;
-		case KeyEvent.VK_3:
-			setPointOfInterest(3);
-			break;
-		case KeyEvent.VK_4:
-			setPointOfInterest(4);
-			break;
-		case KeyEvent.VK_5:
-			setPointOfInterest(5);
-			break;
-		case KeyEvent.VK_6:
-			setPointOfInterest(6);
-			break;
-		case KeyEvent.VK_7:
-			setPointOfInterest(7);
-			break;
-		case KeyEvent.VK_8:
-			setPointOfInterest(8);
-			break;
-		case KeyEvent.VK_9:
-			setPointOfInterest(9);
-			break;
-		case KeyEvent.VK_0:
-			setPointOfInterest(10);
-			break;
-		case KeyEvent.VK_UP:
-			doubleUpMaxIterations();
-			break;
-		case KeyEvent.VK_DOWN:
-			halveMaxIterations();
-			break;
-		case KeyEvent.VK_LEFT:
-			decrementThreads();
-			break;
-		case KeyEvent.VK_RIGHT:
-			incrementThreads();
-			break;
-		default:
-			break;
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.keyPressed(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
 		}
-		if (needRepainting) {
+		if (!e.isConsumed()) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_A:
+				addPointOfInterest();
+				break;
+			case KeyEvent.VK_C:
+				cycleColorModel();
+				break;
+			case KeyEvent.VK_D:
+				deletePointOfInterest();
+				break;
+			case KeyEvent.VK_H:
+				hideOrShowHelp();
+				break;
+			case KeyEvent.VK_I:
+				hideOrShowInfo();
+				break;
+			case KeyEvent.VK_J:
+				setFractalType(FractalType.JULIA);
+				break;
+			case KeyEvent.VK_M:
+				setFractalType(FractalType.MANDELBROT);
+				break;
+			case KeyEvent.VK_P:
+				hideOrShowPointOfInterestName();
+				break;
+			case KeyEvent.VK_R:
+				hideOrShowProgress();
+				break;
+			case KeyEvent.VK_S:
+				saveImage();
+				break;
+			case KeyEvent.VK_1:
+				setPointOfInterest(1);
+				break;
+			case KeyEvent.VK_2:
+				setPointOfInterest(2);
+				break;
+			case KeyEvent.VK_3:
+				setPointOfInterest(3);
+				break;
+			case KeyEvent.VK_4:
+				setPointOfInterest(4);
+				break;
+			case KeyEvent.VK_5:
+				setPointOfInterest(5);
+				break;
+			case KeyEvent.VK_6:
+				setPointOfInterest(6);
+				break;
+			case KeyEvent.VK_7:
+				setPointOfInterest(7);
+				break;
+			case KeyEvent.VK_8:
+				setPointOfInterest(8);
+				break;
+			case KeyEvent.VK_9:
+				setPointOfInterest(9);
+				break;
+			case KeyEvent.VK_0:
+				setPointOfInterest(10);
+				break;
+			case KeyEvent.VK_UP:
+				doubleUpMaxIterations();
+				break;
+			case KeyEvent.VK_DOWN:
+				halveMaxIterations();
+				break;
+			case KeyEvent.VK_LEFT:
+				decrementThreads();
+				break;
+			case KeyEvent.VK_RIGHT:
+				incrementThreads();
+				break;
+			default:
+				break;
+			}
+		}
+		if (shouldRepaint) {
+			repaint();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		boolean shouldRepaint = false;
+		for (RenderableConsumer consumer : renderableConsumers) {
+			consumer.keyTyped(e);
+			if (e.isConsumed()) {
+				shouldRepaint = true;
+				break;
+			}
+		}
+		if (shouldRepaint) {
 			repaint();
 		}
 	}
@@ -446,6 +538,7 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		boolean shouldRepaint = false;
+		boolean shouldRestartCalculation = false;
 		if (FractalService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage((Integer) event.getNewValue());
 			shouldRepaint = showProgress;
@@ -460,6 +553,12 @@ public class FractalCanvas extends JPanel implements Runnable, MouseWheelListene
 			shouldRepaint = showSnapshotProgress;
 		} else if (FractalService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			shouldRepaint = showSnapshotProgress;
+		} else if (FractalService.CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE.equals(event.getPropertyName())) {
+			setCurrentPointOfInterestIndex(null);
+			shouldRestartCalculation = true;
+		}
+		if (shouldRestartCalculation) {
+			startCalculationThread();
 		}
 		if (shouldRepaint) {
 			repaint();

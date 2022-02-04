@@ -1,6 +1,10 @@
 package com.threeamigos.mandelbrot.implementations.service;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
@@ -17,6 +21,8 @@ public class PointsImpl implements Points {
 
 	private static final double ZOOM_OUT_FACTOR = 1.1111111d;
 	private static final double ZOOM_IN_FACTOR = 0.9d;
+
+	private final PropertyChangeSupport propertyChangeSupport;
 
 	private int width;
 	private int height;
@@ -51,9 +57,11 @@ public class PointsImpl implements Points {
 	private double juliaCImaginary = -0.01;
 
 	private PointsImpl() {
+		this.propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 
 	public PointsImpl(Resolution resolution) {
+		this.propertyChangeSupport = new PropertyChangeSupport(this);
 		setResolution(resolution);
 	}
 
@@ -384,4 +392,19 @@ public class PointsImpl implements Points {
 		return juliaCImaginary;
 	}
 
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.addPropertyChangeListener(pcl);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener pcl) {
+		propertyChangeSupport.removePropertyChangeListener(pcl);
+	}
+
+	@Override
+	public void requestRecalculation() {
+		propertyChangeSupport.firePropertyChange(FractalService.CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE, null,
+				null);
+	}
 }

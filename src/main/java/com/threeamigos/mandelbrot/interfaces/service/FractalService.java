@@ -4,6 +4,8 @@ import java.beans.PropertyChangeListener;
 
 public interface FractalService {
 
+	public static final String CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE = "Calculation restart required";
+
 	public static final String CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Calculation in progress";
 
 	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
