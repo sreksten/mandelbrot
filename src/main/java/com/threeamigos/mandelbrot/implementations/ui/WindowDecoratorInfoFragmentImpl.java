@@ -26,7 +26,7 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 
 		fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
 		vSpacing = fontHeight + 4;
-		font = fontService.getFont(FONT_NAME, Font.BOLD, fontHeight);
+		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
 	}
 
 	@Override

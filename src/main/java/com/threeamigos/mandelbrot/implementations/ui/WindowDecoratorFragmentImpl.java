@@ -9,8 +9,6 @@ import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorFragment;
 
 abstract class WindowDecoratorFragmentImpl implements WindowDecoratorFragment {
 
-	protected static final String FONT_NAME = "Serif";
-
 	private boolean active = true;
 
 	protected int fontHeight;

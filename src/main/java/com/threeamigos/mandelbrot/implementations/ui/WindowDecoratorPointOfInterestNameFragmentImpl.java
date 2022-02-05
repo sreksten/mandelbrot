@@ -24,7 +24,7 @@ public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecora
 		this.pointsOfInterestService = pointsOfInterestService;
 
 		fontHeight = getHeight() / 20;
-		font = fontService.getFont(FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
+		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
 	}
 
 	@Override

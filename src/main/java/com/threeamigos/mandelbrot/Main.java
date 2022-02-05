@@ -84,7 +84,7 @@ public class Main {
 		fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
 				CalculationType.FOREGROUND);
 
-		FontService fontService = new FontServiceImpl();
+		fontService = new FontServiceImpl();
 
 		windowDecoratorService = new WindowDecoratorServiceImpl(
 				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, points),
@@ -96,7 +96,8 @@ public class Main {
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, windowDecoratorService);
 
 		mandelbrotCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
-		mandelbrotCanvas.addRenderableConsumer(new JuliaBoundariesServiceImpl(points, pointsOfInterestService));
+		mandelbrotCanvas
+				.addRenderableConsumer(new JuliaBoundariesServiceImpl(points, fontService, pointsOfInterestService));
 
 		points.addPropertyChangeListener(mandelbrotCanvas);
 		fractalService.addPropertyChangeListener(mandelbrotCanvas);
