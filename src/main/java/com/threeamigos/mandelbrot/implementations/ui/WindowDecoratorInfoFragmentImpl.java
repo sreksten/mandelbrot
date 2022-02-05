@@ -7,19 +7,26 @@ import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
 public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 		implements WindowDecoratorInfoFragment {
 
-	private FractalService mandelbrotService;
-	private Points points;
+	private final FractalService mandelbrotService;
+	private final Points points;
+
 	private Integer percentage;
 
-	public WindowDecoratorInfoFragmentImpl(Resolution resolution, FractalService mandelbrotService, Points points) {
+	public WindowDecoratorInfoFragmentImpl(Resolution resolution, FontService fontService,
+			FractalService mandelbrotService, Points points) {
 		super(resolution);
 		this.mandelbrotService = mandelbrotService;
 		this.points = points;
+
+		fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
+		vSpacing = fontHeight + 4;
+		font = fontService.getFont(FONT_NAME, Font.BOLD, fontHeight);
 	}
 
 	@Override
@@ -30,11 +37,8 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 	@Override
 	public final int paint(Graphics2D graphics, int xCoord, int yCoord) {
 		if (isActive()) {
-			int fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
-			Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
 			graphics.setFont(font);
 
-			int vSpacing = fontHeight + 4;
 			drawString(graphics, String.format("Zoom factor: %.2f - count: %d", 1.0d / points.getZoomFactor(),
 					points.getZoomCount()), xCoord, yCoord);
 			yCoord += vSpacing;

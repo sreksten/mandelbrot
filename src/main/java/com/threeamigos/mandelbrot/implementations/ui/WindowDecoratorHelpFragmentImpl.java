@@ -8,17 +8,26 @@ import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorHelpFragment;
 
-public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorHelpFragment {
+public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
+		implements WindowDecoratorHelpFragment {
 
-	private PointsOfInterestService pointsOfInterestService;
+	private final PointsOfInterestService pointsOfInterestService;
+
 	private ImageProducerService imageProducerService;
+
 	private Integer currentPointOfInterestIndex;
 
-	public WindowDecoratorHelpFragmentImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
+	public WindowDecoratorHelpFragmentImpl(Resolution resolution, FontService fontService,
+			PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
+
+		fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
+		vSpacing = fontHeight + 4;
+		font = fontService.getFont(FONT_NAME, Font.BOLD, fontHeight);
 	}
 
 	@Override
@@ -34,9 +43,6 @@ public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
 	@Override
 	public int paint(Graphics2D graphics, int xCoord, int yCoord) {
 		if (isActive()) {
-			int fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
-			int vSpacing = fontHeight + 4;
-			Font font = new Font(FONT_NAME, Font.BOLD, fontHeight);
 			graphics.setFont(font);
 			if (pointsOfInterestService.getCount() < 10) {
 				drawString(graphics, "A - add point of interest", xCoord, yCoord);

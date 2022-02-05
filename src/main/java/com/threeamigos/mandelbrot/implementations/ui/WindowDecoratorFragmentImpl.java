@@ -1,6 +1,7 @@
 package com.threeamigos.mandelbrot.implementations.ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.Resolution;
@@ -11,6 +12,10 @@ abstract class WindowDecoratorFragmentImpl implements WindowDecoratorFragment {
 	protected static final String FONT_NAME = "Serif";
 
 	private boolean active = true;
+
+	protected int fontHeight;
+	protected int vSpacing;
+	protected Font font;
 
 	private int width;
 	private int height;

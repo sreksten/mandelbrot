@@ -8,17 +8,23 @@ import java.awt.Graphics2D;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
+import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorPointOfInterestNameFragment;
 
-public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecoratorFragmentImpl implements WindowDecoratorPointOfInterestNameFragment {
+public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecoratorFragmentImpl
+		implements WindowDecoratorPointOfInterestNameFragment {
 
 	private final PointsOfInterestService pointsOfInterestService;
 
 	private Integer currentPointOfInterestIndex;
 
-	public WindowDecoratorPointOfInterestNameFragmentImpl(Resolution resolution, PointsOfInterestService pointsOfInterestService) {
+	public WindowDecoratorPointOfInterestNameFragmentImpl(Resolution resolution, FontService fontService,
+			PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
+
+		fontHeight = getHeight() / 20;
+		font = fontService.getFont(FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
 	}
 
 	@Override
@@ -26,8 +32,6 @@ public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecora
 		if (isActive() && currentPointOfInterestIndex != null) {
 			PointOfInterest pointOfInterest = pointsOfInterestService.getElements()
 					.get(currentPointOfInterestIndex - 1);
-			int fontHeight = getHeight() / 20;
-			Font font = new Font(FONT_NAME, Font.BOLD | Font.ITALIC, fontHeight);
 			graphics.setFont(font);
 			FontMetrics fontMetrics = graphics.getFontMetrics();
 			drawString(graphics, pointOfInterest.getName(),

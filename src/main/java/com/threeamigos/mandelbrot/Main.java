@@ -17,6 +17,7 @@ import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
+import com.threeamigos.mandelbrot.implementations.ui.FontServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorInfoFragmentImpl;
@@ -35,6 +36,7 @@ import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
 public class Main {
@@ -50,6 +52,7 @@ public class Main {
 	private PointsOfInterestService pointsOfInterestService;
 	private SnapshotService snapshotService;
 	private FractalService fractalService;
+	private FontService fontService;
 	private WindowDecoratorService windowDecoratorService;
 
 	public Main() {
@@ -81,11 +84,13 @@ public class Main {
 		fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
 				CalculationType.FOREGROUND);
 
+		FontService fontService = new FontServiceImpl();
+
 		windowDecoratorService = new WindowDecoratorServiceImpl(
-				new WindowDecoratorInfoFragmentImpl(resolution, fractalService, points),
-				new WindowDecoratorHelpFragmentImpl(resolution, pointsOfInterestService),
-				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, pointsOfInterestService),
-				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, snapshotService));
+				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, points),
+				new WindowDecoratorHelpFragmentImpl(resolution, fontService, pointsOfInterestService),
+				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),
+				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
 		FractalCanvas mandelbrotCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, windowDecoratorService);
