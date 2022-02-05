@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
+package com.threeamigos.mandelbrot.implementations.service.fractal;
 
 import java.util.ArrayList;
 import java.util.List;

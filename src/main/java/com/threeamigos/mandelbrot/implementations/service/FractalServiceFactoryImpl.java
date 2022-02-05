@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service;
 
-import com.threeamigos.mandelbrot.implementations.service.mandelbrot.MultithreadedFractalService;
+import com.threeamigos.mandelbrot.implementations.service.fractal.MultithreadedFractalService;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;

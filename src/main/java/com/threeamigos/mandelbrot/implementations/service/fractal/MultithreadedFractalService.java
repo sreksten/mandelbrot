@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations.service.mandelbrot;
+package com.threeamigos.mandelbrot.implementations.service.fractal;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
