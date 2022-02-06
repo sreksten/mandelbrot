@@ -51,6 +51,102 @@ class CalculationService implements Runnable {
 
 		deque.clear();
 
+		if (points.getMinY() < 0 && 0 < points.getMaxY()) {
+			// A part of the image may be symmetric
+
+			if (points.getFractalType() == FractalType.MANDELBROT) {
+				// A part of the image IS symmetric
+
+				double imaginaryInterval = points.getMaxY() - points.getMinY();
+
+				int upperHeight = 0;
+				int symmetricHeight = (int) (height * Math.min(-points.getMinY(), points.getMaxY())
+						/ imaginaryInterval);
+				int lowerHeight = 0;
+
+				if (-points.getMinY() > points.getMaxY()) {
+					upperHeight = height - 2 * symmetricHeight;
+				} else if (-points.getMinY() < points.getMaxY()) {
+					lowerHeight = height - 2 * symmetricHeight;
+				}
+
+				if (upperHeight > 0) {
+					deque.add(new SliceData(0, 0, width, upperHeight));
+				}
+
+				// This is symmetric
+				deque.add(new SliceData(0, 0, width, upperHeight + symmetricHeight));
+				// with this respect to the X axis
+				deque.add(new SliceData(0, upperHeight + symmetricHeight, width, upperHeight + symmetricHeight * 2));
+
+				if (lowerHeight > 0) {
+					deque.add(new SliceData(0, symmetricHeight * 2, width, height));
+				}
+
+				return;
+
+			} else if (points.getFractalType() == FractalType.JULIA && points.getMinX() < 0 && 0 < points.getMaxX()) {
+				// A part of the image IS symmetric
+
+				double realInterval = points.getMaxX() - points.getMinX();
+				double imaginaryInterval = points.getMaxY() - points.getMinY();
+
+				int upperHeight = 0;
+				int symmetricHeight = (int) (height * Math.min(-points.getMinY(), points.getMaxY())
+						/ imaginaryInterval);
+				int lowerHeight = 0;
+
+				if (-points.getMinY() > points.getMaxY()) {
+					upperHeight = height - 2 * symmetricHeight;
+				} else if (-points.getMinY() < points.getMaxY()) {
+					lowerHeight = height - 2 * symmetricHeight;
+				}
+
+				int leftWidth = 0;
+				int symmetricWidth = (int) (width * Math.min(-points.getMinX(), points.getMaxX()) / realInterval);
+				int rightWidth = 0;
+
+				if (-points.getMinX() > points.getMaxX()) {
+					leftWidth = width - 2 * symmetricWidth;
+				} else if (-points.getMinX() < points.getMaxX()) {
+					rightWidth = width - 2 * symmetricWidth;
+				}
+
+				if (upperHeight > 0) {
+					deque.add(new SliceData(0, 0, width, upperHeight));
+				}
+
+				if (leftWidth > 0) {
+					deque.add(new SliceData(0, upperHeight, leftWidth, upperHeight + symmetricHeight * 2));
+				}
+
+				// This is symmetric
+				deque.add(new SliceData(leftWidth, upperHeight, leftWidth + symmetricWidth,
+						upperHeight + symmetricHeight));
+				// with this respect to the origin
+				deque.add(new SliceData(leftWidth + symmetricWidth, upperHeight + symmetricHeight,
+						leftWidth + symmetricWidth * 2, upperHeight + symmetricHeight * 2));
+
+				// This is symmetric
+				deque.add(new SliceData(leftWidth + symmetricWidth, upperHeight, leftWidth + symmetricWidth * 2,
+						upperHeight + symmetricHeight));
+				// with this respect to the origin
+				deque.add(new SliceData(leftWidth, upperHeight + symmetricHeight, leftWidth + symmetricWidth,
+						upperHeight + symmetricHeight * 2));
+
+				if (rightWidth > 0) {
+					deque.add(new SliceData(2 * symmetricWidth, upperHeight, width, upperHeight + symmetricHeight * 2));
+				}
+
+				if (lowerHeight > 0) {
+					deque.add(new SliceData(0, symmetricHeight * 2, width, height));
+				}
+
+				return;
+
+			}
+		}
+
 		int horizontalSlices = 8;
 		int verticalSlices = 8;
 
