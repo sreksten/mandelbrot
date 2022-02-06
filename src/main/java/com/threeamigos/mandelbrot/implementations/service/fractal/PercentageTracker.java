@@ -13,7 +13,7 @@ public class PercentageTracker {
 		lastNotificationMillis = System.currentTimeMillis();
 	}
 
-	public boolean shouldUpdatePercentage(SliceDataDeque deque) {
+	public boolean shouldUpdatePercentage(SliceDeque deque) {
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - lastNotificationMillis >= INTERVAL_IN_MILLIS) {
 			lastNotificationMillis = currentTime;
@@ -23,9 +23,9 @@ public class PercentageTracker {
 		return false;
 	}
 
-	private int getPercentage(SliceDataDeque deque) {
+	private int getPercentage(SliceDeque deque) {
 		int totalMissingPoints = 0;
-		for (SliceData slice : deque.getDataSlices()) {
+		for (Slice slice : deque.getSlices()) {
 			totalMissingPoints += (slice.endX - slice.startX) * (slice.endY - slice.startY);
 		}
 		return 100 - 100 * totalMissingPoints / totalPointsToCalculate;

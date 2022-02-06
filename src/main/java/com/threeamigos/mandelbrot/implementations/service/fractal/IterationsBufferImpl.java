@@ -5,17 +5,17 @@ import java.util.Arrays;
 import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 
-class PixelBufferImpl implements PixelBuffer {
+class IterationsBufferImpl implements IterationsBuffer {
 
 	private int width;
 	private int height;
 	private int[] pixels;
 
-	public PixelBufferImpl(Resolution resolution) {
+	public IterationsBufferImpl(Resolution resolution) {
 		this(resolution.getWidth(), resolution.getHeight());
 	}
 
-	public PixelBufferImpl(int width, int height) {
+	public IterationsBufferImpl(int width, int height) {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
@@ -38,12 +38,12 @@ class PixelBufferImpl implements PixelBuffer {
 	}
 
 	@Override
-	public int getPixel(int x, int y) {
+	public int getIterations(int x, int y) {
 		return pixels[x + y * width];
 	}
 
 	@Override
-	public int[] getPixels() {
+	public int[] getIterations() {
 		return pixels;
 	}
 

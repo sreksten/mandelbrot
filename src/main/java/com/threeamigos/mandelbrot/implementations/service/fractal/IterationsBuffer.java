@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service.fractal;
 
-interface PixelBuffer {
+interface IterationsBuffer {
 
 	public int getWidth();
 
@@ -8,9 +8,9 @@ interface PixelBuffer {
 
 	public void setPixel(int x, int y, int value);
 
-	public int getPixel(int x, int y);
+	public int getIterations(int x, int y);
 
-	public int[] getPixels();
+	public int[] getIterations();
 
 	public void clear();
 

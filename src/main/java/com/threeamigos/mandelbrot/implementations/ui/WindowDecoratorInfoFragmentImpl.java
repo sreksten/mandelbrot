@@ -48,11 +48,18 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 								mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
 						xCoord, yCoord);
 			} else {
-				drawString(graphics,
-						String.format("Draw time: %d ms (%d threads, %d iterations max)",
-								mandelbrotService.getDrawTime(), mandelbrotService.getNumberOfThreads(),
-								mandelbrotService.getMaxIterations()),
-						xCoord, yCoord);
+				long drawTime = mandelbrotService.getCalculationTime();
+				if (drawTime >= 0) {
+					drawString(graphics,
+							String.format("Calculation time: %d ms (%d threads, %d iterations max)", drawTime,
+									mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
+							xCoord, yCoord);
+				} else {
+					drawString(graphics,
+							String.format("Calculation time: - (%d threads, %d iterations max)",
+									mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
+							xCoord, yCoord);
+				}
 			}
 			yCoord += vSpacing;
 			drawString(graphics, String.format("Real interval: [%1.14f,%1.14f]", points.getMinX(), points.getMaxX()),

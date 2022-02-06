@@ -18,7 +18,7 @@ public class MultithreadedFractalService implements FractalService {
 	private int maxThreads;
 	private int maxIterations;
 
-	private long drawTime;
+	private long calculationTime;
 	private CalculationService calculationService;
 
 	public MultithreadedFractalService(CalculationParameters calculationParameters,
@@ -116,7 +116,7 @@ public class MultithreadedFractalService implements FractalService {
 			}
 		}
 
-		drawTime = calculationService.getCalculationTime();
+		calculationTime = calculationService.getCalculationTime();
 
 		if (!calculationService.isInterrupted()) {
 			propertyChangeSupport.firePropertyChange(serviceType.getCalculationCompleteEvent(), null, this);
@@ -141,18 +141,18 @@ public class MultithreadedFractalService implements FractalService {
 	}
 
 	@Override
-	public long getDrawTime() {
-		return drawTime;
+	public long getCalculationTime() {
+		return calculationTime;
 	}
 
 	@Override
 	public int[] getIterations() {
-		return calculationService.pixelBuffer.getPixels();
+		return calculationService.iterationsBuffer.getIterations();
 	}
 
 	@Override
 	public int getIterations(int x, int y) {
-		return calculationService.pixelBuffer.getPixel(x, y);
+		return calculationService.iterationsBuffer.getIterations(x, y);
 	}
 
 	@Override

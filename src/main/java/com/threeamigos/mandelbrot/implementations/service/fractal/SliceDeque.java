@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-class SliceDataDeque {
+class SliceDeque {
 
-	private ConcurrentLinkedDeque<SliceData> deque = new ConcurrentLinkedDeque<>();
+	private ConcurrentLinkedDeque<Slice> deque = new ConcurrentLinkedDeque<>();
 
-	void add(SliceData dataSlice) {
-		deque.addFirst(dataSlice);
+	void add(Slice slice) {
+		deque.addFirst(slice);
 	}
 
 	boolean isEmpty() {
 		return deque.isEmpty();
 	}
 
-	SliceData remove() {
+	Slice remove() {
 		return deque.remove();
 	}
 
@@ -24,8 +24,8 @@ class SliceDataDeque {
 		deque.clear();
 	}
 
-	List<SliceData> getDataSlices() {
-		List<SliceData> list = new ArrayList<>();
+	List<Slice> getSlices() {
+		List<Slice> list = new ArrayList<>();
 		synchronized (deque) {
 			deque.stream().forEach(list::add);
 		}

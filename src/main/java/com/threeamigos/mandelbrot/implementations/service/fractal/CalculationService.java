@@ -14,8 +14,8 @@ class CalculationService implements Runnable {
 	final int maxThreads;
 	final int maxIterations;
 	final Points points;
-	final SliceDataDeque deque;
-	final PixelBuffer pixelBuffer;
+	final SliceDeque deque;
+	final IterationsBuffer iterationsBuffer;
 	final SliceCalculator[] calculators;
 	final PercentageTracker percentageTracker;
 	final FractalType fractalType;
@@ -32,7 +32,7 @@ class CalculationService implements Runnable {
 		this.maxThreads = maxThreads;
 		this.maxIterations = maxIterations;
 		this.points = points;
-		this.deque = new SliceDataDeque();
+		this.deque = new SliceDeque();
 		this.fractalType = points.getFractalType();
 
 		int width = points.getWidth();
@@ -42,7 +42,7 @@ class CalculationService implements Runnable {
 
 		prepareSlices(width, height);
 
-		this.pixelBuffer = new PixelBufferImpl(width, height);
+		this.iterationsBuffer = new IterationsBufferImpl(width, height);
 		calculators = new SliceCalculator[maxThreads];
 		globalRunning = true;
 	}
@@ -71,16 +71,20 @@ class CalculationService implements Runnable {
 				}
 
 				if (upperHeight > 0) {
-					deque.add(new SliceData(0, 0, width, upperHeight));
+					deque.add(new Slice(0, 0, width, upperHeight));
 				}
 
 				// This is symmetric
-				deque.add(new SliceData(0, 0, width, upperHeight + symmetricHeight));
+				Slice s1 = new Slice(0, upperHeight, width, upperHeight + symmetricHeight);
+				s1.symmetricity = Slice.SimmetricityType.X_AXIS;
+				s1.originX = 0;
+				s1.originY = upperHeight + symmetricHeight;
+				deque.add(s1);
 				// with this respect to the X axis
-				deque.add(new SliceData(0, upperHeight + symmetricHeight, width, upperHeight + symmetricHeight * 2));
+//				deque.add(new Slice(0, upperHeight + symmetricHeight, width, upperHeight + symmetricHeight * 2));
 
 				if (lowerHeight > 0) {
-					deque.add(new SliceData(0, symmetricHeight * 2, width, height));
+					deque.add(new Slice(0, symmetricHeight * 2, width, height));
 				}
 
 				return;
@@ -113,33 +117,40 @@ class CalculationService implements Runnable {
 				}
 
 				if (upperHeight > 0) {
-					deque.add(new SliceData(0, 0, width, upperHeight));
+					deque.add(new Slice(0, 0, width, upperHeight));
 				}
 
 				if (leftWidth > 0) {
-					deque.add(new SliceData(0, upperHeight, leftWidth, upperHeight + symmetricHeight * 2));
+					deque.add(new Slice(0, upperHeight, leftWidth, upperHeight + symmetricHeight * 2));
 				}
 
 				// This is symmetric
-				deque.add(new SliceData(leftWidth, upperHeight, leftWidth + symmetricWidth,
-						upperHeight + symmetricHeight));
+				Slice s1 = new Slice(leftWidth, upperHeight, leftWidth + symmetricWidth, upperHeight + symmetricHeight);
+				s1.symmetricity = Slice.SimmetricityType.ORIGIN;
+				s1.originX = leftWidth + symmetricWidth;
+				s1.originY = upperHeight + symmetricHeight;
+				deque.add(s1);
 				// with this respect to the origin
-				deque.add(new SliceData(leftWidth + symmetricWidth, upperHeight + symmetricHeight,
-						leftWidth + symmetricWidth * 2, upperHeight + symmetricHeight * 2));
+//				deque.add(new Slice(leftWidth + symmetricWidth, upperHeight + symmetricHeight,
+//						leftWidth + symmetricWidth * 2, upperHeight + symmetricHeight * 2));
 
 				// This is symmetric
-				deque.add(new SliceData(leftWidth + symmetricWidth, upperHeight, leftWidth + symmetricWidth * 2,
-						upperHeight + symmetricHeight));
+				Slice s2 = new Slice(leftWidth + symmetricWidth, upperHeight, leftWidth + symmetricWidth * 2,
+						upperHeight + symmetricHeight);
+				s2.symmetricity = Slice.SimmetricityType.ORIGIN;
+				s2.originX = leftWidth + symmetricWidth;
+				s2.originY = upperHeight + symmetricHeight;
+				deque.add(s2);
 				// with this respect to the origin
-				deque.add(new SliceData(leftWidth, upperHeight + symmetricHeight, leftWidth + symmetricWidth,
-						upperHeight + symmetricHeight * 2));
+//				deque.add(new Slice(leftWidth, upperHeight + symmetricHeight, leftWidth + symmetricWidth,
+//						upperHeight + symmetricHeight * 2));
 
 				if (rightWidth > 0) {
-					deque.add(new SliceData(2 * symmetricWidth, upperHeight, width, upperHeight + symmetricHeight * 2));
+					deque.add(new Slice(2 * symmetricWidth, upperHeight, width, upperHeight + symmetricHeight * 2));
 				}
 
 				if (lowerHeight > 0) {
-					deque.add(new SliceData(0, symmetricHeight * 2, width, height));
+					deque.add(new Slice(0, symmetricHeight * 2, width, height));
 				}
 
 				return;
@@ -169,7 +180,7 @@ class CalculationService implements Runnable {
 				} else {
 					endY = height;
 				}
-				deque.add(new SliceData(startX, startY, endX, endY));
+				deque.add(new Slice(startX, startY, endX, endY));
 			}
 		}
 	}
@@ -231,7 +242,7 @@ class CalculationService implements Runnable {
 		for (int i = 0; i < maxThreads && !deque.isEmpty(); i++) {
 			SliceCalculator calculator = calculators[i];
 			if (calculator == null || !calculator.isAlive()) {
-				SliceData slice = deque.remove();
+				Slice slice = deque.remove();
 				String name = "R" + requestNumber + "-T" + i;
 				calculator = createSliceCalculator(slice);
 				calculators[i] = calculator;
@@ -249,7 +260,7 @@ class CalculationService implements Runnable {
 		}
 	}
 
-	private SliceCalculator createSliceCalculator(SliceData slice) {
+	private SliceCalculator createSliceCalculator(Slice slice) {
 		if (fractalType == FractalType.JULIA) {
 			return new JuliaSliceCalculator(points, slice, this, maxIterations);
 		} else {

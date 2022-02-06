@@ -44,7 +44,7 @@ public interface FractalService {
 
 	public int getPercentage();
 
-	public long getDrawTime();
+	public long getCalculationTime();
 
 	public int[] getIterations();
 

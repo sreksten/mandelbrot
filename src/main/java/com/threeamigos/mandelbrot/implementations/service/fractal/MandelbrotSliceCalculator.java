@@ -6,26 +6,20 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 class MandelbrotSliceCalculator implements SliceCalculator {
 
 	private Points points;
-	private int startX;
-	private int startY;
-	private int endX;
-	private int endY;
+	private Slice slice;
 	private CalculationService calculationService;
-	private PixelBuffer dataBuffer;
-	private SliceDataDeque deque;
+	private IterationsBuffer dataBuffer;
+	private SliceDeque deque;
 	private int maxIterations;
 	private String name;
 	private boolean localRunning;
 
-	public MandelbrotSliceCalculator(Points points, SliceData slice, CalculationService calculationService,
+	public MandelbrotSliceCalculator(Points points, Slice slice, CalculationService calculationService,
 			int maxIterations) {
 		this.points = points;
-		this.startX = slice.startX;
-		this.startY = slice.startY;
-		this.endX = slice.endX;
-		this.endY = slice.endY;
+		this.slice = slice;
 		this.calculationService = calculationService;
-		this.dataBuffer = calculationService.pixelBuffer;
+		this.dataBuffer = calculationService.iterationsBuffer;
 		this.deque = calculationService.deque;
 		this.maxIterations = maxIterations;
 
@@ -43,24 +37,31 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 	@Override
 	public void run() {
-		calculateSliceRecursively(startX, endX, startY, endY);
+		calculateSliceRecursively(slice, 0);
 		localRunning = false;
 	}
 
-	private void calculateSliceRecursively(int fromX, int toX, int fromY, int toY) {
+	private void calculateSliceRecursively(Slice slice, int level) {
 		if (!calculationService.globalRunning) {
 			return;
 		}
-		boolean cardioidVisible = isCardioidVisible(fromX, toX, fromY, toY);
-		boolean period2BulbVisible = isPeriod2BulbVisible(fromX, toX, fromY, toY);
-		if (toX - fromX <= 5 || toY - fromY <= 5) {
-			calculateEveryPixel(fromX, toX, fromY, toY, cardioidVisible, period2BulbVisible);
+		int startX = slice.startX;
+		int startY = slice.startY;
+		int endX = slice.endX;
+		int endY = slice.endY;
+		boolean cardioidVisible = isCardioidVisible(startX, endX, startY, endY);
+		boolean period2BulbVisible = isPeriod2BulbVisible(startX, endX, startY, endY);
+		if (endX - startX <= 5 || endY - startY <= 5) {
+			calculateEveryPixel(startX, endX, startY, endY, cardioidVisible, period2BulbVisible);
+			if (level == 0) {
+				slice.replicate(dataBuffer);
+			}
 		} else {
 			int uniqueValue = FractalService.ITERATION_NOT_CALCULATED;
 			boolean hasUniqueValue = true;
 
-			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
-				int iterations = calculateIterations(x, fromY, cardioidVisible, period2BulbVisible);
+			for (int x = startX; x < endX && calculationService.globalRunning; x++) {
+				int iterations = calculateIterations(x, startY, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
@@ -68,8 +69,8 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 				}
 			}
 
-			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
-				int iterations = calculateIterations(fromX, y, cardioidVisible, period2BulbVisible);
+			for (int y = startY; y < endY && calculationService.globalRunning; y++) {
+				int iterations = calculateIterations(startX, y, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
@@ -77,8 +78,8 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 				}
 			}
 
-			for (int x = fromX; x < toX && calculationService.globalRunning; x++) {
-				int iterations = calculateIterations(x, toY - 1, cardioidVisible, period2BulbVisible);
+			for (int x = startX; x < endX && calculationService.globalRunning; x++) {
+				int iterations = calculateIterations(x, endY - 1, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
@@ -86,8 +87,8 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 				}
 			}
 
-			for (int y = fromY; y < toY && calculationService.globalRunning; y++) {
-				int iterations = calculateIterations(toX - 1, y, cardioidVisible, period2BulbVisible);
+			for (int y = startY; y < endY && calculationService.globalRunning; y++) {
+				int iterations = calculateIterations(endX - 1, y, cardioidVisible, period2BulbVisible);
 				if (uniqueValue == FractalService.ITERATION_NOT_CALCULATED) {
 					uniqueValue = iterations;
 				} else if (uniqueValue != iterations) {
@@ -97,22 +98,25 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 
 			if (calculationService.globalRunning) {
 				if (hasUniqueValue) {
-					setEveryPixel(fromX + 1, toX - 1, fromY + 1, toY - 1, uniqueValue);
+					setEveryPixel(startX + 1, endX - 1, startY + 1, endY - 1, uniqueValue);
+					if (level == 0) {
+						slice.replicate(dataBuffer);
+					}
 				} else {
-					int diffX = toX - fromX;
-					int diffY = toY - fromY;
-					int halfX = fromX + diffX / 2;
-					int halfY = fromY + diffY / 2;
+					int diffX = endX - startX;
+					int diffY = endY - startY;
+
 					if (diffX > 80 && diffY > 80) {
-						deque.add(new SliceData(fromX, fromY, halfX, halfY));
-						deque.add(new SliceData(halfX, fromY, toX, halfY));
-						deque.add(new SliceData(fromX, halfY, halfX, toY));
-						deque.add(new SliceData(halfX, halfY, toX, toY));
+						for (Slice data : slice.split()) {
+							deque.add(data);
+						}
 					} else {
-						calculateSliceRecursively(fromX, halfX, fromY, halfY);
-						calculateSliceRecursively(halfX, toX, fromY, halfY);
-						calculateSliceRecursively(fromX, halfX, halfY, toY);
-						calculateSliceRecursively(halfX, toX, halfY, toY);
+						for (Slice data : slice.split()) {
+							calculateSliceRecursively(data, level + 1);
+						}
+						if (level == 0) {
+							slice.replicate(dataBuffer);
+						}
 					}
 				}
 			}
@@ -137,7 +141,7 @@ class MandelbrotSliceCalculator implements SliceCalculator {
 	}
 
 	private int calculateIterations(int x, int y, boolean cardioidVisible, boolean period2BulbVisible) {
-		int iterations = dataBuffer.getPixel(x, y);
+		int iterations = dataBuffer.getIterations(x, y);
 		if (iterations == FractalService.ITERATION_NOT_CALCULATED) {
 			double cReal = points.toCReal(x);
 			double cImaginary = points.toCImaginary(y);

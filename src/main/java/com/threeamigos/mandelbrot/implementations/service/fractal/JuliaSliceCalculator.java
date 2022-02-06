@@ -6,30 +6,24 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 class JuliaSliceCalculator implements SliceCalculator {
 
 	private Points points;
-	private int startX;
-	private int startY;
-	private int endX;
-	private int endY;
+	private Slice slice;
 	private CalculationService calculationService;
-	private PixelBuffer dataBuffer;
-	private SliceDataDeque deque;
+	private IterationsBuffer dataBuffer;
+	private SliceDeque deque;
 	private int maxIterations;
 	private String name;
 	private boolean localRunning;
 	private double cr;
 	private double ci;
 
-	public JuliaSliceCalculator(Points points, SliceData slice, CalculationService calculationService,
+	public JuliaSliceCalculator(Points points, Slice slice, CalculationService calculationService,
 			int maxIterations) {
 		this.points = points;
 		this.cr = points.getJuliaCReal();
 		this.ci = points.getJuliaCImaginary();
-		this.startX = slice.startX;
-		this.startY = slice.startY;
-		this.endX = slice.endX;
-		this.endY = slice.endY;
+		this.slice = slice;
 		this.calculationService = calculationService;
-		this.dataBuffer = calculationService.pixelBuffer;
+		this.dataBuffer = calculationService.iterationsBuffer;
 		this.deque = calculationService.deque;
 		this.maxIterations = maxIterations;
 
@@ -47,32 +41,40 @@ class JuliaSliceCalculator implements SliceCalculator {
 
 	@Override
 	public void run() {
-		calculateSliceRecursively(startX, endX, startY, endY);
+		calculateSliceRecursively(slice, 0);
 		localRunning = false;
 	}
 
-	private void calculateSliceRecursively(int fromX, int toX, int fromY, int toY) {
+	private void calculateSliceRecursively(Slice slice, int level) {
 		if (!calculationService.globalRunning) {
 			return;
 		}
-		if (toX - fromX <= 5 || toY - fromY <= 5) {
-			calculateEveryPixel(fromX, toX, fromY, toY);
+		int startX = slice.startX;
+		int startY = slice.startY;
+		int endX = slice.endX;
+		int endY = slice.endY;
+
+		if (endX - startX <= 5 || endY - startY <= 5) {
+			calculateEveryPixel(startX, endX, startY, endY);
+			if (level == 0) {
+				slice.replicate(dataBuffer);
+			}
 		} else {
 			if (calculationService.globalRunning) {
-				int diffX = toX - fromX;
-				int diffY = toY - fromY;
-				int halfX = fromX + diffX / 2;
-				int halfY = fromY + diffY / 2;
+				int diffX = endX - startX;
+				int diffY = endY - startY;
+
 				if (diffX > 80 && diffY > 80) {
-					deque.add(new SliceData(fromX, fromY, halfX, halfY));
-					deque.add(new SliceData(halfX, fromY, toX, halfY));
-					deque.add(new SliceData(fromX, halfY, halfX, toY));
-					deque.add(new SliceData(halfX, halfY, toX, toY));
+					for (Slice data : slice.split()) {
+						deque.add(data);
+					}
 				} else {
-					calculateSliceRecursively(fromX, halfX, fromY, halfY);
-					calculateSliceRecursively(halfX, toX, fromY, halfY);
-					calculateSliceRecursively(fromX, halfX, halfY, toY);
-					calculateSliceRecursively(halfX, toX, halfY, toY);
+					for (Slice data : slice.split()) {
+						calculateSliceRecursively(data, level + 1);
+					}
+					if (level == 0) {
+						slice.replicate(dataBuffer);
+					}
 				}
 			}
 		}
@@ -86,16 +88,8 @@ class JuliaSliceCalculator implements SliceCalculator {
 		}
 	}
 
-	private void setEveryPixel(int fromX, int toX, int fromY, int toY, int value) {
-		for (int x = fromX; x < toX; x++) {
-			for (int y = fromY; y < toY; y++) {
-				dataBuffer.setPixel(x, y, value);
-			}
-		}
-	}
-
 	private int calculateIterations(int x, int y) {
-		int iterations = dataBuffer.getPixel(x, y);
+		int iterations = dataBuffer.getIterations(x, y);
 		if (iterations == FractalService.ITERATION_NOT_CALCULATED) {
 			double cReal = points.toCReal(x);
 			double cImaginary = points.toCImaginary(y);
