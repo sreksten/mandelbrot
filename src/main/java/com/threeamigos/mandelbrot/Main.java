@@ -92,31 +92,31 @@ public class Main {
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
-		FractalCanvas mandelbrotCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
+		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, calculationParameters, windowDecoratorService);
 
-		mandelbrotCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
-		mandelbrotCanvas
+		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
+		fractalCanvas
 				.addRenderableConsumer(new JuliaBoundariesServiceImpl(points, fontService, pointsOfInterestService));
 
-		points.addPropertyChangeListener(mandelbrotCanvas);
-		fractalService.addPropertyChangeListener(mandelbrotCanvas);
-		snapshotService.addPropertyChangeListener(mandelbrotCanvas);
+		points.addPropertyChangeListener(fractalCanvas);
+		fractalService.addPropertyChangeListener(fractalCanvas);
+		snapshotService.addPropertyChangeListener(fractalCanvas);
 
-		imagePersisterService.setMessageNotifier(mandelbrotCanvas);
-		pointsOfInterestService.setMessageNotifier(mandelbrotCanvas);
+		imagePersisterService.setMessageNotifier(fractalCanvas);
+		pointsOfInterestService.setMessageNotifier(fractalCanvas);
 
 		pointsOfInterestService.loadPointsOfInterest();
 
-		JFrame jframe = prepareFrame(mandelbrotCanvas);
+		JFrame jframe = prepareFrame(fractalCanvas);
 
 		JMenuBar menuBar = prepareMenu(jframe);
 
-		mandelbrotCanvas.addMenus(menuBar);
+		fractalCanvas.addMenus(menuBar);
 
 		jframe.setVisible(true);
 
-		mandelbrotCanvas.startCalculationThread();
+		fractalCanvas.startCalculationThread();
 
 	}
 

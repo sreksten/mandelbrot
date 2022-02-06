@@ -63,6 +63,8 @@ public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
 			yCoord += vSpacing;
 			drawString(graphics, "S - save snapshot", xCoord, yCoord);
 			yCoord += vSpacing;
+			drawString(graphics, "T - enter/exit target mode (for Julia fractals)", xCoord, yCoord);
+			yCoord += vSpacing;
 			drawString(graphics, "Mouse wheel - zoom in/out", xCoord, yCoord);
 			yCoord += vSpacing;
 			drawString(graphics, "Mouse click - change center (or drag to zoom, ESC to quit)", xCoord, yCoord);
