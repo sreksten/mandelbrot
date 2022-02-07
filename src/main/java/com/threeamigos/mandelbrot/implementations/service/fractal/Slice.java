@@ -27,33 +27,37 @@ class Slice {
 
 		int width = endX - startX;
 		int height = endY - startY;
-		int halfX = startX + width / 2;
-		int halfY = startY + height / 2;
 
-		Slice s1 = new Slice(startX, startY, halfX, halfY);
-		s1.symmetricity = symmetricity;
-		s1.originX = originX;
-		s1.originY = originY;
+		final int splitNumber = 4;
 
-		Slice s2 = new Slice(halfX, startY, endX, halfY);
-		s2.symmetricity = symmetricity;
-		s2.originX = originX;
-		s2.originY = originY;
+		int quotientX = width / splitNumber;
+		int quotientY = height / splitNumber;
 
-		Slice s3 = new Slice(startX, halfY, endX, endY);
-		s3.symmetricity = symmetricity;
-		s3.originX = originX;
-		s3.originY = originY;
-
-		Slice s4 = new Slice(halfX, halfY, endX, endY);
-		s4.symmetricity = symmetricity;
-		s4.originX = originX;
-		s4.originY = originY;
-
-		list.add(s1);
-		list.add(s2);
-		list.add(s3);
-		list.add(s4);
+		for (int i = 0; i < splitNumber; i++) {
+			int sizeX;
+			if (i < splitNumber - 1) {
+				// A small trick - as we're checking the contour of a slice, sharing it with its
+				// neighbor leaves half of the calculation already done.
+				sizeX = quotientX + 1;
+			} else {
+				sizeX = width - quotientX * (splitNumber - 1);
+			}
+			for (int j = 0; j < splitNumber; j++) {
+				int sizeY;
+				if (j < splitNumber - 1) {
+					// Ditto.
+					sizeY = quotientY + 1;
+				} else {
+					sizeY = height - quotientY * (splitNumber - 1);
+				}
+				Slice s = new Slice(startX + quotientX * i, startY + quotientY * j, startX + quotientX * i + sizeX,
+						startY + quotientY * j + sizeY);
+				s.symmetricity = symmetricity;
+				s.originX = originX;
+				s.originY = originY;
+				list.add(s);
+			}
+		}
 
 		return list;
 
@@ -74,7 +78,8 @@ class Slice {
 
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				pixelBuffer.setPixel(startX + i, currentDestinationY - j, pixelBuffer.getIterations(startX + i, startY + j));
+				pixelBuffer.setPixel(startX + i, currentDestinationY - j,
+						pixelBuffer.getIterations(startX + i, startY + j));
 			}
 		}
 	}
