@@ -46,7 +46,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	private transient ImageProducerService imageProducerService;
 	private transient SnapshotService snapshotService;
 	private transient Points points;
-	private transient WindowDecoratorService windowDecoratorComposerService;
+	private transient WindowDecoratorService windowDecoratorService;
 	private transient AboutWindow aboutWindow;
 
 	private Integer currentPointOfInterestIndex = null;
@@ -75,7 +75,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.snapshotService = snapshotService;
 		this.points = points;
-		this.windowDecoratorComposerService = windowDecoratorService;
+		this.windowDecoratorService = windowDecoratorService;
 		this.aboutWindow = aboutWindow;
 
 		imageProducerService = imageProducerServiceFactory.createInstance(calculationParameters.getMaxIterations());
@@ -112,13 +112,13 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		super.paintComponent(gfx);
 		Graphics2D graphics = (Graphics2D) gfx;
 		graphics.drawImage(image, 0, 0, null);
-		windowDecoratorComposerService.paint(graphics, 50, 50);
+		windowDecoratorService.paint(graphics, 50, 50);
 		renderableConsumers.stream().forEach(r -> r.paint(graphics));
 	}
 
 	private void setCurrentPointOfInterestIndex(Integer currentPointOfInterestIndex) {
 		this.currentPointOfInterestIndex = currentPointOfInterestIndex;
-		windowDecoratorComposerService.setCurrentPointOfInterestIndex(currentPointOfInterestIndex);
+		windowDecoratorService.setCurrentPointOfInterestIndex(currentPointOfInterestIndex);
 	}
 
 	@Override
@@ -467,22 +467,22 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void hideOrShowHelp() {
-		windowDecoratorComposerService.toggleShowHelp();
+		windowDecoratorService.toggleShowHelp();
 		repaint();
 	}
 
 	private void hideOrShowSnapshotServiceStatus() {
-		windowDecoratorComposerService.toggleShowSnapshotServiceStatus();
+		windowDecoratorService.toggleShowSnapshotServiceStatus();
 		repaint();
 	}
 
 	private void hideOrShowInfo() {
-		windowDecoratorComposerService.toggleShowInfo();
+		windowDecoratorService.toggleShowInfo();
 		repaint();
 	}
 
 	private void hideOrShowPointOfInterestName() {
-		windowDecoratorComposerService.toggleShowPointOfInterestName();
+		windowDecoratorService.toggleShowPointOfInterestName();
 		repaint();
 	}
 
@@ -525,7 +525,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		String currentColorModelName = imageProducerService.getCurrentColorModelName();
 		imageProducerService = imageProducerServiceFactory.createInstance(maxIterations);
 		imageProducerService.switchColorModel(currentColorModelName);
-		windowDecoratorComposerService.setImageProducerService(imageProducerService);
+		windowDecoratorService.setImageProducerService(imageProducerService);
 	}
 
 	@Override
@@ -543,14 +543,14 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		boolean shouldRepaint = false;
 		boolean shouldRestartCalculation = false;
 		if (FractalService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
-			windowDecoratorComposerService.setPercentage((Integer) event.getNewValue());
+			windowDecoratorService.setPercentage((Integer) event.getNewValue());
 			if (showProgress) {
 				shouldRepaint = true;
 				image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
 						fractalService.getIterations());
 			}
 		} else if (FractalService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
-			windowDecoratorComposerService.setPercentage(null);
+			windowDecoratorService.setPercentage(null);
 			shouldRepaint = true;
 			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
 					fractalService.getIterations());
@@ -574,14 +574,14 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 
-		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, windowDecoratorComposerService.isShowInfoActive(),
+		addCheckboxMenuItem(fileMenu, "Show info", KeyEvent.VK_I, windowDecoratorService.isShowInfoActive(),
 				event -> hideOrShowInfo());
-		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, windowDecoratorComposerService.isShowHelpActive(),
+		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, windowDecoratorService.isShowHelpActive(),
 				event -> hideOrShowHelp());
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveImage());
 		addCheckboxMenuItem(fileMenu, "Show snapshot progress", KeyEvent.VK_H,
-				windowDecoratorComposerService.isShowSnapshotServiceStatusActive(),
+				windowDecoratorService.isShowSnapshotServiceStatusActive(),
 				event -> hideOrShowSnapshotServiceStatus());
 
 		fileMenu.addSeparator();
@@ -609,7 +609,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 				event -> deletePointOfInterest());
 		pointsOfInterestMenu.addSeparator();
 		addCheckboxMenuItem(pointsOfInterestMenu, "Show point of interest's name", KeyEvent.VK_P,
-				windowDecoratorComposerService.isShowPointOfInterestNameActive(),
+				windowDecoratorService.isShowPointOfInterestNameActive(),
 				event -> hideOrShowPointOfInterestName());
 		pointsOfInterestMenu.addSeparator();
 		updatePointsOfInterestMenu();
