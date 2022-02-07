@@ -8,8 +8,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-public class AboutWindow {
+import com.threeamigos.mandelbrot.interfaces.ui.AboutWindow;
 
+public class AboutWindowImpl implements AboutWindow {
+
+	@Override
 	public void about(Component component) {
 
 		Box panel = Box.createVerticalBox();

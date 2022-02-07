@@ -16,6 +16,7 @@ import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServic
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
+import com.threeamigos.mandelbrot.implementations.ui.AboutWindowImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.FontServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
@@ -93,7 +94,8 @@ public class Main {
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
-				imageProducerServiceFactory, snapshotService, points, calculationParameters, windowDecoratorService);
+				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, new AboutWindowImpl(),
+				calculationParameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
 		fractalCanvas

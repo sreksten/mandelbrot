@@ -20,7 +20,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.threeamigos.mandelbrot.implementations.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
@@ -31,6 +30,7 @@ import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
+import com.threeamigos.mandelbrot.interfaces.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.ui.InputConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
@@ -47,9 +47,11 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	private transient SnapshotService snapshotService;
 	private transient Points points;
 	private transient WindowDecoratorService windowDecoratorComposerService;
+	private transient AboutWindow aboutWindow;
+
 	private Integer currentPointOfInterestIndex = null;
 
-	private List<RenderableConsumer> renderableConsumers = new ArrayList<>();
+	private transient List<RenderableConsumer> renderableConsumers = new ArrayList<>();
 
 	private boolean showProgress = true;
 	private boolean showSnapshotProgress = true;
@@ -65,23 +67,24 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	public FractalCanvas(FractalService fractalService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			CalculationParameters calculationParameters, WindowDecoratorService windowDecoratorService) {
+			WindowDecoratorService windowDecoratorService, AboutWindow aboutWindow,
+			CalculationParameters calculationParameters) {
 		super();
+		this.fractalService = fractalService;
 		this.pointsOfInterestService = pointsOfInterestService;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
-		this.imageProducerService = imageProducerServiceFactory
-				.createInstance(calculationParameters.getMaxIterations());
-		windowDecoratorService.setImageProducerService(imageProducerService);
 		this.snapshotService = snapshotService;
 		this.points = points;
+		this.windowDecoratorComposerService = windowDecoratorService;
+		this.aboutWindow = aboutWindow;
+
+		imageProducerService = imageProducerServiceFactory.createInstance(calculationParameters.getMaxIterations());
+		windowDecoratorService.setImageProducerService(imageProducerService);
 
 		setSize(points.getWidth(), points.getHeight());
 		setBackground(Color.YELLOW);
 		setFocusable(true);
 		setDoubleBuffered(true);
-
-		this.fractalService = fractalService;
-		this.windowDecoratorComposerService = windowDecoratorService;
 
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -363,7 +366,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	public void keyReleased(KeyEvent e) {
 		boolean shouldRepaint = false;
 		for (RenderableConsumer consumer : renderableConsumers) {
-			consumer.keyTyped(e);
+			consumer.keyReleased(e);
 			if (e.isConsumed()) {
 				shouldRepaint = true;
 				break;
@@ -541,9 +544,11 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		boolean shouldRestartCalculation = false;
 		if (FractalService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage((Integer) event.getNewValue());
-			shouldRepaint = showProgress;
-			image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
-					fractalService.getIterations());
+			if (showProgress) {
+				shouldRepaint = true;
+				image = imageProducerService.produceImage(points.getWidth(), points.getHeight(),
+						fractalService.getIterations());
+			}
 		} else if (FractalService.CALCULATION_COMPLETE_PROPERTY_CHANGE.equals(event.getPropertyName())) {
 			windowDecoratorComposerService.setPercentage(null);
 			shouldRepaint = true;
@@ -649,7 +654,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void about() {
-		new AboutWindow().about(this);
+		aboutWindow.about(this);
 	}
 
 	private void updateFractalTypeMenu() {
