@@ -3,11 +3,11 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
 public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
@@ -24,7 +24,7 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 		this.mandelbrotService = mandelbrotService;
 		this.points = points;
 
-		fontHeight = getWidth() == Resolution.SD.getWidth() ? 16 : 24;
+		fontHeight = getWidth() == ResolutionEnum.SD.getWidth() ? 16 : 24;
 		vSpacing = fontHeight + 4;
 		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
 	}

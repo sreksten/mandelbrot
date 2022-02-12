@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorHelpFragment;
 
 public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
@@ -25,7 +25,7 @@ public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
 
-		fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
+		fontHeight = getWidth() == ResolutionEnum.SD.getWidth() ? 12 : 16;
 		vSpacing = fontHeight + 4;
 		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
 	}

@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFileChooser;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
@@ -26,6 +25,7 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class SnapshotServiceImpl implements SnapshotService, Runnable {
 

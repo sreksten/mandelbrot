@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorFragment;
 
 abstract class WindowDecoratorFragmentImpl implements WindowDecoratorFragment {

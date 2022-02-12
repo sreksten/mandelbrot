@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.beans.PropertyChangeListener;
 
-import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public interface Points {
 

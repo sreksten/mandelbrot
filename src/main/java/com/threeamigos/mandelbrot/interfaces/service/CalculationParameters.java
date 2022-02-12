@@ -1,6 +1,6 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
-import com.threeamigos.mandelbrot.Resolution;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public interface CalculationParameters {
 

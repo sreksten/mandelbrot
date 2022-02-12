@@ -1,6 +1,8 @@
-package com.threeamigos.mandelbrot;
+package com.threeamigos.mandelbrot.implementations.ui;
 
-public enum Resolution {
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
+
+public enum ResolutionEnum implements Resolution {
 
 	FULL_ULTRA_HD("Full Ultra HD/8K", 7680, 4320),
 	ULTRA_HD("Ultra HD/4K", 3840, 2160),
@@ -14,20 +16,23 @@ public enum Resolution {
 	private int width;
 	private int height;
 
-	Resolution(String name, int width, int height) {
+	ResolutionEnum(String name, int width, int height) {
 		this.name = name;
 		this.width = width;
 		this.height = height;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}

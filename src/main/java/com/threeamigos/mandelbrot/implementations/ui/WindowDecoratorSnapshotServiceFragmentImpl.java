@@ -3,9 +3,9 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorSnapshotServiceFragment;
 
 public class WindowDecoratorSnapshotServiceFragmentImpl extends WindowDecoratorFragmentImpl
@@ -18,7 +18,7 @@ public class WindowDecoratorSnapshotServiceFragmentImpl extends WindowDecoratorF
 		super(resolution);
 		this.snapshotService = snapshotService;
 
-		fontHeight = getWidth() == Resolution.SD.getWidth() ? 12 : 16;
+		fontHeight = getWidth() == ResolutionEnum.SD.getWidth() ? 12 : 16;
 		vSpacing = fontHeight + 4;
 		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
 	}

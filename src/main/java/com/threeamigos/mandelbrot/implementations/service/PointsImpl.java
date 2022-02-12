@@ -3,11 +3,11 @@ package com.threeamigos.mandelbrot.implementations.service;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class PointsImpl implements Points {
 

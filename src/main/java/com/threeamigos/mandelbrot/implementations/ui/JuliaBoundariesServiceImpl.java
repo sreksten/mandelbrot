@@ -11,7 +11,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
@@ -54,7 +53,7 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 		halfRadius = diameter >> 2;
 		crossWidth = radius * 2 + 20;
 
-		fontHeight = maxWidth == Resolution.SD.getWidth() ? 12 : 16;
+		fontHeight = maxWidth == ResolutionEnum.SD.getWidth() ? 12 : 16;
 		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
 
 	}

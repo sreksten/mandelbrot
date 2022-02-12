@@ -38,56 +38,43 @@ import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
 public class Main {
 
-	private CalculationParametersRequester calculationParametersRequester;
-	private CalculationParameters calculationParameters;
-	private Resolution resolution;
-	private Points points;
-	private SchedulerService schedulerService;
-	private FractalServiceFactory fractalServiceFactory;
-	private ImageProducerServiceFactory imageProducerServiceFactory;
-	private ImagePersisterService imagePersisterService;
-	private PointsOfInterestService pointsOfInterestService;
-	private SnapshotService snapshotService;
-	private FractalService fractalService;
-	private FontService fontService;
-	private WindowDecoratorService windowDecoratorService;
-
 	public Main() {
 
-		calculationParametersRequester = new CalculationParametersRequesterImpl();
+		CalculationParametersRequester calculationParametersRequester = new CalculationParametersRequesterImpl();
 
-		calculationParameters = calculationParametersRequester.getCalculationParameters(null);
+		CalculationParameters calculationParameters = calculationParametersRequester.getCalculationParameters(null);
 		if (calculationParameters == null) {
 			return;
 		}
 
-		resolution = calculationParameters.getResolution();
+		Resolution resolution = calculationParameters.getResolution();
 
-		points = new PointsImpl(resolution);
+		Points points = new PointsImpl(resolution);
 
-		fractalServiceFactory = new FractalServiceFactoryImpl();
+		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl();
 
-		schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
+		SchedulerService schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
 
-		imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
+		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
 
-		imagePersisterService = new ImagePersisterServiceImpl();
+		ImagePersisterService imagePersisterService = new ImagePersisterServiceImpl();
 
-		pointsOfInterestService = new PointsOfInterestServiceImpl();
+		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
 
-		snapshotService = new SnapshotServiceImpl(calculationParametersRequester, fractalServiceFactory,
+		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester, fractalServiceFactory,
 				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
-		fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
+		FractalService fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
 				CalculationType.FOREGROUND);
 
-		fontService = new FontServiceImpl();
+		FontService fontService = new FontServiceImpl();
 
-		windowDecoratorService = new WindowDecoratorServiceImpl(
+		WindowDecoratorService windowDecoratorService = new WindowDecoratorServiceImpl(
 				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, points),
 				new WindowDecoratorHelpFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),

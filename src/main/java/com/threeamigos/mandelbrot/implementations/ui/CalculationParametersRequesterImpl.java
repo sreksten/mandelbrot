@@ -10,10 +10,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
 
@@ -34,8 +34,8 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		resolutionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panel.add(resolutionLabel);
 
-		JComboBox<Resolution> resolutionComboBox = new JComboBox<>(Resolution.values());
-		Integer defaultValue = matchScreenResolution ? matchScreenResolution() : Resolution.FULL_HD.ordinal();
+		JComboBox<Resolution> resolutionComboBox = new JComboBox<>(ResolutionEnum.values());
+		Integer defaultValue = matchScreenResolution ? matchScreenResolution() : ResolutionEnum.FULL_HD.ordinal();
 		resolutionComboBox.setSelectedIndex(defaultValue);
 		resolutionComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panel.add(resolutionComboBox);
@@ -96,7 +96,7 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 		int result = JOptionPane.showOptionDialog(component, panel, "3AM Mandelbrot", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, null, null);
 		if (result == JOptionPane.OK_OPTION) {
-			Resolution resolution = Resolution.values()[resolutionComboBox.getSelectedIndex()];
+			Resolution resolution = ResolutionEnum.values()[resolutionComboBox.getSelectedIndex()];
 			int maxThreads = threadsSlider.getValue();
 			int exponent = FractalService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
 			return new CalculationParametersImpl(resolution, maxThreads, (int) Math.pow(2, exponent));
@@ -107,41 +107,11 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 
 	private int matchScreenResolution() {
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-		for (Resolution res : Resolution.values()) {
+		for (ResolutionEnum res : ResolutionEnum.values()) {
 			if (res.getWidth() == screenDimension.getWidth() && res.getHeight() == screenDimension.getHeight()) {
 				return res.ordinal();
 			}
 		}
-		return Resolution.FULL_HD.ordinal();
+		return ResolutionEnum.FULL_HD.ordinal();
 	}
-
-	private class CalculationParametersImpl implements CalculationParameters {
-
-		private final Resolution resolution;
-		private final int maxThreads;
-		private final int maxIterations;
-
-		CalculationParametersImpl(Resolution resolution, int maxThreads, int maxIterations) {
-			this.resolution = resolution;
-			this.maxThreads = maxThreads;
-			this.maxIterations = maxIterations;
-		}
-
-		@Override
-		public Resolution getResolution() {
-			return resolution;
-		}
-
-		@Override
-		public int getMaxThreads() {
-			return maxThreads;
-		}
-
-		@Override
-		public int getMaxIterations() {
-			return maxIterations;
-		}
-
-	}
-
 }

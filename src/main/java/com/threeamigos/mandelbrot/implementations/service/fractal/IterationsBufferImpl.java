@@ -2,8 +2,8 @@ package com.threeamigos.mandelbrot.implementations.service.fractal;
 
 import java.util.Arrays;
 
-import com.threeamigos.mandelbrot.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 class IterationsBufferImpl implements IterationsBuffer {
 
