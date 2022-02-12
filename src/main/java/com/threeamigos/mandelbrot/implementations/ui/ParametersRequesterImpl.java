@@ -12,21 +12,23 @@ import javax.swing.JSlider;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
-import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
-public class CalculationParametersRequesterImpl implements CalculationParametersRequester {
+public class ParametersRequesterImpl implements ParametersRequester {
 
 	private static final int MAX_ITERATIONS_NOT_SPECIFIED = -1;
 
+	private CalculationParameters calculationParameters;
+	private Resolution resolution;
+
 	@Override
-	public CalculationParameters getCalculationParameters(Component component) {
-		return getCalculationParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, component);
+	public boolean requestParameters(Component component) {
+		return requestParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, component);
 	}
 
 	@Override
-	public CalculationParameters getCalculationParameters(boolean matchScreenResolution, int maxIterations,
-			Component component) {
+	public boolean requestParameters(boolean matchScreenResolution, int maxIterations, Component component) {
 
 		Box panel = Box.createVerticalBox();
 
@@ -95,14 +97,16 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 
 		int result = JOptionPane.showOptionDialog(component, panel, "3AM Mandelbrot", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, null, null);
+
 		if (result == JOptionPane.OK_OPTION) {
-			Resolution resolution = ResolutionEnum.values()[resolutionComboBox.getSelectedIndex()];
+			resolution = ResolutionEnum.values()[resolutionComboBox.getSelectedIndex()];
 			int maxThreads = threadsSlider.getValue();
 			int exponent = FractalService.MIN_ITERATIONS_EXPONENT + iterationsSlider.getValue();
-			return new CalculationParametersImpl(resolution, maxThreads, (int) Math.pow(2, exponent));
+			calculationParameters = new CalculationParametersImpl(maxThreads, (int) Math.pow(2, exponent));
+			return true;
 		}
 
-		return null;
+		return false;
 	}
 
 	private int matchScreenResolution() {
@@ -113,5 +117,15 @@ public class CalculationParametersRequesterImpl implements CalculationParameters
 			}
 		}
 		return ResolutionEnum.FULL_HD.ordinal();
+	}
+
+	@Override
+	public Resolution getResolution() {
+		return resolution;
+	}
+
+	@Override
+	public CalculationParameters getCalculationParameters() {
+		return calculationParameters;
 	}
 }

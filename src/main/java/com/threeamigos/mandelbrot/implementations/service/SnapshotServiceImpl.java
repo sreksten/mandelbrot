@@ -16,22 +16,22 @@ import javax.swing.JFileChooser;
 
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
+import com.threeamigos.mandelbrot.interfaces.service.FractalService;
+import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
-import com.threeamigos.mandelbrot.interfaces.service.FractalService;
-import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
-import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
 	private final PropertyChangeSupport propertyChangeSupport;
 
-	private CalculationParametersRequester calculationParametersRequester;
+	private ParametersRequester calculationParametersRequester;
 	private FractalServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
@@ -44,7 +44,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	private Thread queuedSnapshotsThread;
 	private AtomicBoolean running;
 
-	public SnapshotServiceImpl(CalculationParametersRequester calculationParametersRequester,
+	public SnapshotServiceImpl(ParametersRequester calculationParametersRequester,
 			FractalServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
 			ImagePersisterService imageService, SchedulerService schedulerService) {
 		this.calculationParametersRequester = calculationParametersRequester;
@@ -70,21 +70,22 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	public void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
 			Component parentComponent) {
 
-		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters(true,
-				maxIterations, parentComponent);
-		if (tempCalculationParameters == null) {
+		if (!calculationParametersRequester.requestParameters(true, maxIterations, parentComponent)) {
 			return;
 		}
+
+		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters();
+		Resolution tempResolution = calculationParametersRequester.getResolution();
 
 		String filename = askFilename(parentComponent);
 		if (filename == null) {
 			return;
 		}
 
-		if (hasSameResolution(bufferedImage, tempCalculationParameters)) {
+		if (hasSameResolution(bufferedImage, tempResolution)) {
 			saveImage(bufferedImage, filename);
 		} else {
-			Points newPoints = points.adaptToResolution(tempCalculationParameters.getResolution());
+			Points newPoints = points.adaptToResolution(tempResolution);
 			queuedSnapshots.add(new SnapshotJob(tempCalculationParameters, newPoints, colorModelName, filename));
 			queuedSnapshotsThread.interrupt();
 		}
@@ -109,8 +110,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		return null;
 	}
 
-	private boolean hasSameResolution(Image image, CalculationParameters calculationParameters) {
-		Resolution resolution = calculationParameters.getResolution();
+	private boolean hasSameResolution(Image image, Resolution resolution) {
 		return resolution.getWidth() == image.getWidth(null) && resolution.getHeight() == image.getHeight(null);
 	}
 

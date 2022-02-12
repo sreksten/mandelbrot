@@ -17,9 +17,9 @@ import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.AboutWindowImpl;
-import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.FontServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
+import com.threeamigos.mandelbrot.implementations.ui.ParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorInfoFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorPointOfInterestNameFragmentImpl;
@@ -36,8 +36,8 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
-import com.threeamigos.mandelbrot.interfaces.ui.CalculationParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
+import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
@@ -45,14 +45,15 @@ public class Main {
 
 	public Main() {
 
-		CalculationParametersRequester calculationParametersRequester = new CalculationParametersRequesterImpl();
+		ParametersRequester parametersRequester = new ParametersRequesterImpl();
 
-		CalculationParameters calculationParameters = calculationParametersRequester.getCalculationParameters(null);
-		if (calculationParameters == null) {
+		if (!parametersRequester.requestParameters(null)) {
 			return;
 		}
 
-		Resolution resolution = calculationParameters.getResolution();
+		CalculationParameters parameters = parametersRequester.getCalculationParameters();
+
+		Resolution resolution = parametersRequester.getResolution();
 
 		Points points = new PointsImpl(resolution);
 
@@ -66,10 +67,10 @@ public class Main {
 
 		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
 
-		SnapshotService snapshotService = new SnapshotServiceImpl(calculationParametersRequester, fractalServiceFactory,
+		SnapshotService snapshotService = new SnapshotServiceImpl(parametersRequester, fractalServiceFactory,
 				imageProducerServiceFactory, imagePersisterService, schedulerService);
 
-		FractalService fractalService = fractalServiceFactory.createInstance(calculationParameters, schedulerService,
+		FractalService fractalService = fractalServiceFactory.createInstance(parameters, schedulerService,
 				CalculationType.FOREGROUND);
 
 		FontService fontService = new FontServiceImpl();
@@ -82,7 +83,7 @@ public class Main {
 
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, new AboutWindowImpl(),
-				calculationParameters);
+				parameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
 		fractalCanvas
