@@ -19,6 +19,7 @@ class CalculationService implements Runnable {
 	final SliceCalculator[] calculators;
 	final PercentageTracker percentageTracker;
 	final FractalType fractalType;
+	boolean isJuliaConnected;
 
 	boolean globalRunning;
 	private boolean interrupted = false;
@@ -41,6 +42,10 @@ class CalculationService implements Runnable {
 		percentageTracker = new PercentageTracker(width, height);
 
 		prepareSlices(width, height);
+
+		if (fractalType == FractalType.JULIA) {
+			isJuliaConnected = points.isJuliaConnected();
+		}
 
 		this.iterationsBuffer = new IterationsBufferImpl(width, height);
 		calculators = new SliceCalculator[maxThreads];
@@ -262,7 +267,11 @@ class CalculationService implements Runnable {
 
 	private SliceCalculator createSliceCalculator(Slice slice) {
 		if (fractalType == FractalType.JULIA) {
-			return new JuliaSliceCalculator(points, slice, this, maxIterations);
+			if (isJuliaConnected) {
+				return new ConnectedJuliaSliceCalculator(points, slice, this, maxIterations);
+			} else {
+				return new NotConnectedJuliaSliceCalculator(points, slice, this, maxIterations);
+			}
 		} else {
 			return new MandelbrotSliceCalculator(points, slice, this, maxIterations);
 		}

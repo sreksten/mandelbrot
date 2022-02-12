@@ -136,7 +136,7 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 		if (!active) {
 			return;
 		}
-		graphics.setColor(Color.WHITE);
+		graphics.setColor(points.isJuliaConnected() ? Color.WHITE : Color.YELLOW);
 		graphics.drawOval(centerX - radius, centerY - radius, diameter, diameter);
 		graphics.drawLine(centerX - crossWidth / 2, centerY, centerX + crossWidth / 2, centerY);
 		graphics.drawLine(centerX, centerY - crossWidth / 2, centerX, centerY + crossWidth / 2);

@@ -76,6 +76,8 @@ public interface Points {
 
 	public double getJuliaCImaginary();
 
+	public boolean isJuliaConnected();
+
 	public void addPropertyChangeListener(PropertyChangeListener pcl);
 
 	public void removePropertyChangeListener(PropertyChangeListener pcl);

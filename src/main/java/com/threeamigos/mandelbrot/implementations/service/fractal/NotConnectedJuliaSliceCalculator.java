@@ -3,7 +3,7 @@ package com.threeamigos.mandelbrot.implementations.service.fractal;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 
-class JuliaSliceCalculator implements SliceCalculator {
+class NotConnectedJuliaSliceCalculator implements SliceCalculator {
 
 	private Points points;
 	private Slice slice;
@@ -16,7 +16,7 @@ class JuliaSliceCalculator implements SliceCalculator {
 	private double cr;
 	private double ci;
 
-	public JuliaSliceCalculator(Points points, Slice slice, CalculationService calculationService,
+	public NotConnectedJuliaSliceCalculator(Points points, Slice slice, CalculationService calculationService,
 			int maxIterations) {
 		this.points = points;
 		this.cr = points.getJuliaCReal();
@@ -107,18 +107,33 @@ class JuliaSliceCalculator implements SliceCalculator {
 		double real2;
 		double imaginary2;
 
+		double realOld = 0.0d;
+		double imaginaryOld = 0.0d;
+		int period = 0;
+
 		for (int iteration = 0; iteration < maxIterations && calculationService.globalRunning; iteration++) {
 			real2 = real * real;
 			imaginary2 = imaginary * imaginary;
 
-			if (real2 + imaginary2 > 4.0) {
+			if (real2 + imaginary2 > 4.0d) {
 				return iteration;
 			}
 
 			// Z=Z*Z+C
 			tempReal = real2 - imaginary2 + cr;
-			imaginary = (real + real) * imaginary + ci; // 2.0 * real * imaginary
+			imaginary = (real + real) * imaginary + ci; // 2 * real * imaginary
 			real = tempReal;
+
+			if (real == realOld && imaginary == imaginaryOld) {
+				return maxIterations;
+			}
+
+			period++;
+			if (period > 20) {
+				period = 0;
+				realOld = real;
+				imaginaryOld = imaginary;
+			}
 		}
 
 		return maxIterations;

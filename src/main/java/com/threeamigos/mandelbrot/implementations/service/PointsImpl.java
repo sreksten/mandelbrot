@@ -55,6 +55,7 @@ public class PointsImpl implements Points {
 
 	private double juliaCReal = 0.3d;
 	private double juliaCImaginary = -0.01;
+	private boolean juliaConnected;
 
 	private PointsImpl() {
 		this.propertyChangeSupport = new PropertyChangeSupport(this);
@@ -380,6 +381,7 @@ public class PointsImpl implements Points {
 	public void setJuliaC(double juliaCReal, double juliaCImaginary) {
 		this.juliaCReal = juliaCReal;
 		this.juliaCImaginary = juliaCImaginary;
+		this.juliaConnected = belongsToMandelbrotSet(juliaCReal, juliaCImaginary, 8192);
 	}
 
 	@Override
@@ -390,6 +392,51 @@ public class PointsImpl implements Points {
 	@Override
 	public double getJuliaCImaginary() {
 		return juliaCImaginary;
+	}
+
+	@Override
+	public boolean isJuliaConnected() {
+		return juliaConnected;
+	}
+
+	private boolean belongsToMandelbrotSet(double cReal, double cImaginary, int maxIterations) {
+		double real = 0;
+		double imaginary = 0;
+		double tempReal;
+
+		double real2;
+		double imaginary2;
+
+		double realOld = 0.0d;
+		double imaginaryOld = 0.0d;
+		int period = 0;
+
+		for (int iteration = 0; iteration < maxIterations; iteration++) {
+			real2 = real * real;
+			imaginary2 = imaginary * imaginary;
+
+			if (real2 + imaginary2 > 4.0) {
+				return false;
+			}
+
+			// Z=Z*Z+C
+			tempReal = real2 - imaginary2 + cReal;
+			imaginary = (real + real) * imaginary + cImaginary; // 2.0 * real * imaginary
+			real = tempReal;
+
+			if (real == realOld && imaginary == imaginaryOld) {
+				return true;
+			}
+
+			period++;
+			if (period > 20) {
+				period = 0;
+				realOld = real;
+				imaginaryOld = imaginary;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
