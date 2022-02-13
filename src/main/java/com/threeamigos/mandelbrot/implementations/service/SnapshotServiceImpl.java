@@ -28,34 +28,36 @@ import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
-	private final PropertyChangeSupport propertyChangeSupport;
-
-	private ParametersRequester calculationParametersRequester;
-	private FractalServiceFactory mandelbrotServiceFactory;
+	private ParametersRequester parametersRequester;
+	private FractalServiceFactory fractalServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
 
+	private final PropertyChangeSupport propertyChangeSupport;
+	private final Queue<SnapshotJob> queuedSnapshotJobs;
+
 	private final JFileChooser fileChooser;
 
-	private Queue<SnapshotJob> queuedSnapshots;
-	private FractalService bkgCalculator;
-	private Thread queuedSnapshotsThread;
 	private AtomicBoolean running;
+	private Thread queuedSnapshotsThread;
 
-	public SnapshotServiceImpl(ParametersRequester calculationParametersRequester,
-			FractalServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
-			ImagePersisterService imageService) {
-		this.calculationParametersRequester = calculationParametersRequester;
-		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
+	private FractalService bkgCalculator;
+
+	public SnapshotServiceImpl(ParametersRequester parametersRequester, FractalServiceFactory fractalServiceFactory,
+			ImageProducerServiceFactory imageProducerServiceFactory, ImagePersisterService imageService) {
+		this.parametersRequester = parametersRequester;
+		this.fractalServiceFactory = fractalServiceFactory;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.imagePersisterService = imageService;
+
 		this.propertyChangeSupport = new PropertyChangeSupport(this);
-		this.queuedSnapshots = new ConcurrentLinkedQueue<>();
+		this.queuedSnapshotJobs = new ConcurrentLinkedQueue<>();
 
 		fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Select snapshot destination");
 		fileChooser.setApproveButtonText("Save");
 		fileChooser.setApproveButtonToolTipText("Saves the snapshot to the selected file");
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 
 		running = new AtomicBoolean(true);
 		queuedSnapshotsThread = new Thread(null, this, "QueuedSnapshotsThread");
@@ -67,7 +69,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	public void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
 			Component parentComponent) {
 
-		if (!calculationParametersRequester.requestParameters(true, maxIterations, parentComponent)) {
+		if (!parametersRequester.requestParameters(true, maxIterations, parentComponent)) {
 			return;
 		}
 
@@ -76,15 +78,15 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 			return;
 		}
 
-		CalculationParameters bkgCalculationParameters = calculationParametersRequester.getCalculationParameters();
+		CalculationParameters bkgCalculationParameters = parametersRequester.getCalculationParameters();
 		bkgCalculationParameters.setCalculationType(CalculationType.BACKGROUND);
-		Resolution bkgResolution = calculationParametersRequester.getResolution();
+		Resolution bkgResolution = parametersRequester.getResolution();
 
 		if (hasSameResolution(bufferedImage, bkgResolution)) {
 			saveImage(bufferedImage, filename);
 		} else {
 			Points newPoints = points.adaptToResolution(bkgResolution);
-			queuedSnapshots
+			queuedSnapshotJobs
 					.add(new SnapshotJob(bkgCalculationParameters, bkgResolution, newPoints, colorModelName, filename));
 			queuedSnapshotsThread.interrupt();
 		}
@@ -94,7 +96,6 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		String filename = new StringBuilder().append("3AM_Mandelbrot_")
 				.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())).append(".png").toString();
 
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		fileChooser.setSelectedFile(new File(filename));
 		int returnVal = fileChooser.showOpenDialog(parentComponent);
 
@@ -121,10 +122,10 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	public void run() {
 		while (running.get()) {
 			waitForScheduledSnapshot();
-			while (!queuedSnapshots.isEmpty()) {
-				SnapshotJob snapshotJob = queuedSnapshots.remove();
+			while (!queuedSnapshotJobs.isEmpty()) {
+				SnapshotJob snapshotJob = queuedSnapshotJobs.remove();
 				CalculationParameters bkgParameters = snapshotJob.calculationParameters;
-				bkgCalculator = mandelbrotServiceFactory.createInstance();
+				bkgCalculator = fractalServiceFactory.createInstance();
 				for (PropertyChangeListener propertyChangeListener : propertyChangeSupport
 						.getPropertyChangeListeners()) {
 					bkgCalculator.addPropertyChangeListener(propertyChangeListener);
@@ -153,7 +154,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
 	@Override
 	public int getQueuedSnapshots() {
-		return queuedSnapshots.size();
+		return queuedSnapshotJobs.size();
 	}
 
 	@Override
