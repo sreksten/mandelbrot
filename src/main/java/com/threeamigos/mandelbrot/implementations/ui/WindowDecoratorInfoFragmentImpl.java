@@ -3,6 +3,7 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
@@ -14,14 +15,16 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 		implements WindowDecoratorInfoFragment {
 
 	private final FractalService mandelbrotService;
+	private final CalculationParameters calculationParameters;
 	private final Points points;
 
 	private Integer percentage;
 
 	public WindowDecoratorInfoFragmentImpl(Resolution resolution, FontService fontService,
-			FractalService mandelbrotService, Points points) {
+			FractalService mandelbrotService, CalculationParameters calculationParameters, Points points) {
 		super(resolution);
 		this.mandelbrotService = mandelbrotService;
+		this.calculationParameters = calculationParameters;
 		this.points = points;
 
 		fontHeight = getWidth() == ResolutionEnum.SD.getWidth() ? 16 : 24;
@@ -45,19 +48,19 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 			if (percentage != null) {
 				drawString(graphics,
 						String.format("Percentage: %d (%d threads, %d iterations max)", percentage,
-								mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
+								calculationParameters.getNumberOfThreads(), calculationParameters.getMaxIterations()),
 						xCoord, yCoord);
 			} else {
 				long drawTime = mandelbrotService.getCalculationTime();
 				if (drawTime >= 0) {
 					drawString(graphics,
 							String.format("Calculation time: %d ms (%d threads, %d iterations max)", drawTime,
-									mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
+									calculationParameters.getNumberOfThreads(),
+									calculationParameters.getMaxIterations()),
 							xCoord, yCoord);
 				} else {
-					drawString(graphics,
-							String.format("Calculation time: - (%d threads, %d iterations max)",
-									mandelbrotService.getNumberOfThreads(), mandelbrotService.getMaxIterations()),
+					drawString(graphics, String.format("Calculation time: - (%d threads, %d iterations max)",
+							calculationParameters.getNumberOfThreads(), calculationParameters.getMaxIterations()),
 							xCoord, yCoord);
 				}
 			}

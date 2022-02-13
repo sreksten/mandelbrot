@@ -24,11 +24,20 @@ public class PercentageTracker {
 	}
 
 	private int getPercentage(SliceDeque deque) {
+		// Since a slice may be split up in parts, the percentage floats around the
+		// actual percentage.
+		// It is uselessly time consuming to calculate the correct percentage due to all
+		// optimizations done in the calculation (symmetry, slice enlarging), so we
+		// return just an estimate percentage.
 		int totalMissingPoints = 0;
 		for (Slice slice : deque.getSlices()) {
 			totalMissingPoints += (slice.endX - slice.startX) * (slice.endY - slice.startY);
 		}
-		return 100 - 100 * totalMissingPoints / totalPointsToCalculate;
+		int p = 100 - (int) (100.0d * ((double) totalMissingPoints / totalPointsToCalculate));
+		if (p > percentage) {
+			percentage = p;
+		}
+		return percentage;
 	}
 
 	public int getPercentage() {

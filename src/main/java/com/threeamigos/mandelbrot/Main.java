@@ -76,14 +76,14 @@ public class Main {
 		FontService fontService = new FontServiceImpl();
 
 		WindowDecoratorService windowDecoratorService = new WindowDecoratorServiceImpl(
-				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, points),
+				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, parameters, points),
 				new WindowDecoratorHelpFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, new AboutWindowImpl(),
-				parameters);
+				resolution, parameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
 		fractalCanvas

@@ -21,6 +21,10 @@ class Slice {
 		this.endY = endY;
 	}
 
+	public boolean hasSimmetricity() {
+		return symmetricity != null;
+	}
+
 	public List<Slice> split() {
 
 		List<Slice> list = new ArrayList<>();
@@ -98,7 +102,7 @@ class Slice {
 		}
 	}
 
-	static enum SimmetricityType {
+	enum SimmetricityType {
 		X_AXIS,
 		ORIGIN;
 	}

@@ -34,6 +34,7 @@ import com.threeamigos.mandelbrot.interfaces.ui.AboutWindow;
 import com.threeamigos.mandelbrot.interfaces.ui.InputConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
+import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
 public class FractalCanvas extends JPanel implements Runnable, InputConsumer, MessageNotifier, PropertyChangeListener {
@@ -48,6 +49,8 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	private transient Points points;
 	private transient WindowDecoratorService windowDecoratorService;
 	private transient AboutWindow aboutWindow;
+	private transient Resolution resolution;
+	private transient CalculationParameters calculationParameters;
 
 	private Integer currentPointOfInterestIndex = null;
 
@@ -67,7 +70,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	public FractalCanvas(FractalService fractalService, PointsOfInterestService pointsOfInterestService,
 			ImageProducerServiceFactory imageProducerServiceFactory, SnapshotService snapshotService, Points points,
-			WindowDecoratorService windowDecoratorService, AboutWindow aboutWindow,
+			WindowDecoratorService windowDecoratorService, AboutWindow aboutWindow, Resolution resolution,
 			CalculationParameters calculationParameters) {
 		super();
 		this.fractalService = fractalService;
@@ -77,6 +80,8 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		this.points = points;
 		this.windowDecoratorService = windowDecoratorService;
 		this.aboutWindow = aboutWindow;
+		this.resolution = resolution;
+		this.calculationParameters = calculationParameters;
 
 		imageProducerService = imageProducerServiceFactory.createInstance(calculationParameters.getMaxIterations());
 		windowDecoratorService.setImageProducerService(imageProducerService);
@@ -104,7 +109,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	@Override
 	public void run() {
-		fractalService.calculate(points);
+		fractalService.calculate(points, resolution, calculationParameters);
 	}
 
 	@Override
@@ -378,24 +383,24 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void setMaxIterations(int maxIterations) {
-		if (fractalService.setMaxIterations(maxIterations)) {
-			updateImageProducer(fractalService.getMaxIterations());
+		if (calculationParameters.setMaxIterations(maxIterations)) {
+			updateImageProducer(calculationParameters.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void doubleUpMaxIterations() {
-		if (fractalService.doubleUpMaxIterations()) {
-			updateImageProducer(fractalService.getMaxIterations());
+		if (calculationParameters.doubleUpMaxIterations()) {
+			updateImageProducer(calculationParameters.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void halveMaxIterations() {
-		if (fractalService.halveMaxIterations()) {
-			updateImageProducer(fractalService.getMaxIterations());
+		if (calculationParameters.halveMaxIterations()) {
+			updateImageProducer(calculationParameters.getMaxIterations());
 			updateIterationsMenu();
 			startCalculationThread();
 		}
@@ -410,21 +415,21 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void setNumberOfThreads(int numberOfThreads) {
-		if (fractalService.setNumberOfThreads(numberOfThreads)) {
+		if (calculationParameters.setNumberOfThreads(numberOfThreads)) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void incrementThreads() {
-		if (fractalService.incrementNumberOfThreads()) {
+		if (calculationParameters.incrementNumberOfThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void decrementThreads() {
-		if (fractalService.decrementNumberOfThreads()) {
+		if (calculationParameters.decrementNumberOfThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
@@ -432,7 +437,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	private void addPointOfInterest() {
 		PersistResult persistResult = pointsOfInterestService
-				.add(points.getPointOfInterest(fractalService.getMaxIterations()));
+				.add(points.getPointOfInterest(calculationParameters.getMaxIterations()));
 		if (persistResult != null && persistResult.isSuccessful()) {
 			setCurrentPointOfInterestIndex(pointsOfInterestService.getCount());
 			updatePointsOfInterestMenu();
@@ -492,7 +497,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void saveImage() {
-		snapshotService.saveSnapshot(points, fractalService.getMaxIterations(),
+		snapshotService.saveSnapshot(points, calculationParameters.getMaxIterations(),
 				imageProducerService.getCurrentColorModelName(), image, this);
 	}
 
@@ -503,9 +508,9 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 			points.setPointOfInterest(pointOfInterest);
 			points.setFractalType(pointOfInterest.getFractalType());
 			updateFractalTypeMenu();
-			if (pointOfInterest.getMaxIterations() != fractalService.getMaxIterations()) {
+			if (pointOfInterest.getMaxIterations() != calculationParameters.getMaxIterations()) {
 				updateImageProducer(pointOfInterest.getMaxIterations());
-				fractalService.setMaxIterations(pointOfInterest.getMaxIterations());
+				calculationParameters.setMaxIterations(pointOfInterest.getMaxIterations());
 				updateIterationsMenu();
 			}
 			startCalculationThread();
@@ -581,8 +586,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveImage());
 		addCheckboxMenuItem(fileMenu, "Show snapshot progress", KeyEvent.VK_H,
-				windowDecoratorService.isShowSnapshotServiceStatusActive(),
-				event -> hideOrShowSnapshotServiceStatus());
+				windowDecoratorService.isShowSnapshotServiceStatusActive(), event -> hideOrShowSnapshotServiceStatus());
 
 		fileMenu.addSeparator();
 		addMenuItem(fileMenu, "About", KeyEvent.VK_S, event -> about());
@@ -609,8 +613,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 				event -> deletePointOfInterest());
 		pointsOfInterestMenu.addSeparator();
 		addCheckboxMenuItem(pointsOfInterestMenu, "Show point of interest's name", KeyEvent.VK_P,
-				windowDecoratorService.isShowPointOfInterestNameActive(),
-				event -> hideOrShowPointOfInterestName());
+				windowDecoratorService.isShowPointOfInterestNameActive(), event -> hideOrShowPointOfInterestName());
 		pointsOfInterestMenu.addSeparator();
 		updatePointsOfInterestMenu();
 
@@ -633,15 +636,16 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		calculationsMenu.add(threadsMenu);
 		for (int i = 1; i <= Runtime.getRuntime().availableProcessors(); i++) {
 			final int threadsToUse = i;
-			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, fractalService.getNumberOfThreads() == i,
+			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, calculationParameters.getNumberOfThreads() == i,
 					event -> setNumberOfThreads(threadsToUse));
 		}
 		calculationsMenu.addSeparator();
 		iterationsMenu = new JMenu("Max iterations");
-		for (int i = FractalService.MIN_ITERATIONS_EXPONENT; i <= FractalService.MAX_ITERATIONS_EXPONENT; i++) {
+		for (int i = CalculationParameters.MIN_ITERATIONS_EXPONENT; i <= CalculationParameters.MAX_ITERATIONS_EXPONENT; i++) {
 			final int maxIterations = 1 << i;
 			addCheckboxMenuItem(iterationsMenu, String.valueOf(maxIterations), -1,
-					fractalService.getMaxIterations() == maxIterations, event -> setMaxIterations(maxIterations));
+					calculationParameters.getMaxIterations() == maxIterations,
+					event -> setMaxIterations(maxIterations));
 		}
 		calculationsMenu.add(iterationsMenu);
 
@@ -677,7 +681,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		Component[] items = threadsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			item.setSelected(fractalService.getNumberOfThreads() == i + 1);
+			item.setSelected(calculationParameters.getNumberOfThreads() == i + 1);
 		}
 	}
 
@@ -685,8 +689,8 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		Component[] items = iterationsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			final int maxIterations = 1 << i + FractalService.MIN_ITERATIONS_EXPONENT;
-			item.setSelected(fractalService.getMaxIterations() == maxIterations);
+			final int maxIterations = 1 << i + CalculationParameters.MIN_ITERATIONS_EXPONENT;
+			item.setSelected(calculationParameters.getMaxIterations() == maxIterations);
 		}
 	}
 

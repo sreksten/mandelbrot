@@ -74,19 +74,20 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 			return;
 		}
 
-		CalculationParameters tempCalculationParameters = calculationParametersRequester.getCalculationParameters();
-		Resolution tempResolution = calculationParametersRequester.getResolution();
+		CalculationParameters bkgCalculationParameters = calculationParametersRequester.getCalculationParameters();
+		Resolution bkgResolution = calculationParametersRequester.getResolution();
 
 		String filename = askFilename(parentComponent);
 		if (filename == null) {
 			return;
 		}
 
-		if (hasSameResolution(bufferedImage, tempResolution)) {
+		if (hasSameResolution(bufferedImage, bkgResolution)) {
 			saveImage(bufferedImage, filename);
 		} else {
-			Points newPoints = points.adaptToResolution(tempResolution);
-			queuedSnapshots.add(new SnapshotJob(tempCalculationParameters, newPoints, colorModelName, filename));
+			Points newPoints = points.adaptToResolution(bkgResolution);
+			queuedSnapshots
+					.add(new SnapshotJob(bkgCalculationParameters, bkgResolution, newPoints, colorModelName, filename));
 			queuedSnapshotsThread.interrupt();
 		}
 	}
@@ -123,21 +124,21 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		while (running.get()) {
 			waitForScheduledSnapshot();
 			while (!queuedSnapshots.isEmpty()) {
-				SnapshotJob snapshot = queuedSnapshots.remove();
-				CalculationParameters bkgParameters = snapshot.calculationParameters;
+				SnapshotJob snapshotJob = queuedSnapshots.remove();
+				CalculationParameters bkgParameters = snapshotJob.calculationParameters;
 				bkgCalculator = mandelbrotServiceFactory.createInstance(bkgParameters, schedulerService,
 						CalculationType.BACKGROUND);
 				for (PropertyChangeListener propertyChangeListener : propertyChangeSupport
 						.getPropertyChangeListeners()) {
 					bkgCalculator.addPropertyChangeListener(propertyChangeListener);
 				}
-				bkgCalculator.calculate(snapshot.points);
+				bkgCalculator.calculate(snapshotJob.points, snapshotJob.resolution, snapshotJob.calculationParameters);
 				ImageProducerService bkgImageProducer = imageProducerServiceFactory
 						.createInstance(bkgParameters.getMaxIterations());
-				bkgImageProducer.switchColorModel(snapshot.colorModelName);
-				Image imageToSave = bkgImageProducer.produceImage(snapshot.points.getWidth(),
-						snapshot.points.getHeight(), bkgCalculator.getIterations());
-				saveImage(imageToSave, snapshot.filename);
+				bkgImageProducer.switchColorModel(snapshotJob.colorModelName);
+				Image imageToSave = bkgImageProducer.produceImage(snapshotJob.points.getWidth(),
+						snapshotJob.points.getHeight(), bkgCalculator.getIterations());
+				saveImage(imageToSave, snapshotJob.filename);
 				bkgCalculator = null;
 			}
 		}
@@ -180,13 +181,15 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	private class SnapshotJob {
 
 		final CalculationParameters calculationParameters;
+		final Resolution resolution;
 		final Points points;
 		final String colorModelName;
 		final String filename;
 
-		SnapshotJob(CalculationParameters calculationParameters, Points points, String colorModelName,
-				String filename) {
+		SnapshotJob(CalculationParameters calculationParameters, Resolution resolution, Points points,
+				String colorModelName, String filename) {
 			this.calculationParameters = calculationParameters;
+			this.resolution = resolution;
 			this.points = points.copy();
 			this.colorModelName = colorModelName;
 			this.filename = filename;
