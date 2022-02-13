@@ -71,14 +71,14 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 			return;
 		}
 
-		CalculationParameters bkgCalculationParameters = calculationParametersRequester.getCalculationParameters();
-		bkgCalculationParameters.setCalculationType(CalculationType.BACKGROUND);
-		Resolution bkgResolution = calculationParametersRequester.getResolution();
-
 		String filename = askFilename(parentComponent);
 		if (filename == null) {
 			return;
 		}
+
+		CalculationParameters bkgCalculationParameters = calculationParametersRequester.getCalculationParameters();
+		bkgCalculationParameters.setCalculationType(CalculationType.BACKGROUND);
+		Resolution bkgResolution = calculationParametersRequester.getResolution();
 
 		if (hasSameResolution(bufferedImage, bkgResolution)) {
 			saveImage(bufferedImage, filename);
