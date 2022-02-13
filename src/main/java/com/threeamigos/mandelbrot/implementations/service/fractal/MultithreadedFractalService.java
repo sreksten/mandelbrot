@@ -32,16 +32,16 @@ public class MultithreadedFractalService implements FractalService {
 
 		int maxThreads = calculationParameters.getMaxThreads();
 		int maxIterations = calculationParameters.getMaxIterations();
-		CalculationType serviceType = calculationParameters.getCalculationType();
+		CalculationType calculationType = calculationParameters.getCalculationType();
 
 		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), schedulerService,
-				serviceType.getPriority());
+				calculationType.getPriority());
 
 		calculationService.startCalculation();
 
 		while (calculationService.isRunning()) {
 			if (calculationService.shouldUpdatePercentage()) {
-				propertyChangeSupport.firePropertyChange(serviceType.getCalculationInProgressEvent(), null,
+				propertyChangeSupport.firePropertyChange(calculationType.getCalculationInProgressEvent(), null,
 						calculationService.getPercentage());
 			}
 			try {
@@ -54,7 +54,7 @@ public class MultithreadedFractalService implements FractalService {
 		calculationTime = calculationService.getCalculationTime();
 
 		if (!calculationService.isInterrupted()) {
-			propertyChangeSupport.firePropertyChange(serviceType.getCalculationCompleteEvent(), null, this);
+			propertyChangeSupport.firePropertyChange(calculationType.getCalculationCompleteEvent(), null, this);
 		}
 	}
 
