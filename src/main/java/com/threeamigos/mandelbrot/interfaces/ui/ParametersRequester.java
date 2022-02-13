@@ -7,11 +7,13 @@ import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 /**
  * An object that allows an user to choose a {@link Resolution} and
  * {@link CalculationParameters} used to render a fractal.
- * 
+ *
  * @author stefano.reksten
  *
  */
 public interface ParametersRequester {
+
+	public boolean requestParameters();
 
 	public boolean requestParameters(Component component);
 

@@ -46,7 +46,7 @@ public class Main {
 
 		ParametersRequester parametersRequester = new ParametersRequesterImpl();
 
-		if (!parametersRequester.requestParameters(null)) {
+		if (!parametersRequester.requestParameters()) {
 			// User cancelled the operation
 			return;
 		}

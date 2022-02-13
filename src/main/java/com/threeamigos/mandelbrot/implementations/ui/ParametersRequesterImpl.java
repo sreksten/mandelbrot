@@ -22,6 +22,11 @@ public class ParametersRequesterImpl implements ParametersRequester {
 	private Resolution resolution;
 
 	@Override
+	public boolean requestParameters() {
+		return requestParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, null);
+	}
+
+	@Override
 	public boolean requestParameters(Component component) {
 		return requestParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, component);
 	}
