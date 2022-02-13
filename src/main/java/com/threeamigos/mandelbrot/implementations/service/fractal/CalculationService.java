@@ -85,8 +85,6 @@ class CalculationService implements Runnable {
 				s1.originX = 0;
 				s1.originY = upperHeight + symmetricHeight;
 				deque.add(s1);
-				// with this respect to the X axis
-//				deque.add(new Slice(0, upperHeight + symmetricHeight, width, upperHeight + symmetricHeight * 2));
 
 				if (lowerHeight > 0) {
 					deque.add(new Slice(0, symmetricHeight * 2, width, height));
@@ -135,9 +133,6 @@ class CalculationService implements Runnable {
 				s1.originX = leftWidth + symmetricWidth;
 				s1.originY = upperHeight + symmetricHeight;
 				deque.add(s1);
-				// with this respect to the origin
-//				deque.add(new Slice(leftWidth + symmetricWidth, upperHeight + symmetricHeight,
-//						leftWidth + symmetricWidth * 2, upperHeight + symmetricHeight * 2));
 
 				// This is symmetric
 				Slice s2 = new Slice(leftWidth + symmetricWidth, upperHeight, leftWidth + symmetricWidth * 2,
@@ -146,9 +141,6 @@ class CalculationService implements Runnable {
 				s2.originX = leftWidth + symmetricWidth;
 				s2.originY = upperHeight + symmetricHeight;
 				deque.add(s2);
-				// with this respect to the origin
-//				deque.add(new Slice(leftWidth, upperHeight + symmetricHeight, leftWidth + symmetricWidth,
-//						upperHeight + symmetricHeight * 2));
 
 				if (rightWidth > 0) {
 					deque.add(new Slice(2 * symmetricWidth, upperHeight, width, upperHeight + symmetricHeight * 2));

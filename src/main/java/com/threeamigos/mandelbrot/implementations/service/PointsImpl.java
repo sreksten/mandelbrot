@@ -13,9 +13,6 @@ public class PointsImpl implements Points {
 
 	private static final double JUNCTION_BETWEEN_CARDIOID_AND_PERIOD2BULB = -0.75d;
 
-	private static final double DEFAULT_MIN_X = -2.0d;
-	private static final double DEFAULT_MAX_X = 0.47d;
-
 	private static final double DEFAULT_MIN_Y = -1.12d;
 	private static final double DEFAULT_MAX_Y = 1.12d;
 
