@@ -9,7 +9,7 @@ public class CalculationParametersImpl implements CalculationParameters {
 	private int maxIterations;
 	private CalculationType calculationType;
 
-	CalculationParametersImpl(int maxThreads, int maxIterations) {
+	public CalculationParametersImpl(int maxThreads, int maxIterations) {
 		this.maxThreads = maxThreads;
 		this.maxIterations = maxIterations;
 		this.calculationType = CalculationType.FOREGROUND;

@@ -5,30 +5,21 @@ import java.awt.Toolkit;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 
-public class IndexColorModelImageProducer implements SingleColorModelImageProducer {
+public class BlackWhiteColorModelImageProducer implements SingleColorModelImageProducer {
 
 	private final byte[] colorMapR;
 	private final byte[] colorMapG;
 	private final byte[] colorMapB;
 	private final IndexColorModel indexColorModel;
 
-	public IndexColorModelImageProducer() {
-		int length = 256;
-		colorMapR = new byte[length];
-		colorMapG = new byte[length];
-		colorMapB = new byte[length];
-		int index = 0;
-		for (int i = 0; i < 256; i++) {
-			if (i % 2 == 0) {
-				colorMapR[index] = (byte) (256 - i);
-			}
-			colorMapG[index] = (byte) i;
-			if (i % 2 == 1) {
-				colorMapB[index] = (byte) (256 - i);
-			}
-			index++;
-		}
-		indexColorModel = new IndexColorModel(8, length, colorMapR, colorMapG, colorMapB, 0);
+	public BlackWhiteColorModelImageProducer() {
+		colorMapR = new byte[2];
+		colorMapG = new byte[2];
+		colorMapB = new byte[2];
+		colorMapR[1] = (byte) 0xFF;
+		colorMapG[1] = (byte) 0xFF;
+		colorMapB[1] = (byte) 0xFF;
+		indexColorModel = new IndexColorModel(8, 2, colorMapR, colorMapG, colorMapB, 0);
 	}
 
 	@Override
@@ -39,6 +30,7 @@ public class IndexColorModelImageProducer implements SingleColorModelImageProduc
 
 	@Override
 	public String getName() {
-		return "Indexed";
+		return "Black and White";
 	}
+
 }

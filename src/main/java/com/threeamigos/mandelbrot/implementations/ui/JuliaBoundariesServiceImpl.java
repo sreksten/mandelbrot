@@ -1,9 +1,12 @@
 package com.threeamigos.mandelbrot.implementations.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
@@ -34,6 +37,8 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 	final int fontHeight;
 	final Font font;
 
+	Image image;
+
 	private boolean active;
 	private Integer cursorX;
 	private Integer cursorY;
@@ -55,7 +60,14 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 
 		fontHeight = maxWidth == ResolutionEnum.SD.getWidth() ? 12 : 16;
 		font = fontService.getFont(FontService.STANDARD_FONT_NAME, Font.BOLD, fontHeight);
+	}
 
+	public int getDiameter() {
+		return diameter;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 	@Override
@@ -106,6 +118,7 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 		if (active) {
 			calculateCursorCoordinates(e.getX(), e.getY());
 			recalcCAndStartCalculation();
+			e.consume();
 		}
 	}
 
@@ -135,6 +148,13 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 		if (!active) {
 			return;
 		}
+
+		Composite composite = graphics.getComposite();
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f);
+		graphics.setComposite(ac);
+		graphics.drawImage(image, centerX - radius, centerY - radius, null);
+		graphics.setComposite(composite);
+
 		graphics.setColor(points.isJuliaConnected() ? Color.WHITE : Color.YELLOW);
 		graphics.drawOval(centerX - radius, centerY - radius, diameter, diameter);
 		graphics.drawLine(centerX - crossWidth / 2, centerY, centerX + crossWidth / 2, centerY);

@@ -14,9 +14,12 @@ import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFa
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.imageproducer.BlackWhiteColorModelImageProducer;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.AboutWindowImpl;
+import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
+import com.threeamigos.mandelbrot.implementations.ui.CustomResolution;
 import com.threeamigos.mandelbrot.implementations.ui.FontServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ParametersRequesterImpl;
@@ -37,6 +40,7 @@ import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
+import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
@@ -86,8 +90,8 @@ public class Main {
 				resolution, calculationParameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
-		fractalCanvas
-				.addRenderableConsumer(new JuliaBoundariesServiceImpl(points, fontService, pointsOfInterestService));
+		fractalCanvas.addRenderableConsumer(
+				createJuliaBoundariesService(points, fontService, pointsOfInterestService, fractalService));
 
 		points.addPropertyChangeListener(fractalCanvas);
 		fractalService.addPropertyChangeListener(fractalCanvas);
@@ -108,6 +112,37 @@ public class Main {
 
 		fractalCanvas.startCalculationThread();
 
+	}
+
+	private RenderableConsumer createJuliaBoundariesService(Points points, FontService fontService,
+			PointsOfInterestService pointsOfInterestService, FractalService fractalService) {
+		JuliaBoundariesServiceImpl juliaBoundariesService = new JuliaBoundariesServiceImpl(points, fontService,
+				pointsOfInterestService);
+
+		int diameter = juliaBoundariesService.getDiameter();
+		Resolution targetResolution = new CustomResolution(diameter, diameter);
+
+		Points targetPoints = new PointsImpl(targetResolution);
+		targetPoints.setMinX(-2.0d);
+		targetPoints.setMaxX(2.0d);
+		targetPoints.setMinY(-2.0d);
+		targetPoints.setMaxY(2.0d);
+		points.adaptToResolution(targetResolution);
+
+		final int maxIterations = 32;
+
+		fractalService.calculate(targetPoints, targetResolution,
+				new CalculationParametersImpl(Runtime.getRuntime().availableProcessors(), maxIterations));
+
+		int[] iterations = fractalService.getIterations();
+		for (int i = 0; i < iterations.length; i++) {
+			iterations[i] = iterations[i] == maxIterations ? 1 : 0;
+		}
+
+		juliaBoundariesService
+				.setImage(new BlackWhiteColorModelImageProducer().produceImage(diameter, diameter, iterations));
+
+		return juliaBoundariesService;
 	}
 
 	private JFrame prepareFrame(FractalCanvas mandelbrotCanvas) {

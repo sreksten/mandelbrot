@@ -7,7 +7,7 @@ public class CustomResolution implements Resolution {
 	private int width;
 	private int height;
 
-	CustomResolution(int width, int height) {
+	public CustomResolution(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
