@@ -47,12 +47,13 @@ public class Main {
 		ParametersRequester parametersRequester = new ParametersRequesterImpl();
 
 		if (!parametersRequester.requestParameters(null)) {
+			// User cancelled the operation
 			return;
 		}
 
-		CalculationParameters parameters = parametersRequester.getCalculationParameters();
-
 		Resolution resolution = parametersRequester.getResolution();
+
+		CalculationParameters calculationParameters = parametersRequester.getCalculationParameters();
 
 		Points points = new PointsImpl(resolution);
 
@@ -74,14 +75,15 @@ public class Main {
 		FontService fontService = new FontServiceImpl();
 
 		WindowDecoratorService windowDecoratorService = new WindowDecoratorServiceImpl(
-				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, parameters, points),
+				new WindowDecoratorInfoFragmentImpl(resolution, fontService, fractalService, calculationParameters,
+						points),
 				new WindowDecoratorHelpFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, new AboutWindowImpl(),
-				resolution, parameters);
+				resolution, calculationParameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
 		fractalCanvas

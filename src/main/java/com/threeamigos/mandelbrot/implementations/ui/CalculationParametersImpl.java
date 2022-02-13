@@ -63,7 +63,7 @@ public class CalculationParametersImpl implements CalculationParameters {
 	}
 
 	@Override
-	public boolean incrementNumberOfThreads() {
+	public boolean incrementMaxThreads() {
 		if (maxThreads < Runtime.getRuntime().availableProcessors()) {
 			maxThreads++;
 			return true;
@@ -72,7 +72,7 @@ public class CalculationParametersImpl implements CalculationParameters {
 	}
 
 	@Override
-	public boolean decrementNumberOfThreads() {
+	public boolean decrementMaxThreads() {
 		if (maxThreads > 1) {
 			maxThreads--;
 			return true;
@@ -81,7 +81,7 @@ public class CalculationParametersImpl implements CalculationParameters {
 	}
 
 	@Override
-	public boolean setNumberOfThreads(int numberOfThreads) {
+	public boolean setMaxThreads(int numberOfThreads) {
 		if (numberOfThreads <= Runtime.getRuntime().availableProcessors()) {
 			maxThreads = numberOfThreads;
 			return true;

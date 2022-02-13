@@ -415,21 +415,21 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 	}
 
 	private void setNumberOfThreads(int numberOfThreads) {
-		if (calculationParameters.setNumberOfThreads(numberOfThreads)) {
+		if (calculationParameters.setMaxThreads(numberOfThreads)) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void incrementThreads() {
-		if (calculationParameters.incrementNumberOfThreads()) {
+		if (calculationParameters.incrementMaxThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
 	}
 
 	private void decrementThreads() {
-		if (calculationParameters.decrementNumberOfThreads()) {
+		if (calculationParameters.decrementMaxThreads()) {
 			updateThreadsMenu();
 			startCalculationThread();
 		}
