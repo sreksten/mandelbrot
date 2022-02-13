@@ -27,7 +27,6 @@ import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorSnapshotServiceFragmentImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ZoomBoxServiceImpl;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
-import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
@@ -57,9 +56,9 @@ public class Main {
 
 		Points points = new PointsImpl(resolution);
 
-		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl();
-
 		SchedulerService schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
+
+		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl(schedulerService);
 
 		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
 
@@ -68,10 +67,9 @@ public class Main {
 		PointsOfInterestService pointsOfInterestService = new PointsOfInterestServiceImpl();
 
 		SnapshotService snapshotService = new SnapshotServiceImpl(parametersRequester, fractalServiceFactory,
-				imageProducerServiceFactory, imagePersisterService, schedulerService);
+				imageProducerServiceFactory, imagePersisterService);
 
-		FractalService fractalService = fractalServiceFactory.createInstance(parameters, schedulerService,
-				CalculationType.FOREGROUND);
+		FractalService fractalService = fractalServiceFactory.createInstance();
 
 		FontService fontService = new FontServiceImpl();
 

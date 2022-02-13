@@ -10,11 +10,11 @@ public interface CalculationParameters {
 
 	public int getMaxIterations();
 
+	public void setCalculationType(CalculationType calculationType);
+
 	public CalculationType getCalculationType();
 
 	public boolean setNumberOfThreads(int numberOfThreads);
-
-	public int getNumberOfThreads();
 
 	public boolean incrementNumberOfThreads();
 

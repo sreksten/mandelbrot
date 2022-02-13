@@ -636,7 +636,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		calculationsMenu.add(threadsMenu);
 		for (int i = 1; i <= Runtime.getRuntime().availableProcessors(); i++) {
 			final int threadsToUse = i;
-			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, calculationParameters.getNumberOfThreads() == i,
+			addCheckboxMenuItem(threadsMenu, String.valueOf(i), -1, calculationParameters.getMaxThreads() == i,
 					event -> setNumberOfThreads(threadsToUse));
 		}
 		calculationsMenu.addSeparator();
@@ -681,7 +681,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		Component[] items = threadsMenu.getMenuComponents();
 		for (int i = 0; i < items.length; i++) {
 			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			item.setSelected(calculationParameters.getNumberOfThreads() == i + 1);
+			item.setSelected(calculationParameters.getMaxThreads() == i + 1);
 		}
 	}
 

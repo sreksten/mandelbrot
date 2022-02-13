@@ -154,10 +154,8 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 
 		for (PointOfInterest pointOfInterest : pointsOfInterestService.getElements()) {
 			if (pointOfInterest.getFractalType() == FractalType.JULIA) {
-				double cr = pointOfInterest.getJuliaCReal();
-				double ci = pointOfInterest.getJuliaCImaginary();
-				int pointX = centerX + (int) (halfRadius * cr);
-				int pointY = centerY + (int) (halfRadius * ci);
+				int pointX = centerX + (int) (halfRadius * pointOfInterest.getJuliaCReal());
+				int pointY = centerY + (int) (halfRadius * pointOfInterest.getJuliaCImaginary());
 				graphics.drawLine(pointX - 5, pointY - 5, pointX + 5, pointY + 5);
 				graphics.drawLine(pointX + 5, pointY - 5, pointX - 5, pointY + 5);
 			}
@@ -187,7 +185,7 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 	private void calculateCursorCoordinates(int x, int y) {
 		int dx = centerX - x;
 		int dy = centerY - y;
-		double distance = Math.sqrt(dx * dx + dy * dy);
+		double distance = Math.sqrt((double) dx * dx + (double) dy * dy);
 		if (distance > radius) {
 			double sin = (y - centerY) / distance;
 			double cos = (x - centerX) / distance;
@@ -202,7 +200,7 @@ public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 	private void drawArrow(Graphics2D graphics) {
 		int dx = centerX - cursorX;
 		int dy = centerY - cursorY;
-		double distance = Math.sqrt(dx * dx + dy * dy);
+		double distance = Math.sqrt((double) dx * dx + (double) dy * dy);
 		if (distance > radius) {
 			distance = radius;
 		}

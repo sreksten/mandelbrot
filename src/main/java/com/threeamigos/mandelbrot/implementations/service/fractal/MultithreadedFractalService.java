@@ -12,15 +12,13 @@ import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class MultithreadedFractalService implements FractalService {
 
-	private final PropertyChangeSupport propertyChangeSupport;
-
 	private final SchedulerService schedulerService;
+	private final PropertyChangeSupport propertyChangeSupport;
 
 	private long calculationTime;
 	private CalculationService calculationService;
 
-	public MultithreadedFractalService(CalculationParameters calculationParameters, SchedulerService schedulerService,
-			CalculationType serviceType) {
+	public MultithreadedFractalService(SchedulerService schedulerService) {
 		this.schedulerService = schedulerService;
 		propertyChangeSupport = new PropertyChangeSupport(this);
 	}

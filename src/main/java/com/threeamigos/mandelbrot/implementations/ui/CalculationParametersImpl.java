@@ -15,12 +15,6 @@ public class CalculationParametersImpl implements CalculationParameters {
 		this.calculationType = CalculationType.FOREGROUND;
 	}
 
-	CalculationParametersImpl(int maxThreads, int maxIterations, CalculationType calculationType) {
-		this.maxThreads = maxThreads;
-		this.maxIterations = maxIterations;
-		this.calculationType = calculationType;
-	}
-
 	@Override
 	public int getMaxThreads() {
 		return maxThreads;
@@ -32,13 +26,13 @@ public class CalculationParametersImpl implements CalculationParameters {
 	}
 
 	@Override
-	public CalculationType getCalculationType() {
-		return calculationType;
+	public void setCalculationType(CalculationType calculationType) {
+		this.calculationType = calculationType;
 	}
 
 	@Override
-	public int getNumberOfThreads() {
-		return maxThreads;
+	public CalculationType getCalculationType() {
+		return calculationType;
 	}
 
 	@Override

@@ -48,19 +48,19 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 			if (percentage != null) {
 				drawString(graphics,
 						String.format("Percentage: %d (%d threads, %d iterations max)", percentage,
-								calculationParameters.getNumberOfThreads(), calculationParameters.getMaxIterations()),
+								calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations()),
 						xCoord, yCoord);
 			} else {
 				long drawTime = mandelbrotService.getCalculationTime();
 				if (drawTime >= 0) {
 					drawString(graphics,
 							String.format("Calculation time: %d ms (%d threads, %d iterations max)", drawTime,
-									calculationParameters.getNumberOfThreads(),
-									calculationParameters.getMaxIterations()),
+									calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations()),
 							xCoord, yCoord);
 				} else {
-					drawString(graphics, String.format("Calculation time: - (%d threads, %d iterations max)",
-							calculationParameters.getNumberOfThreads(), calculationParameters.getMaxIterations()),
+					drawString(graphics,
+							String.format("Calculation time: - (%d threads, %d iterations max)",
+									calculationParameters.getMaxThreads(), calculationParameters.getMaxIterations()),
 							xCoord, yCoord);
 				}
 			}

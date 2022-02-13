@@ -28,7 +28,7 @@ class Mode2DirectColorModelImageProducer implements SingleColorModelImageProduce
 
 		for (int iteration = CalculationParameters.MIN_ITERATIONS_EXPONENT; iteration <= CalculationParameters.MAX_ITERATIONS_EXPONENT; iteration++) {
 			int minValue = (iteration == CalculationParameters.MIN_ITERATIONS_EXPONENT ? 0
-					: (int) Math.pow(2, iteration - 1));
+					: (int) Math.pow(2, iteration - 1.0d));
 			int maxValue = (int) Math.pow(2, iteration) - 1;
 
 			int localMaxIterations = maxValue - minValue + 1;

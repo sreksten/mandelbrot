@@ -22,7 +22,6 @@ import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
@@ -35,7 +34,6 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	private FractalServiceFactory mandelbrotServiceFactory;
 	private ImageProducerServiceFactory imageProducerServiceFactory;
 	private ImagePersisterService imagePersisterService;
-	private SchedulerService schedulerService;
 
 	private final JFileChooser fileChooser;
 
@@ -46,12 +44,11 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
 	public SnapshotServiceImpl(ParametersRequester calculationParametersRequester,
 			FractalServiceFactory mandelbrotServiceFactory, ImageProducerServiceFactory imageProducerServiceFactory,
-			ImagePersisterService imageService, SchedulerService schedulerService) {
+			ImagePersisterService imageService) {
 		this.calculationParametersRequester = calculationParametersRequester;
 		this.mandelbrotServiceFactory = mandelbrotServiceFactory;
 		this.imageProducerServiceFactory = imageProducerServiceFactory;
 		this.imagePersisterService = imageService;
-		this.schedulerService = schedulerService;
 		this.propertyChangeSupport = new PropertyChangeSupport(this);
 		this.queuedSnapshots = new ConcurrentLinkedQueue<>();
 
@@ -75,6 +72,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		}
 
 		CalculationParameters bkgCalculationParameters = calculationParametersRequester.getCalculationParameters();
+		bkgCalculationParameters.setCalculationType(CalculationType.BACKGROUND);
 		Resolution bkgResolution = calculationParametersRequester.getResolution();
 
 		String filename = askFilename(parentComponent);
@@ -126,8 +124,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 			while (!queuedSnapshots.isEmpty()) {
 				SnapshotJob snapshotJob = queuedSnapshots.remove();
 				CalculationParameters bkgParameters = snapshotJob.calculationParameters;
-				bkgCalculator = mandelbrotServiceFactory.createInstance(bkgParameters, schedulerService,
-						CalculationType.BACKGROUND);
+				bkgCalculator = mandelbrotServiceFactory.createInstance();
 				for (PropertyChangeListener propertyChangeListener : propertyChangeSupport
 						.getPropertyChangeListeners()) {
 					bkgCalculator.addPropertyChangeListener(propertyChangeListener);
