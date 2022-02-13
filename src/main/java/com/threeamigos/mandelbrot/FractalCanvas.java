@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.threeamigos.mandelbrot.implementations.ui.ResolutionEnum;
 import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
@@ -117,7 +118,8 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		super.paintComponent(gfx);
 		Graphics2D graphics = (Graphics2D) gfx;
 		graphics.drawImage(image, 0, 0, null);
-		windowDecoratorService.paint(graphics, 50, 50);
+		int coordinate = resolution.getWidth() == ResolutionEnum.SD.getWidth() ? 20 : 50;
+		windowDecoratorService.paint(graphics, coordinate, coordinate);
 		renderableConsumers.stream().forEach(r -> r.paint(graphics));
 	}
 
