@@ -316,7 +316,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 				hideOrShowProgress();
 				break;
 			case KeyEvent.VK_S:
-				saveImage();
+				saveSnapshot();
 				break;
 			case KeyEvent.VK_1:
 				setPointOfInterest(1);
@@ -498,7 +498,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		showProgressMenuItem.setSelected(showProgress);
 	}
 
-	private void saveImage() {
+	private void saveSnapshot() {
 		snapshotService.saveSnapshot(points, calculationParameters.getMaxIterations(),
 				imageProducerService.getCurrentColorModelName(), image, this);
 	}
@@ -586,7 +586,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		addCheckboxMenuItem(fileMenu, "Show help", KeyEvent.VK_H, windowDecoratorService.isShowHelpActive(),
 				event -> hideOrShowHelp());
 		fileMenu.addSeparator();
-		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveImage());
+		addMenuItem(fileMenu, "Save snapshot", KeyEvent.VK_S, event -> saveSnapshot());
 		addCheckboxMenuItem(fileMenu, "Show snapshot progress", KeyEvent.VK_H,
 				windowDecoratorService.isShowSnapshotServiceStatusActive(), event -> hideOrShowSnapshotServiceStatus());
 

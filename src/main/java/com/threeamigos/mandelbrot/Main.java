@@ -104,9 +104,7 @@ public class Main {
 
 		JFrame jframe = prepareFrame(fractalCanvas);
 
-		JMenuBar menuBar = prepareMenu(jframe);
-
-		fractalCanvas.addMenus(menuBar);
+		fractalCanvas.addMenus(prepareMenu(jframe));
 
 		jframe.setVisible(true);
 
@@ -116,6 +114,7 @@ public class Main {
 
 	private RenderableConsumer createJuliaBoundariesService(Points points, FontService fontService,
 			PointsOfInterestService pointsOfInterestService, FractalService fractalService) {
+		
 		JuliaBoundariesServiceImpl juliaBoundariesService = new JuliaBoundariesServiceImpl(points, fontService,
 				pointsOfInterestService);
 
@@ -136,7 +135,7 @@ public class Main {
 
 		int[] iterations = fractalService.getIterations();
 		for (int i = 0; i < iterations.length; i++) {
-			iterations[i] = iterations[i] == maxIterations ? 1 : 0;
+			iterations[i] = (iterations[i] == maxIterations ? 1 : 0);
 		}
 
 		juliaBoundariesService
@@ -167,7 +166,7 @@ public class Main {
 		return jframe;
 	}
 
-	public JMenuBar prepareMenu(JFrame jframe) {
+	private JMenuBar prepareMenu(JFrame jframe) {
 		JMenuBar menuBar = new JMenuBar();
 		jframe.setJMenuBar(menuBar);
 		return menuBar;
