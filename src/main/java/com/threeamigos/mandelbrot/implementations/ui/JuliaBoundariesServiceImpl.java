@@ -23,21 +23,21 @@ import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
 
 public class JuliaBoundariesServiceImpl implements RenderableConsumer {
 
-	final Points points;
-	final PointsOfInterestService pointsOfInterestService;
-	final int maxWidth;
-	final int maxHeight;
-	final int centerX;
-	final int centerY;
-	final int diameter;
-	final int radius;
-	final int halfRadius;
-	final int crossWidth;
+	private final Points points;
+	private final PointsOfInterestService pointsOfInterestService;
+	private final int maxWidth;
+	private final int maxHeight;
+	private final int centerX;
+	private final int centerY;
+	private final int diameter;
+	private final int radius;
+	private final int halfRadius;
+	private final int crossWidth;
 
-	final int fontHeight;
-	final Font font;
+	private final int fontHeight;
+	private final Font font;
 
-	Image image;
+	private Image image;
 
 	private boolean active;
 	private Integer cursorX;

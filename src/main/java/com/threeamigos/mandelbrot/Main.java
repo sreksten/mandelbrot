@@ -114,11 +114,11 @@ public class Main {
 
 	private RenderableConsumer createJuliaBoundariesService(Points points, FontService fontService,
 			PointsOfInterestService pointsOfInterestService, FractalService fractalService) {
-		
+
 		JuliaBoundariesServiceImpl juliaBoundariesService = new JuliaBoundariesServiceImpl(points, fontService,
 				pointsOfInterestService);
 
-		int diameter = juliaBoundariesService.getDiameter();
+		final int diameter = juliaBoundariesService.getDiameter();
 		Resolution targetResolution = new CustomResolution(diameter, diameter);
 
 		Points targetPoints = new PointsImpl(targetResolution);
