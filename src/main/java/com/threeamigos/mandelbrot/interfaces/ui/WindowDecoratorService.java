@@ -4,6 +4,13 @@ import java.awt.Graphics2D;
 
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 
+/**
+ * An object that decorates the canvas with help, point of interests' name,
+ * info, etc, using various {@link WindowDecoratorFragment}s
+ *
+ * @author Stefano Reksten
+ *
+ */
 public interface WindowDecoratorService {
 
 	void setPercentage(Integer percentage);

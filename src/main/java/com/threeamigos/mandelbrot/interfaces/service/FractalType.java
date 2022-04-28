@@ -1,5 +1,11 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
+/**
+ * Enumerates the type of fractals this program can render
+ *
+ * @author Stefano Reksten
+ *
+ */
 public enum FractalType {
 
 	MANDELBROT("Mandelbrot"),

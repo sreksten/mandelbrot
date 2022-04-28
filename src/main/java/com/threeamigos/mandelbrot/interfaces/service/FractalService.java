@@ -4,6 +4,13 @@ import java.beans.PropertyChangeListener;
 
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
+/**
+ * An object that calculates a fractal representation from a set of
+ * {@link Points}, a {@link Resolution} and some {@link CalculationParameters}
+ *
+ * @author Stefano Reksten
+ *
+ */
 public interface FractalService {
 
 	public static final String CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE = "Calculation restart required";

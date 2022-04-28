@@ -1,5 +1,11 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
+/**
+ * Enumerates possible priorities to give to the calculation of a fractal
+ *
+ * @author Stefano Reksten
+ *
+ */
 public enum CalculationType {
 
 	FOREGROUND(
@@ -15,8 +21,7 @@ public enum CalculationType {
 	private String calculationCompleteEvent;
 	private int priority;
 
-	private CalculationType(String calculationInProgressEvent, String calculationCompleteEvent,
-			int priority) {
+	private CalculationType(String calculationInProgressEvent, String calculationCompleteEvent, int priority) {
 		this.calculationInProgressEvent = calculationInProgressEvent;
 		this.calculationCompleteEvent = calculationCompleteEvent;
 		this.priority = priority;

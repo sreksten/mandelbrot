@@ -4,6 +4,14 @@ import java.beans.PropertyChangeListener;
 
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
+/**
+ * An object that keeps track of the real and imaginary intervals of interest
+ * (used to calculate the fractal image) and transforms them to screen pixel
+ * coordinates, or zooms in and out, etc
+ *
+ * @author Stefano Reksten
+ *
+ */
 public interface Points {
 
 	Points adaptToResolution(Resolution resolution);

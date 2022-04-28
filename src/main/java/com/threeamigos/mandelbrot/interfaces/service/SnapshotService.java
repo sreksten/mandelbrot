@@ -4,6 +4,12 @@ import java.awt.Component;
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
 
+/**
+ * An object that handles rendering and saving of screen snapshots in background
+ *
+ * @author Stefano Reksten
+ *
+ */
 public interface SnapshotService {
 
 	public void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
