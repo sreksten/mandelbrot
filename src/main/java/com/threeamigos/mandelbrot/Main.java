@@ -87,7 +87,7 @@ public class Main {
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
 		AboutWindow aboutWindow = new AboutWindowImpl("3AM Mandelbrot",
-				"by Stefano Reksten - stefano.reksten@gmail.com", "Released under the GNU General Public License");
+				"by Stefano Reksten - stefano.reksten@gmail.com", "Released under the Apache License v2.0");
 
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
 				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, aboutWindow, resolution,
