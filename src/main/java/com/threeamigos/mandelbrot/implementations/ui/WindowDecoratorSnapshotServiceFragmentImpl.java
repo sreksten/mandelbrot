@@ -3,8 +3,8 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import com.threeamigos.common.util.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
-import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorSnapshotServiceFragment;
 

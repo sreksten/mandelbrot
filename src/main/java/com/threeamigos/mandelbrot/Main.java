@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.WindowConstants;
 
+import com.threeamigos.common.util.implementations.ui.FontServiceImpl;
+import com.threeamigos.common.util.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
@@ -20,7 +22,6 @@ import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerSer
 import com.threeamigos.mandelbrot.implementations.ui.AboutWindowImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CustomResolution;
-import com.threeamigos.mandelbrot.implementations.ui.FontServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
@@ -38,7 +39,6 @@ import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
-import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;

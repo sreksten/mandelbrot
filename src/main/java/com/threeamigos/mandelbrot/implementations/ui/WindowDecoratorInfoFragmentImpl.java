@@ -3,11 +3,11 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import com.threeamigos.common.util.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
