@@ -8,7 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.WindowConstants;
 
+import com.threeamigos.common.util.implementations.ui.AboutWindowImpl;
 import com.threeamigos.common.util.implementations.ui.FontServiceImpl;
+import com.threeamigos.common.util.interfaces.ui.AboutWindow;
 import com.threeamigos.common.util.interfaces.ui.FontService;
 import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
@@ -19,7 +21,6 @@ import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.imageproducer.BlackWhiteColorModelImageProducer;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
 import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
-import com.threeamigos.mandelbrot.implementations.ui.AboutWindowImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CustomResolution;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
@@ -85,9 +86,12 @@ public class Main {
 				new WindowDecoratorPointOfInterestNameFragmentImpl(resolution, fontService, pointsOfInterestService),
 				new WindowDecoratorSnapshotServiceFragmentImpl(resolution, fontService, snapshotService));
 
+		AboutWindow aboutWindow = new AboutWindowImpl("3AM Mandelbrot",
+				"by Stefano Reksten - stefano.reksten@gmail.com", "Released under the GNU General Public License");
+
 		FractalCanvas fractalCanvas = new FractalCanvas(fractalService, pointsOfInterestService,
-				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, new AboutWindowImpl(),
-				resolution, calculationParameters);
+				imageProducerServiceFactory, snapshotService, points, windowDecoratorService, aboutWindow, resolution,
+				calculationParameters);
 
 		fractalCanvas.addRenderableConsumer(new ZoomBoxServiceImpl(points));
 		fractalCanvas.addRenderableConsumer(
