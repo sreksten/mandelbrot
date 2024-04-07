@@ -35,6 +35,28 @@
 					<outputDirectory>${project.basedir}</outputDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>com.threeamigos.mandelbrot.Main</mainClass>
+						</manifest>
+					</archive>
+					<outputDirectory>${project.basedir}</outputDirectory>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
     
