@@ -27,11 +27,6 @@ public class ParametersRequesterImpl implements ParametersRequester {
 	}
 
 	@Override
-	public boolean requestParameters(Component component) {
-		return requestParameters(false, MAX_ITERATIONS_NOT_SPECIFIED, component);
-	}
-
-	@Override
 	public boolean requestParameters(boolean matchScreenResolution, int maxIterations, Component component) {
 
 		Box panel = Box.createVerticalBox();
@@ -41,7 +36,7 @@ public class ParametersRequesterImpl implements ParametersRequester {
 		panel.add(resolutionLabel);
 
 		JComboBox<Resolution> resolutionComboBox = new JComboBox<>(ResolutionEnum.values());
-		Integer defaultValue = matchScreenResolution ? matchScreenResolution() : ResolutionEnum.FULL_HD.ordinal();
+		int defaultValue = matchScreenResolution ? matchScreenResolution() : ResolutionEnum.FULL_HD.ordinal();
 		resolutionComboBox.setSelectedIndex(defaultValue);
 		resolutionComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panel.add(resolutionComboBox);

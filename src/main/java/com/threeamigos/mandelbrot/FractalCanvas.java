@@ -725,7 +725,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		}
 	}
 
-	private JMenuItem addCheckboxMenuItem(JMenu menu, String title, int mnemonic, boolean initialValue,
+	private void addCheckboxMenuItem(JMenu menu, String title, int mnemonic, boolean initialValue,
 			java.awt.event.ActionListener actionListener) {
 		JMenuItem menuItem = new JCheckBoxMenuItem(title);
 		if (actionListener != null) {
@@ -736,10 +736,9 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		}
 		menuItem.setSelected(initialValue);
 		menu.add(menuItem);
-		return menuItem;
 	}
 
-	private JMenuItem addMenuItem(JMenu menu, String title, int mnemonic,
+	private void addMenuItem(JMenu menu, String title, int mnemonic,
 			java.awt.event.ActionListener actionListener) {
 		JMenuItem menuItem = new JMenuItem(title);
 		if (actionListener != null) {
@@ -749,7 +748,6 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 			menuItem.setMnemonic(mnemonic);
 		}
 		menu.add(menuItem);
-		return menuItem;
 	}
 
 }
