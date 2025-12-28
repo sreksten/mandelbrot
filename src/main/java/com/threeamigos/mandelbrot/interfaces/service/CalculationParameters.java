@@ -9,28 +9,28 @@ package com.threeamigos.mandelbrot.interfaces.service;
  */
 public interface CalculationParameters {
 
-	public static final int MIN_ITERATIONS_EXPONENT = 5;
+	int MIN_ITERATIONS_EXPONENT = 5;
 
-	public static final int MAX_ITERATIONS_EXPONENT = 15;
+	int MAX_ITERATIONS_EXPONENT = 15;
 
-	public boolean setMaxThreads(int numberOfThreads);
+	boolean setMaxThreads(int numberOfThreads);
 
-	public int getMaxThreads();
+	int getMaxThreads();
 
-	public boolean incrementMaxThreads();
+	boolean incrementMaxThreads();
 
-	public boolean decrementMaxThreads();
+	boolean decrementMaxThreads();
 
-	public boolean setMaxIterations(int maxIterations);
+	boolean setMaxIterations(int maxIterations);
 
-	public int getMaxIterations();
+	int getMaxIterations();
 
-	public boolean doubleUpMaxIterations();
+	boolean doubleUpMaxIterations();
 
-	public boolean halveMaxIterations();
+	boolean halveMaxIterations();
 
-	public void setCalculationType(CalculationType calculationType);
+	void setCalculationType(CalculationType calculationType);
 
-	public CalculationType getCalculationType();
+	CalculationType getCalculationType();
 
 }

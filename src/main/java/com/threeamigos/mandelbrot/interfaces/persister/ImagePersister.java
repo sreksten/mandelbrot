@@ -10,6 +10,6 @@ import java.awt.Image;
  */
 public interface ImagePersister {
 
-	public PersistResult saveImage(Image image, String filename);
+	PersistResult saveImage(Image image, String filename);
 
 }

@@ -8,10 +8,10 @@ package com.threeamigos.mandelbrot.interfaces.persister;
  */
 public interface PersistResult {
 
-	public boolean isSuccessful();
+	boolean isSuccessful();
 
-	public String getFilename();
+	String getFilename();
 
-	public String getError();
+	String getError();
 
 }

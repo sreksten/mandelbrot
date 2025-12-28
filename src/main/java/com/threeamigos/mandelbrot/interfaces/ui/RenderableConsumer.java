@@ -1,5 +1,7 @@
 package com.threeamigos.mandelbrot.interfaces.ui;
 
+import com.threeamigos.common.util.interfaces.ui.InputConsumer;
+
 import java.awt.Graphics2D;
 
 /**
