@@ -2,9 +2,10 @@ package com.threeamigos.mandelbrot.implementations.service;
 
 import java.awt.Image;
 
+import com.threeamigos.common.util.interfaces.persistence.PersistResult;
+import com.threeamigos.common.util.interfaces.persistence.file.FilePersistResult;
 import com.threeamigos.mandelbrot.implementations.persister.ImagePersisterImpl;
 import com.threeamigos.mandelbrot.interfaces.persister.ImagePersister;
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
@@ -20,7 +21,7 @@ public class ImagePersisterServiceImpl implements ImagePersisterService {
 
 	@Override
 	public PersistResult saveImage(Image image, String filename) {
-		PersistResult persistResult = imagePersister.saveImage(image, filename);
+		FilePersistResult persistResult = imagePersister.saveImage(image, filename);
 		if (messageNotifier != null) {
 			if (persistResult.isSuccessful()) {
 				messageNotifier.notify("File saved in " + persistResult.getFilename());

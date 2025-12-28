@@ -1,5 +1,7 @@
 package com.threeamigos.mandelbrot.interfaces.persister;
 
+import com.threeamigos.common.util.interfaces.persistence.file.FilePersistResult;
+
 import java.awt.Image;
 
 /**
@@ -10,6 +12,6 @@ import java.awt.Image;
  */
 public interface ImagePersister {
 
-	PersistResult saveImage(Image image, String filename);
+	FilePersistResult saveImage(Image image, String filename);
 
 }

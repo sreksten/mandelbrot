@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.util.List;
 
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.common.util.interfaces.persistence.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
 /**

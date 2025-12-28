@@ -8,13 +8,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.threeamigos.common.util.implementations.persistence.file.FilePersistResultBuilder;
+import com.threeamigos.common.util.interfaces.persistence.file.FilePersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.ImagePersister;
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 
 public class ImagePersisterImpl implements ImagePersister {
 
 	@Override
-	public PersistResult saveImage(Image image, String filename) {
+	public FilePersistResult saveImage(Image image, String filename) {
 		try {
 			File outputFile = new File(filename);
 
@@ -26,12 +27,10 @@ public class ImagePersisterImpl implements ImagePersister {
 
 			ImageIO.write(bufferedImage, "png", outputFile);
 
-			PersistResultImpl result = new PersistResultImpl();
-			result.setFilename(filename);
-			return result;
+			return FilePersistResultBuilder.successful("Snapshot", filename);
 
 		} catch (IOException e) {
-			return new PersistResultImpl("Error while saving image: " + e.getMessage());
+			return FilePersistResultBuilder.error("Snapshot", filename, e.getMessage());
 		}
 	}
 

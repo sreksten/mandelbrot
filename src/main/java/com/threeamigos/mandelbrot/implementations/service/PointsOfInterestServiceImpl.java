@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.threeamigos.common.util.interfaces.persistence.PersistResult;
+import com.threeamigos.common.util.interfaces.persistence.file.FilePersistResult;
 import com.threeamigos.mandelbrot.implementations.persister.PointsOfInterestPersisterImpl;
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
@@ -38,7 +39,7 @@ public class PointsOfInterestServiceImpl implements PointsOfInterestService {
 
 	@Override
 	public PersistResult savePointsOfInterest() {
-		PersistResult persistResult = pointsOfInterestPersister.savePointsOfInterest(pointsOfInterest);
+		FilePersistResult persistResult = pointsOfInterestPersister.savePointsOfInterest(pointsOfInterest);
 		if (messageNotifier != null) {
 			if (persistResult.isSuccessful()) {
 				messageNotifier.notify("Points of interest saved in " + persistResult.getFilename());

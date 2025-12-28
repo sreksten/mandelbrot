@@ -2,11 +2,11 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 import java.awt.Image;
 
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
+import com.threeamigos.common.util.interfaces.persistence.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 
 /**
- * An object that stores an image to disk
+ * An object that stores an image to a disk
  *
  * @author Stefano Reksten
  *

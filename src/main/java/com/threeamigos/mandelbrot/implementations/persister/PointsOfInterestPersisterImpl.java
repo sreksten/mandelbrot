@@ -12,14 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.threeamigos.common.util.implementations.persistence.file.FilePersistResultBuilder;
+import com.threeamigos.common.util.interfaces.persistence.PersistResult;
+import com.threeamigos.common.util.interfaces.persistence.file.FilePersistResult;
 import com.threeamigos.mandelbrot.implementations.service.PointOfInterestImpl;
-import com.threeamigos.mandelbrot.interfaces.persister.PersistResult;
 import com.threeamigos.mandelbrot.interfaces.persister.PointsOfInterestPersister;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
+import org.jspecify.annotations.NonNull;
 
 public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister {
 
+	private static final String POINTS_OF_INTEREST_DESCRIPTION = "Points of interest";
 	private static final String POINTS_OF_INTEREST_FILENAME = "points_of_interest.txt";
 
 	private static final String SEPARATOR = "|";
@@ -27,42 +31,39 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 	private List<PointOfInterest> pointsOfInterest;
 
 	@Override
-	public PersistResult savePointsOfInterest(List<PointOfInterest> pointsOfInterest) {
+	public FilePersistResult savePointsOfInterest(List<PointOfInterest> pointsOfInterest) {
 		String filename = getFilename();
 		try (PrintWriter printWriter = new PrintWriter(new File(filename))) {
 			for (PointOfInterest pointOfInterest : pointsOfInterest) {
 				printWriter.println(toString(pointOfInterest));
 			}
 			printWriter.println("");
-			PersistResultImpl result = new PersistResultImpl();
-			result.setFilename(filename);
-			return result;
-
+			return FilePersistResultBuilder.successful(POINTS_OF_INTEREST_DESCRIPTION, filename);
 		} catch (IOException e) {
-			return new PersistResultImpl("Error while saving points of interest: " + e.getMessage());
+			return FilePersistResultBuilder.error(POINTS_OF_INTEREST_DESCRIPTION, POINTS_OF_INTEREST_FILENAME, e.getMessage());
 		}
 	}
 
 	@Override
 	public PersistResult loadPointsOfInterest() {
-		try (InputStream inputStream = getInputStream(POINTS_OF_INTEREST_FILENAME)) {
+		try (InputStream inputStream = getInputStream()) {
 			if (inputStream == null) {
-				return new PersistResultImpl("Cannot access " + POINTS_OF_INTEREST_FILENAME);
+				return FilePersistResultBuilder.notReadable(POINTS_OF_INTEREST_DESCRIPTION, POINTS_OF_INTEREST_FILENAME);
 			}
 			List<PointOfInterest> points = new ArrayList<>();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
-					if (line.trim().length() > 0) {
+					if (!line.trim().isEmpty()) {
 						PointOfInterest point = parsePointOfInterest(line);
 						points.add(point);
 					}
 				}
 			}
 			pointsOfInterest = points;
-			return new PersistResultImpl();
+			return FilePersistResultBuilder.successful(POINTS_OF_INTEREST_DESCRIPTION, POINTS_OF_INTEREST_FILENAME);
 		} catch (Exception e) {
-			return new PersistResultImpl("Error reading " + POINTS_OF_INTEREST_FILENAME + ": " + e.getMessage());
+			return FilePersistResultBuilder.error(POINTS_OF_INTEREST_DESCRIPTION, POINTS_OF_INTEREST_FILENAME, e.getMessage());
 		}
 	}
 
@@ -71,9 +72,8 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 		return pointsOfInterest;
 	}
 
-	private InputStream getInputStream(String filename) {
-		String path = new StringBuilder(getPointsOfInterestPath()).append(File.separatorChar).append(filename)
-				.toString();
+	private InputStream getInputStream() {
+		String path = getPointsOfInterestPath() + File.separatorChar + POINTS_OF_INTEREST_FILENAME;
 		InputStream inputStream = null;
 		File inputFile = new File(path);
 		if (inputFile.exists() && inputFile.canRead()) {
@@ -83,22 +83,22 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 				return null;
 			}
 		} else {
-			inputStream = this.getClass().getResourceAsStream("/" + filename);
+			inputStream = this.getClass().getResourceAsStream("/" + POINTS_OF_INTEREST_FILENAME);
 		}
 		return inputStream;
 	}
 
 	private String getPointsOfInterestPath() {
-		String path = new StringBuilder(System.getProperty("user.home")).append(File.separatorChar)
-				.append(".com.threeamigos.mandelbrot").toString();
+		String path = System.getProperty("user.home") + File.separatorChar +
+                ".com.threeamigos.mandelbrot";
 		new File(path).mkdirs();
 		return path;
 	}
 
 	@Override
 	public String getFilename() {
-		return new StringBuilder(getPointsOfInterestPath()).append(File.separatorChar)
-				.append(POINTS_OF_INTEREST_FILENAME).toString();
+		return getPointsOfInterestPath() + File.separatorChar +
+                POINTS_OF_INTEREST_FILENAME;
 	}
 
 	private final PointOfInterest parsePointOfInterest(String line) {
