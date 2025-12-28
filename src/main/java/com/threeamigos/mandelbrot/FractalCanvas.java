@@ -42,20 +42,19 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	private static final long serialVersionUID = 1L;
 
-	private transient FractalService fractalService;
-	private transient PointsOfInterestService pointsOfInterestService;
-	private transient ImageProducerServiceFactory imageProducerServiceFactory;
-	private transient ImageProducerService imageProducerService;
-	private transient SnapshotService snapshotService;
-	private transient Points points;
-	private transient WindowDecoratorService windowDecoratorService;
-	private transient AboutWindow aboutWindow;
-	private transient Resolution resolution;
-	private transient CalculationParameters calculationParameters;
+	private final transient FractalService fractalService;
+	private final transient PointsOfInterestService pointsOfInterestService;
+	private final transient ImageProducerServiceFactory imageProducerServiceFactory;
+	private final transient SnapshotService snapshotService;
+	private final transient Points points;
+	private final transient WindowDecoratorService windowDecoratorService;
+	private final transient AboutWindow aboutWindow;
+	private final transient Resolution resolution;
+	private final transient CalculationParameters calculationParameters;
+	private final transient List<RenderableConsumer> renderableConsumers = new ArrayList<>();
 
 	private Integer currentPointOfInterestIndex = null;
-
-	private transient List<RenderableConsumer> renderableConsumers = new ArrayList<>();
+	private transient ImageProducerService imageProducerService;
 
 	private boolean showProgress = true;
 	private boolean showSnapshotProgress = true;
@@ -98,6 +97,14 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		addKeyListener(this);
 	}
 
+	public boolean isShowSnapshotProgress() {
+		return showSnapshotProgress;
+	}
+
+	public void setShowSnapshotProgress(boolean showSnapshotProgress) {
+		this.showSnapshotProgress = showSnapshotProgress;
+	}
+
 	public void addRenderableConsumer(RenderableConsumer inputConsumer) {
 		renderableConsumers.add(inputConsumer);
 	}
@@ -120,7 +127,7 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 		graphics.drawImage(image, 0, 0, null);
 		int coordinate = resolution.getWidth() == ResolutionEnum.SD.getWidth() ? 20 : 50;
 		windowDecoratorService.paint(graphics, coordinate, coordinate);
-		renderableConsumers.stream().forEach(r -> r.paint(graphics));
+		renderableConsumers.forEach(r -> r.paint(graphics));
 	}
 
 	private void setCurrentPointOfInterestIndex(Integer currentPointOfInterestIndex) {
@@ -665,18 +672,18 @@ public class FractalCanvas extends JPanel implements Runnable, InputConsumer, Me
 
 	private void updateFractalTypeMenu() {
 		Component[] items = fractalTypeMenu.getMenuComponents();
-		for (int i = 0; i < items.length; i++) {
-			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			item.setSelected(points.getFractalType().getDescription().equals(item.getText()));
-		}
+        for (Component component : items) {
+            JCheckBoxMenuItem item = (JCheckBoxMenuItem) component;
+            item.setSelected(points.getFractalType().getDescription().equals(item.getText()));
+        }
 	}
 
 	private void updateColorModelsMenu() {
 		Component[] items = colorModelsMenu.getMenuComponents();
-		for (int i = 0; i < items.length; i++) {
-			JCheckBoxMenuItem item = (JCheckBoxMenuItem) items[i];
-			item.setSelected(imageProducerService.getCurrentColorModelName().equals(item.getText()));
-		}
+        for (Component component : items) {
+            JCheckBoxMenuItem item = (JCheckBoxMenuItem) component;
+            item.setSelected(imageProducerService.getCurrentColorModelName().equals(item.getText()));
+        }
 	}
 
 	private void updateThreadsMenu() {
