@@ -52,7 +52,7 @@ public class Main {
 		ParametersRequester parametersRequester = new ParametersRequesterImpl();
 
 		if (!parametersRequester.requestParameters()) {
-			// User cancelled the operation
+			// User canceled the operation
 			return;
 		}
 

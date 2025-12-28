@@ -77,7 +77,7 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 						points.getJuliaCImaginary()), xCoord, yCoord);
 				yCoord += vSpacing;
 			}
-			Double realCoordinateUnderPointer = points.getPointerRealcoordinate();
+			Double realCoordinateUnderPointer = points.getPointerRealCoordinate();
 			if (realCoordinateUnderPointer != null) {
 				Double imaginaryCoordinateUnderPointer = points.getPointerImaginaryCoordinate();
 				if (imaginaryCoordinateUnderPointer != null) {

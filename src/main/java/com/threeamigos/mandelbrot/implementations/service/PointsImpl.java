@@ -326,7 +326,7 @@ public class PointsImpl implements Points {
 	}
 
 	@Override
-	public Double getPointerRealcoordinate() {
+	public Double getPointerRealCoordinate() {
 		return realCoordinateUnderPointer;
 	}
 
