@@ -11,14 +11,14 @@ import java.util.List;
  */
 public interface ImageProducerService {
 
-	public Image produceImage(int width, int height, int[] pixels);
+	Image produceImage(int width, int height, int[] pixels);
 
-	public void cycleColorModel();
+	void cycleColorModel();
 
-	public void switchColorModel(String modeName);
+	void switchColorModel(String modeName);
 
-	public List<String> getColorModeNames();
+	List<String> getColorModeNames();
 
-	public String getCurrentColorModelName();
+	String getCurrentColorModelName();
 
 }

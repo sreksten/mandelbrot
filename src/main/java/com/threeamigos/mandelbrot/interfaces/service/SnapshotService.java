@@ -12,15 +12,15 @@ import java.beans.PropertyChangeListener;
  */
 public interface SnapshotService {
 
-	public void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
+	void saveSnapshot(Points points, int maxIterations, String colorModelName, Image bufferedImage,
 			Component parentComponent);
 
-	public int getQueuedSnapshots();
+	int getQueuedSnapshots();
 
-	public Integer getCurrentSnapshotPercentage();
+	Integer getCurrentSnapshotPercentage();
 
-	public void addPropertyChangeListener(PropertyChangeListener pcl);
+	void addPropertyChangeListener(PropertyChangeListener pcl);
 
-	public void removePropertyChangeListener(PropertyChangeListener pcl);
+	void removePropertyChangeListener(PropertyChangeListener pcl);
 
 }

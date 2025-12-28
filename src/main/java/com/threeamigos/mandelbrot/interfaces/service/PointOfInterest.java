@@ -9,24 +9,24 @@ package com.threeamigos.mandelbrot.interfaces.service;
  */
 public interface PointOfInterest {
 
-	public void setName(String name);
+	void setName(String name);
 
-	public String getName();
+	String getName();
 
-	public double getMinImaginary();
+	double getMinImaginary();
 
-	public double getMaxImaginary();
+	double getMaxImaginary();
 
-	public double getCentralReal();
+	double getCentralReal();
 
-	public int getZoomCount();
+	int getZoomCount();
 
-	public int getMaxIterations();
+	int getMaxIterations();
 
-	public FractalType getFractalType();
+	FractalType getFractalType();
 
-	public double getJuliaCReal();
+	double getJuliaCReal();
 
-	public double getJuliaCImaginary();
+	double getJuliaCImaginary();
 
 }

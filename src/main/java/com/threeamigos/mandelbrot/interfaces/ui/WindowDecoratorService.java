@@ -15,26 +15,26 @@ public interface WindowDecoratorService {
 
 	void setPercentage(Integer percentage);
 
-	public void setCurrentPointOfInterestIndex(Integer pointOfInterestIndex);
+	void setCurrentPointOfInterestIndex(Integer pointOfInterestIndex);
 
 	void setImageProducerService(ImageProducerService imageProducerService);
 
-	public void toggleShowInfo();
+	void toggleShowInfo();
 
-	public boolean isShowInfoActive();
+	boolean isShowInfoActive();
 
-	public void toggleShowHelp();
+	void toggleShowHelp();
 
-	public boolean isShowHelpActive();
+	boolean isShowHelpActive();
 
-	public void toggleShowPointOfInterestName();
+	void toggleShowPointOfInterestName();
 
-	public boolean isShowPointOfInterestNameActive();
+	boolean isShowPointOfInterestNameActive();
 
-	public void toggleShowSnapshotServiceStatus();
+	void toggleShowSnapshotServiceStatus();
 
-	public boolean isShowSnapshotServiceStatusActive();
+	boolean isShowSnapshotServiceStatusActive();
 
-	public void paint(Graphics2D graphics, int x, int y);
+	void paint(Graphics2D graphics, int x, int y);
 
 }

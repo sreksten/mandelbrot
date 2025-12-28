@@ -11,7 +11,7 @@ public enum FractalType {
 	MANDELBROT("Mandelbrot"),
 	JULIA("Julia");
 
-	private String description;
+	private final String description;
 
 	FractalType(String description) {
 		this.description = description;

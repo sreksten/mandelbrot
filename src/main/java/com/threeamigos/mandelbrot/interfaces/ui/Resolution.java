@@ -9,10 +9,10 @@ package com.threeamigos.mandelbrot.interfaces.ui;
  */
 public interface Resolution {
 
-	public String getName();
+	String getName();
 
-	public int getWidth();
+	int getWidth();
 
-	public int getHeight();
+	int getHeight();
 
 }

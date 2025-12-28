@@ -13,20 +13,20 @@ import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
  */
 public interface PointsOfInterestService {
 
-	public void setMessageNotifier(MessageNotifier messageNotifier);
+	void setMessageNotifier(MessageNotifier messageNotifier);
 
-	public PersistResult loadPointsOfInterest();
+	PersistResult loadPointsOfInterest();
 
-	public PersistResult savePointsOfInterest();
+	PersistResult savePointsOfInterest();
 
-	public String getFilename();
+	String getFilename();
 
-	public int getCount();
+	int getCount();
 
-	public PersistResult add(PointOfInterest pointOfInterest);
+	PersistResult add(PointOfInterest pointOfInterest);
 
-	public void remove(int index);
+	void remove(int index);
 
-	public List<PointOfInterest> getElements();
+	List<PointOfInterest> getElements();
 
 }

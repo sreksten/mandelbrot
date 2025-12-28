@@ -9,11 +9,11 @@ package com.threeamigos.mandelbrot.interfaces.service;
  */
 public interface SchedulerService {
 
-	public void schedule(Thread caller, Runnable runnable, int priority, boolean interruptCallerWhenFinished,
+	void schedule(Thread caller, Runnable runnable, int priority, boolean interruptCallerWhenFinished,
 			String threadName);
 
-	public void terminate();
+	void terminate();
 
-	public void interrupt(Thread caller);
+	void interrupt(Thread caller);
 
 }

@@ -13,8 +13,8 @@ import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
  */
 public interface ImagePersisterService {
 
-	public void setMessageNotifier(MessageNotifier messageNotifier);
+	void setMessageNotifier(MessageNotifier messageNotifier);
 
-	public PersistResult saveImage(Image image, String filename);
+	PersistResult saveImage(Image image, String filename);
 
 }

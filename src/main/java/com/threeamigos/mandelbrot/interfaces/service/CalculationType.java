@@ -17,11 +17,11 @@ public enum CalculationType {
 			FractalService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE,
 			5);
 
-	private String calculationInProgressEvent;
-	private String calculationCompleteEvent;
-	private int priority;
+	private final String calculationInProgressEvent;
+	private final String calculationCompleteEvent;
+	private final int priority;
 
-	private CalculationType(String calculationInProgressEvent, String calculationCompleteEvent, int priority) {
+	CalculationType(String calculationInProgressEvent, String calculationCompleteEvent, int priority) {
 		this.calculationInProgressEvent = calculationInProgressEvent;
 		this.calculationCompleteEvent = calculationCompleteEvent;
 		this.priority = priority;

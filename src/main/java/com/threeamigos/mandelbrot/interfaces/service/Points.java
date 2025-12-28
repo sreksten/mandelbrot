@@ -60,36 +60,36 @@ public interface Points {
 
 	void updatePointerCoordinates(Integer x, Integer y);
 
-	public int getPointerXCoordinate();
+	int getPointerXCoordinate();
 
-	public int getPointerYCoordinate();
+	int getPointerYCoordinate();
 
-	public Double getPointerRealcoordinate();
+	Double getPointerRealCoordinate();
 
-	public Double getPointerImaginaryCoordinate();
+	Double getPointerImaginaryCoordinate();
 
-	public double toCReal(int x);
+	double toCReal(int x);
 
-	public double toCImaginary(int y);
+	double toCImaginary(int y);
 
-	public Points copy();
+	Points copy();
 
-	public void setFractalType(FractalType fractalType);
+	void setFractalType(FractalType fractalType);
 
-	public FractalType getFractalType();
+	FractalType getFractalType();
 
-	public void setJuliaC(double juliaCReal, double juliaCImaginary);
+	void setJuliaC(double juliaCReal, double juliaCImaginary);
 
-	public double getJuliaCReal();
+	double getJuliaCReal();
 
-	public double getJuliaCImaginary();
+	double getJuliaCImaginary();
 
-	public boolean isJuliaConnected();
+	boolean isJuliaConnected();
 
-	public void addPropertyChangeListener(PropertyChangeListener pcl);
+	void addPropertyChangeListener(PropertyChangeListener pcl);
 
-	public void removePropertyChangeListener(PropertyChangeListener pcl);
+	void removePropertyChangeListener(PropertyChangeListener pcl);
 
-	public void requestRecalculation();
+	void requestRecalculation();
 
 }

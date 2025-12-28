@@ -13,34 +13,34 @@ import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
  */
 public interface FractalService {
 
-	public static final String CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE = "Calculation restart required";
+	String CALCULATION_RESTART_REQUIRED_PROPERTY_CHANGE = "Calculation restart required";
 
-	public static final String CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Calculation in progress";
+	String CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Calculation in progress";
 
-	public static final String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
+	String CALCULATION_COMPLETE_PROPERTY_CHANGE = "Calculation complete";
 
-	public static final String BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Background calculation in progress";
+	String BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE = "Background calculation in progress";
 
-	public static final String BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE = "Background calculation complete";
+	String BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE = "Background calculation complete";
 
-	public static final int ITERATION_NOT_CALCULATED = -1;
+	int ITERATION_NOT_CALCULATED = -1;
 
-	public void calculate(Points points, Resolution resolution, CalculationParameters calculationParameters);
+	void calculate(Points points, Resolution resolution, CalculationParameters calculationParameters);
 
-	public void interruptCalculation();
+	void interruptCalculation();
 
-	public boolean isCalculating();
+	boolean isCalculating();
 
-	public int getPercentage();
+	int getPercentage();
 
-	public long getCalculationTime();
+	long getCalculationTime();
 
-	public int[] getIterations();
+	int[] getIterations();
 
-	public int getIterations(int x, int y);
+	int getIterations(int x, int y);
 
-	public void addPropertyChangeListener(PropertyChangeListener pcl);
+	void addPropertyChangeListener(PropertyChangeListener pcl);
 
-	public void removePropertyChangeListener(PropertyChangeListener pcl);
+	void removePropertyChangeListener(PropertyChangeListener pcl);
 
 }

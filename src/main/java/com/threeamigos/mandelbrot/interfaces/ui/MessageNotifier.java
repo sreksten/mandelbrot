@@ -9,8 +9,8 @@ package com.threeamigos.mandelbrot.interfaces.ui;
 public interface MessageNotifier {
 
 	// FIXME should be split in two objects
-	public String request(String message);
+	String request(String message);
 
-	public void notify(String message);
+	void notify(String message);
 
 }
