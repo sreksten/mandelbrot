@@ -20,10 +20,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.threeamigos.common.util.implementations.ui.ResolutionEnum;
 import com.threeamigos.common.util.interfaces.persistence.PersistResult;
 import com.threeamigos.common.util.interfaces.ui.AboutWindow;
 import com.threeamigos.common.util.interfaces.ui.InputConsumer;
-import com.threeamigos.mandelbrot.implementations.ui.ResolutionEnum;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
@@ -35,7 +36,6 @@ import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.MessageNotifier;
 import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
 public class FractalCanvas extends JPanel implements Runnable, InputConsumer, MessageNotifier, PropertyChangeListener {

@@ -1,8 +1,8 @@
 package com.threeamigos.mandelbrot.interfaces.service;
 
-import java.beans.PropertyChangeListener;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
+import java.beans.PropertyChangeListener;
 
 /**
  * An object that calculates a fractal representation from a set of

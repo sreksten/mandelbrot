@@ -3,12 +3,13 @@ package com.threeamigos.mandelbrot.implementations.ui;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import com.threeamigos.common.util.implementations.ui.ResolutionEnum;
 import com.threeamigos.common.util.interfaces.ui.FontService;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorInfoFragment;
 
 public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
@@ -21,7 +22,7 @@ public class WindowDecoratorInfoFragmentImpl extends WindowDecoratorFragmentImpl
 	private Integer percentage;
 
 	public WindowDecoratorInfoFragmentImpl(Resolution resolution, FontService fontService,
-			FractalService mandelbrotService, CalculationParameters calculationParameters, Points points) {
+										   FractalService mandelbrotService, CalculationParameters calculationParameters, Points points) {
 		super(resolution);
 		this.mandelbrotService = mandelbrotService;
 		this.calculationParameters = calculationParameters;

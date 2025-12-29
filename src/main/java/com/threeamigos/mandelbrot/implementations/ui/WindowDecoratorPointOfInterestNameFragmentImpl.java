@@ -6,9 +6,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 import com.threeamigos.common.util.interfaces.ui.FontService;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorPointOfInterestNameFragment;
 
 public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecoratorFragmentImpl
@@ -19,7 +19,7 @@ public class WindowDecoratorPointOfInterestNameFragmentImpl extends WindowDecora
 	private Integer currentPointOfInterestIndex;
 
 	public WindowDecoratorPointOfInterestNameFragmentImpl(Resolution resolution, FontService fontService,
-			PointsOfInterestService pointsOfInterestService) {
+														  PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
 

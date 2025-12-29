@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
+import com.threeamigos.common.util.implementations.ui.ResolutionEnum;
 import com.threeamigos.common.util.interfaces.ui.FontService;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerService;
 import com.threeamigos.mandelbrot.interfaces.service.PointOfInterest;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorHelpFragment;
 
 public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
@@ -21,7 +22,7 @@ public class WindowDecoratorHelpFragmentImpl extends WindowDecoratorFragmentImpl
 	private Integer currentPointOfInterestIndex;
 
 	public WindowDecoratorHelpFragmentImpl(Resolution resolution, FontService fontService,
-			PointsOfInterestService pointsOfInterestService) {
+										   PointsOfInterestService pointsOfInterestService) {
 		super(resolution);
 		this.pointsOfInterestService = pointsOfInterestService;
 

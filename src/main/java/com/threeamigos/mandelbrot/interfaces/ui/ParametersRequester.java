@@ -2,6 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.ui;
 
 import java.awt.Component;
 
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 
 /**

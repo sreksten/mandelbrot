@@ -3,17 +3,12 @@ package com.threeamigos.mandelbrot.implementations.service.fractal;
 import java.util.Arrays;
 
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 class IterationsBufferImpl implements IterationsBuffer {
 
-	private int width;
-	private int height;
-	private int[] pixels;
-
-	public IterationsBufferImpl(Resolution resolution) {
-		this(resolution.getWidth(), resolution.getHeight());
-	}
+	private final int width;
+	private final int height;
+	private final int[] pixels;
 
 	public IterationsBufferImpl(int width, int height) {
 		this.width = width;

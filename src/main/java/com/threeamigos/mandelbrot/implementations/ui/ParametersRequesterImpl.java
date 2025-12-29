@@ -10,9 +10,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 
+import com.threeamigos.common.util.implementations.ui.ResolutionEnum;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 
 public class ParametersRequesterImpl implements ParametersRequester {
 
