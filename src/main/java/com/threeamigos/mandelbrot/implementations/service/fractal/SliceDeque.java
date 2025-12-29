@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 class SliceDeque {
 
-	private ConcurrentLinkedDeque<Slice> deque = new ConcurrentLinkedDeque<>();
+	private final ConcurrentLinkedDeque<Slice> deque = new ConcurrentLinkedDeque<>();
 
 	void add(Slice slice) {
 		deque.addFirst(slice);
@@ -25,9 +25,9 @@ class SliceDeque {
 	}
 
 	List<Slice> getSlices() {
-		List<Slice> list = new ArrayList<>();
+		List<Slice> list;
 		synchronized (deque) {
-			deque.stream().forEach(list::add);
+            list = new ArrayList<>(deque);
 		}
 		return list;
 	}

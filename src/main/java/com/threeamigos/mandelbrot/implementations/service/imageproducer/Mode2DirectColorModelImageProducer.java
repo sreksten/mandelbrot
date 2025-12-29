@@ -14,7 +14,7 @@ class Mode2DirectColorModelImageProducer implements SingleColorModelImageProduce
 
 	private final DirectColorModel directColorModel;
 
-	private int maxIterations;
+	private final int maxIterations;
 
 	private final int[] map;
 

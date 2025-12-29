@@ -9,20 +9,21 @@ import javax.swing.JMenuBar;
 import javax.swing.WindowConstants;
 
 import com.threeamigos.common.util.implementations.ui.AboutWindowImpl;
+import com.threeamigos.common.util.implementations.ui.CustomResolution;
 import com.threeamigos.common.util.implementations.ui.FontServiceImpl;
 import com.threeamigos.common.util.interfaces.ui.AboutWindow;
 import com.threeamigos.common.util.interfaces.ui.FontService;
+import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.implementations.service.FractalServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImagePersisterServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFactoryImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionPolicy;
 import com.threeamigos.mandelbrot.implementations.service.imageproducer.BlackWhiteColorModelImageProducer;
-import com.threeamigos.mandelbrot.implementations.service.scheduler.PrioritizedRunnableLIFOComparator;
-import com.threeamigos.mandelbrot.implementations.service.scheduler.SchedulerServiceImpl;
+import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
-import com.threeamigos.mandelbrot.implementations.ui.CustomResolution;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ParametersRequesterImpl;
 import com.threeamigos.mandelbrot.implementations.ui.WindowDecoratorHelpFragmentImpl;
@@ -38,11 +39,10 @@ import com.threeamigos.mandelbrot.interfaces.service.ImagePersisterService;
 import com.threeamigos.mandelbrot.interfaces.service.ImageProducerServiceFactory;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
 import com.threeamigos.mandelbrot.interfaces.service.PointsOfInterestService;
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
+import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 import com.threeamigos.mandelbrot.interfaces.service.SnapshotService;
 import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 import com.threeamigos.mandelbrot.interfaces.ui.RenderableConsumer;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.ui.WindowDecoratorService;
 
 public class Main {
@@ -62,9 +62,9 @@ public class Main {
 
 		Points points = new PointsImpl(resolution);
 
-		SchedulerService schedulerService = new SchedulerServiceImpl(new PrioritizedRunnableLIFOComparator());
+		BackgroundExecutionService backgroundExecutionService = new BackgroundExecutionServiceImpl(BackgroundExecutionPolicy.LIFO);
 
-		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl(schedulerService);
+		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl(backgroundExecutionService);
 
 		ImageProducerServiceFactory imageProducerServiceFactory = new ImageProducerServiceFactoryImpl();
 

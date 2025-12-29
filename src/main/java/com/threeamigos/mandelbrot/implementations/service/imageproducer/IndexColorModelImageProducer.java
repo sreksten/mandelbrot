@@ -7,16 +7,13 @@ import java.awt.image.MemoryImageSource;
 
 public class IndexColorModelImageProducer implements SingleColorModelImageProducer {
 
-	private final byte[] colorMapR;
-	private final byte[] colorMapG;
-	private final byte[] colorMapB;
-	private final IndexColorModel indexColorModel;
+    private final IndexColorModel indexColorModel;
 
 	public IndexColorModelImageProducer() {
 		int length = 256;
-		colorMapR = new byte[length];
-		colorMapG = new byte[length];
-		colorMapB = new byte[length];
+        byte[] colorMapR = new byte[length];
+        byte[] colorMapG = new byte[length];
+        byte[] colorMapB = new byte[length];
 		int index = 0;
 		for (int i = 0; i < 256; i++) {
 			if (i % 2 == 0) {

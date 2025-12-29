@@ -8,19 +8,18 @@ import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationType;
 import com.threeamigos.mandelbrot.interfaces.service.FractalService;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
-import com.threeamigos.mandelbrot.interfaces.ui.Resolution;
+import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 
 public class MultithreadedFractalService implements FractalService {
 
-	private final SchedulerService schedulerService;
+	private final BackgroundExecutionService backgroundExecutionService;
 	private final PropertyChangeSupport propertyChangeSupport;
 
 	private long calculationTime;
 	private CalculationService calculationService;
 
-	public MultithreadedFractalService(SchedulerService schedulerService) {
-		this.schedulerService = schedulerService;
+	public MultithreadedFractalService(BackgroundExecutionService backgroundExecutionService) {
+		this.backgroundExecutionService = backgroundExecutionService;
 		propertyChangeSupport = new PropertyChangeSupport(this);
 	}
 
@@ -33,7 +32,7 @@ public class MultithreadedFractalService implements FractalService {
 		int maxIterations = calculationParameters.getMaxIterations();
 		CalculationType calculationType = calculationParameters.getCalculationType();
 
-		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), schedulerService,
+		calculationService = new CalculationService(maxThreads, maxIterations, points.copy(), backgroundExecutionService,
 				calculationType.getPriority());
 
 		calculationService.startCalculation();

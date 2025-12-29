@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations.service.scheduler;
+package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

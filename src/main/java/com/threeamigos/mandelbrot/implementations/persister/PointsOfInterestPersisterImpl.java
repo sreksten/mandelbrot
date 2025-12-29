@@ -101,7 +101,7 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
                 POINTS_OF_INTEREST_FILENAME;
 	}
 
-	private final PointOfInterest parsePointOfInterest(String line) {
+	private PointOfInterest parsePointOfInterest(String line) {
 		StringTokenizer st = new StringTokenizer(line, SEPARATOR);
 		String name = st.nextToken();
 		double minImaginary = Double.parseDouble(st.nextToken());
@@ -119,7 +119,7 @@ public class PointsOfInterestPersisterImpl implements PointsOfInterestPersister 
 		}
 	}
 
-	private final String toString(PointOfInterest pointOfInterest) {
+	private String toString(PointOfInterest pointOfInterest) {
 		StringBuilder sb = new StringBuilder(pointOfInterest.getName()).append(SEPARATOR)
 				.append(pointOfInterest.getMinImaginary()).append(SEPARATOR).append(pointOfInterest.getMaxImaginary())
 				.append(SEPARATOR).append(pointOfInterest.getCentralReal()).append(SEPARATOR)

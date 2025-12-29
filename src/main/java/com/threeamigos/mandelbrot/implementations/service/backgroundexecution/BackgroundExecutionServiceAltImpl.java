@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations.service.scheduler;
+package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
 import java.util.Comparator;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
+import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 
-public class SchedulerServiceAltImpl implements SchedulerService, Runnable {
+public class BackgroundExecutionServiceAltImpl implements BackgroundExecutionService, Runnable {
 
 	private static final int SLOT_NOT_AVAILABLE = -1;
 
@@ -16,11 +16,11 @@ public class SchedulerServiceAltImpl implements SchedulerService, Runnable {
 
 	private final AtomicBoolean running;
 
-	private Thread mainThread;
-	private Runner[] runners;
-	private ConcurrentSkipListSet<PrioritizedRunnable> waitingRunnables;
+	private final Thread mainThread;
+	private final Runner[] runners;
+	private final ConcurrentSkipListSet<PrioritizedRunnable> waitingRunnables;
 
-	public SchedulerServiceAltImpl(Comparator<PrioritizedRunnable> comparator) {
+	public BackgroundExecutionServiceAltImpl(Comparator<PrioritizedRunnable> comparator) {
 
 		running = new AtomicBoolean();
 		running.set(true);
@@ -32,7 +32,7 @@ public class SchedulerServiceAltImpl implements SchedulerService, Runnable {
 
 		waitingRunnables = new ConcurrentSkipListSet<>(comparator);
 
-		mainThread = new Thread(null, this, "SchedulerService");
+		mainThread = new Thread(null, this, "BackgroundExecutionServiceAlt");
 		mainThread.setDaemon(true);
 		mainThread.start();
 	}
@@ -80,7 +80,7 @@ public class SchedulerServiceAltImpl implements SchedulerService, Runnable {
 	public void run() {
 		while (running.get()) {
 			if (!waitingRunnables.isEmpty()) {
-				scheduleNextRunnableIfPossible();
+				executeNextRunnableIfPossible();
 			}
 			synchronized (this) {
 				try {
@@ -92,7 +92,7 @@ public class SchedulerServiceAltImpl implements SchedulerService, Runnable {
 		}
 	}
 
-	private void scheduleNextRunnableIfPossible() {
+	private void executeNextRunnableIfPossible() {
 		int availableSlot = getAvailableSlot();
 		if (availableSlot != SLOT_NOT_AVAILABLE) {
 			PrioritizedRunnable runnable = waitingRunnables.last();

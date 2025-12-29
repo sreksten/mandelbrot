@@ -1,4 +1,4 @@
-package com.threeamigos.mandelbrot.implementations.service.scheduler;
+package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
 import java.util.Comparator;
 import java.util.List;
@@ -6,24 +6,35 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
+import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 
-public class SchedulerServiceImpl implements SchedulerService, Runnable {
+public class BackgroundExecutionServiceImpl implements BackgroundExecutionService, Runnable {
 
 	private static final int SLOT_NOT_AVAILABLE = -1;
 
-	private AtomicBoolean running = new AtomicBoolean();
+	private final AtomicBoolean running = new AtomicBoolean();
 
-	private Thread mainThread;
-	private PrioritizedRunnable[] activeRunnables;
-	private ConcurrentSkipListSet<PrioritizedRunnable> waitingRunnables;
+	private final Thread mainThread;
+	private final PrioritizedRunnable[] activeRunnables;
+	private final ConcurrentSkipListSet<PrioritizedRunnable> waitingRunnables;
 
-	public SchedulerServiceImpl(Comparator<PrioritizedRunnable> comparator) {
+	public BackgroundExecutionServiceImpl(BackgroundExecutionPolicy backgroundExecutionPolicy) {
+		Comparator<PrioritizedRunnable> comparator;
+		switch (backgroundExecutionPolicy) {
+			case FIFO:
+				comparator = new PrioritizedRunnableFIFOComparator();
+				break;
+			case LIFO:
+				comparator = new PrioritizedRunnableLIFOComparator();
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid execution policy");
+		}
 		activeRunnables = new PrioritizedRunnable[Runtime.getRuntime().availableProcessors()];
 		waitingRunnables = new ConcurrentSkipListSet<>(comparator);
 
 		running.set(true);
-		mainThread = new Thread(null, this, "SchedulerService");
+		mainThread = new Thread(null, this, "BackgroundExecutionService");
 		mainThread.setDaemon(true);
 		mainThread.start();
 	}
@@ -72,7 +83,7 @@ public class SchedulerServiceImpl implements SchedulerService, Runnable {
 	public void run() {
 		while (running.get()) {
 			if (!waitingRunnables.isEmpty()) {
-				scheduleNextRunnableIfPossible();
+				executeNextRunnableIfPossible();
 			}
 			try {
 				Thread.sleep(10000);
@@ -82,7 +93,7 @@ public class SchedulerServiceImpl implements SchedulerService, Runnable {
 		}
 	}
 
-	private void scheduleNextRunnableIfPossible() {
+	private void executeNextRunnableIfPossible() {
 		int availableSlot = getAvailableSlot();
 		if (availableSlot != SLOT_NOT_AVAILABLE) {
 			PrioritizedRunnable runnable = waitingRunnables.last();

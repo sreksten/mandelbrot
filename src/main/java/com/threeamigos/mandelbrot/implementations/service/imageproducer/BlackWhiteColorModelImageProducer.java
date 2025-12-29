@@ -7,15 +7,12 @@ import java.awt.image.MemoryImageSource;
 
 public class BlackWhiteColorModelImageProducer implements SingleColorModelImageProducer {
 
-	private final byte[] colorMapR;
-	private final byte[] colorMapG;
-	private final byte[] colorMapB;
-	private final IndexColorModel indexColorModel;
+    private final IndexColorModel indexColorModel;
 
 	public BlackWhiteColorModelImageProducer() {
-		colorMapR = new byte[2];
-		colorMapG = new byte[2];
-		colorMapB = new byte[2];
+        byte[] colorMapR = new byte[2];
+        byte[] colorMapG = new byte[2];
+        byte[] colorMapB = new byte[2];
 		colorMapR[1] = (byte) 0xFF;
 		colorMapG[1] = (byte) 0xFF;
 		colorMapB[1] = (byte) 0xFF;

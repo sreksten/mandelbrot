@@ -4,8 +4,8 @@ import java.awt.Image;
 
 public interface SingleColorModelImageProducer {
 
-	public Image produceImage(int width, int height, int[] pixels);
+	Image produceImage(int width, int height, int[] pixels);
 
-	public String getName();
+	String getName();
 
 }

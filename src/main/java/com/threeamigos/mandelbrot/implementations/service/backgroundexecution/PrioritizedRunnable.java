@@ -1,33 +1,33 @@
-package com.threeamigos.mandelbrot.implementations.service.scheduler;
+package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
 class PrioritizedRunnable implements Runnable {
 
 	private static long globalTID = 0;
 
-	private final Thread client;
+	private final Thread caller;
 	private final Integer priority;
 	private final Runnable runnable;
-	private final boolean interruptClientAtEnd;
+	private final boolean interruptCallerAtEnd;
 	private final String threadName;
 	private final Long threadId;
-	private final Thread schedulerServiceMainThread;
+	private final Thread backgroundExecutionServiceMainThread;
 
 	private Thread thread;
 	private boolean completed = false;
 
-	PrioritizedRunnable(Thread caller, int priority, Runnable runnable, boolean interruptClientAtEnd, String threadName,
-			Thread schedulerServiceMainThread) {
-		this.client = caller;
-		this.priority = Integer.valueOf(priority);
+	PrioritizedRunnable(Thread caller, int priority, Runnable runnable, boolean interruptCallerAtEnd, String threadName,
+			Thread backgroundExecutionServiceMainThread) {
+		this.caller = caller;
+		this.priority = priority;
 		this.runnable = runnable;
-		this.interruptClientAtEnd = interruptClientAtEnd;
+		this.interruptCallerAtEnd = interruptCallerAtEnd;
 		this.threadName = threadName;
 		this.threadId = ++globalTID;
-		this.schedulerServiceMainThread = schedulerServiceMainThread;
+		this.backgroundExecutionServiceMainThread = backgroundExecutionServiceMainThread;
 	}
 
 	public Thread getCaller() {
-		return client;
+		return caller;
 	}
 
 	public Integer getPriority() {
@@ -39,7 +39,7 @@ class PrioritizedRunnable implements Runnable {
 	}
 
 	public boolean isInterruptingCallerAtEnd() {
-		return interruptClientAtEnd;
+		return interruptCallerAtEnd;
 	}
 
 	public String getThreadName() {
@@ -68,8 +68,8 @@ class PrioritizedRunnable implements Runnable {
 		if (thread != null) {
 			thread.interrupt();
 		}
-		if (interruptClientAtEnd) {
-			client.interrupt();
+		if (interruptCallerAtEnd) {
+			caller.interrupt();
 		}
 		completed = true;
 	}
@@ -77,11 +77,11 @@ class PrioritizedRunnable implements Runnable {
 	@Override
 	public void run() {
 		runnable.run();
-		if (interruptClientAtEnd) {
-			client.interrupt();
+		if (interruptCallerAtEnd) {
+			caller.interrupt();
 		}
 		completed = true;
-		schedulerServiceMainThread.interrupt();
+		backgroundExecutionServiceMainThread.interrupt();
 	}
 
 }

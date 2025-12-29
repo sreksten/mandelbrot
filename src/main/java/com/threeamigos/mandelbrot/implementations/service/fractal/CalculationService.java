@@ -2,13 +2,13 @@ package com.threeamigos.mandelbrot.implementations.service.fractal;
 
 import com.threeamigos.mandelbrot.interfaces.service.FractalType;
 import com.threeamigos.mandelbrot.interfaces.service.Points;
-import com.threeamigos.mandelbrot.interfaces.service.SchedulerService;
+import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 
 class CalculationService implements Runnable {
 
 	private static int requestCounter = 0;
 
-	private final SchedulerService schedulerService;
+	private final BackgroundExecutionService backgroundExecutionService;
 	private final int priority;
 	final int requestNumber;
 	final int maxThreads;
@@ -25,9 +25,9 @@ class CalculationService implements Runnable {
 	private boolean interrupted = false;
 	private long calculationTime = -1;
 
-	CalculationService(int maxThreads, int maxIterations, Points points, SchedulerService schedulerService,
+	CalculationService(int maxThreads, int maxIterations, Points points, BackgroundExecutionService backgroundExecutionService,
 			int priority) {
-		this.schedulerService = schedulerService;
+		this.backgroundExecutionService = backgroundExecutionService;
 		this.priority = priority;
 		this.requestNumber = ++requestCounter;
 		this.maxThreads = maxThreads;
@@ -243,7 +243,7 @@ class CalculationService implements Runnable {
 				String name = "R" + requestNumber + "-T" + i;
 				calculator = createSliceCalculator(slice);
 				calculators[i] = calculator;
-				schedulerService.schedule(Thread.currentThread(), calculator, priority, true, name);
+				backgroundExecutionService.schedule(Thread.currentThread(), calculator, priority, true, name);
 			}
 		}
 	}
