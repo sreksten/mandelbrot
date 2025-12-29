@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
 import java.util.Comparator;
 
-public class PrioritizedRunnableLIFOComparator implements Comparator<PrioritizedRunnable> {
+class PrioritizedRunnableLIFOComparator implements Comparator<PrioritizedRunnable> {
 
 	@Override
 	public int compare(PrioritizedRunnable o1, PrioritizedRunnable o2) {
