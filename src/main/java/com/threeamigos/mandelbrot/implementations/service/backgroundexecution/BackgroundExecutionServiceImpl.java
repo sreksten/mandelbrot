@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.threeamigos.common.util.implementations.collections.BucketedPriorityDeque;
+import com.threeamigos.common.util.interfaces.collections.PriorityDeque;
 import com.threeamigos.mandelbrot.interfaces.service.BackgroundExecutionService;
 
 public class BackgroundExecutionServiceImpl implements BackgroundExecutionService, Runnable {
@@ -16,7 +18,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 
 	private final Thread mainThread;
 	private final PrioritizedRunnable[] activeRunnables;
-	private final ConcurrentSkipListSet<PrioritizedRunnable> waitingRunnables;
+	private final PriorityDeque<PrioritizedRunnable> waitingRunnables;
 
 	public BackgroundExecutionServiceImpl(BackgroundExecutionPolicy backgroundExecutionPolicy) {
 		Comparator<PrioritizedRunnable> comparator;
@@ -31,7 +33,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 				throw new IllegalArgumentException("Invalid execution policy");
 		}
 		activeRunnables = new PrioritizedRunnable[Runtime.getRuntime().availableProcessors()];
-		waitingRunnables = new ConcurrentSkipListSet<>(comparator);
+		waitingRunnables = new BucketedPriorityDeque<>(31);
 
 		running.set(true);
 		mainThread = new Thread(null, this, "BackgroundExecutionService");
@@ -44,7 +46,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 			String threadName) {
 		PrioritizedRunnable prioritizedRunnable = new PrioritizedRunnable(caller, priority, runnable,
 				interruptCallerAtEnd, threadName, mainThread);
-		waitingRunnables.add(prioritizedRunnable);
+		waitingRunnables.add(prioritizedRunnable, priority);
 		mainThread.interrupt();
 	}
 
@@ -56,7 +58,8 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 				runnable.interrupt();
 			}
 		}
-		for (PrioritizedRunnable runnable : waitingRunnables) {
+		PrioritizedRunnable runnable;
+		while ((runnable = waitingRunnables.pollFifo()) != null) {
 			runnable.interrupt();
 		}
 		waitingRunnables.clear();
@@ -65,13 +68,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 
 	@Override
 	public void interrupt(Thread caller) {
-		synchronized (waitingRunnables) {
-			List<PrioritizedRunnable> removables = waitingRunnables.stream().filter(r -> r.getCaller().equals(caller))
-					.collect(Collectors.toList());
-			for (PrioritizedRunnable removable : removables) {
-				waitingRunnables.remove(removable);
-			}
-		}
+		waitingRunnables.clear(r -> r.getCaller().equals(caller));
 		for (PrioritizedRunnable runnable : activeRunnables) {
 			if (runnable.getCaller().equals(caller)) {
 				runnable.interrupt();
@@ -96,8 +93,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 	private void executeNextRunnableIfPossible() {
 		int availableSlot = getAvailableSlot();
 		if (availableSlot != SLOT_NOT_AVAILABLE) {
-			PrioritizedRunnable runnable = waitingRunnables.last();
-			waitingRunnables.remove(runnable);
+			PrioritizedRunnable runnable = waitingRunnables.pollLifo();
 			activeRunnables[availableSlot] = runnable;
 			runnable.start();
 		}
