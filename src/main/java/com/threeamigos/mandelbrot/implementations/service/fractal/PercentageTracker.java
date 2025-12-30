@@ -4,7 +4,7 @@ public class PercentageTracker {
 
 	private static final int INTERVAL_IN_MILLIS = 1000;
 
-	private int totalPointsToCalculate;
+	private final int totalPointsToCalculate;
 	private long lastNotificationMillis;
 	private int percentage;
 
@@ -26,7 +26,7 @@ public class PercentageTracker {
 	private int getPercentage(SliceDeque deque) {
 		// Since a slice may be split up in parts, the percentage floats around the
 		// actual percentage.
-		// It is uselessly time consuming to calculate the correct percentage due to all
+		// It is uselessly time-consuming to calculate the correct percentage due to all
 		// optimizations done in the calculation (symmetry, slice enlarging), so we
 		// return just an estimate percentage.
 		int totalMissingPoints = 0;
