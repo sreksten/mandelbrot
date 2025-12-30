@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.threeamigos.common.util.interfaces.ui.Resolution;
 import com.threeamigos.mandelbrot.interfaces.service.CalculationParameters;
@@ -28,18 +29,18 @@ import com.threeamigos.mandelbrot.interfaces.ui.ParametersRequester;
 
 public class SnapshotServiceImpl implements SnapshotService, Runnable {
 
-	private ParametersRequester parametersRequester;
-	private FractalServiceFactory fractalServiceFactory;
-	private ImageProducerServiceFactory imageProducerServiceFactory;
-	private ImagePersisterService imagePersisterService;
+	private final ParametersRequester parametersRequester;
+	private final FractalServiceFactory fractalServiceFactory;
+	private final ImageProducerServiceFactory imageProducerServiceFactory;
+	private final ImagePersisterService imagePersisterService;
 
 	private final PropertyChangeSupport propertyChangeSupport;
 	private final Queue<SnapshotJob> queuedSnapshotJobs;
 
 	private final JFileChooser fileChooser;
 
-	private AtomicBoolean running;
-	private Thread queuedSnapshotsThread;
+	private final AtomicBoolean running;
+	private final Thread queuedSnapshotsThread;
 
 	private FractalService bkgCalculator;
 
@@ -58,6 +59,8 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		fileChooser.setApproveButtonText("Save");
 		fileChooser.setApproveButtonToolTipText("Saves the snapshot to the selected file");
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Images", "png");
+		fileChooser.setFileFilter(filter);
 
 		running = new AtomicBoolean(true);
 		queuedSnapshotsThread = new Thread(null, this, "QueuedSnapshotsThread");
@@ -93,11 +96,11 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 	}
 
 	private String askFilename(Component parentComponent) {
-		String filename = new StringBuilder().append("3AM_Mandelbrot_")
-				.append(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())).append(".png").toString();
+		String filename = "3AM_Mandelbrot_" +
+                new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".png";
 
 		fileChooser.setSelectedFile(new File(filename));
-		int returnVal = fileChooser.showOpenDialog(parentComponent);
+		int returnVal = fileChooser.showSaveDialog(parentComponent);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
@@ -176,7 +179,7 @@ public class SnapshotServiceImpl implements SnapshotService, Runnable {
 		propertyChangeSupport.removePropertyChangeListener(pcl);
 	}
 
-	private class SnapshotJob {
+	private static class SnapshotJob {
 
 		final CalculationParameters calculationParameters;
 		final Resolution resolution;
