@@ -22,7 +22,6 @@ import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServic
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionServiceExecutorImpl;
 import com.threeamigos.mandelbrot.implementations.service.imageproducer.BlackWhiteColorModelImageProducer;
-import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
 import com.threeamigos.mandelbrot.implementations.ui.JuliaBoundariesServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.ParametersRequesterImpl;

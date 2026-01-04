@@ -12,7 +12,6 @@ import com.threeamigos.common.util.interfaces.collections.PriorityDeque;
 /**
  * Modern implementation of BackgroundExecutionService that leverages the Java
  * Executor framework.
- *
  * It uses a custom BlockingPriorityDequeWrapper to bridge the existing project
  * PriorityDeque logic with the standard ThreadPoolExecutor.
  */
