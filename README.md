@@ -17,3 +17,6 @@ Arrow left/right: uses more or less threads.<br/>
 Numeric keys 1 to 0 recall points of interest 1 to 10 (other points have to be recalled via the Points of Interest menu).<br/>
 <br/>
 The calculation part uses some optimizations that you can find here: https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+
+Release notes:
+1.0.7: Makes use of the BackgroundExecutionServiceExecutorImpl from com.threeamigos.common-utils.

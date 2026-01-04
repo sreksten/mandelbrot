@@ -11,11 +11,11 @@ public enum CalculationType {
 	FOREGROUND(
 			FractalService.CALCULATION_IN_PROGRESS_PROPERTY_CHANGE,
 			FractalService.CALCULATION_COMPLETE_PROPERTY_CHANGE,
-			10),
+			1),
 	BACKGROUND(
 			FractalService.BACKGROUND_CALCULATION_IN_PROGRESS_PROPERTY_CHANGE,
 			FractalService.BACKGROUND_CALCULATION_COMPLETE_PROPERTY_CHANGE,
-			5);
+			0);
 
 	private final String calculationInProgressEvent;
 	private final String calculationCompleteEvent;

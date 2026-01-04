@@ -1,10 +1,6 @@
 package com.threeamigos.mandelbrot.implementations.service.backgroundexecution;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import com.threeamigos.common.util.implementations.collections.BucketedPriorityDeque;
 import com.threeamigos.common.util.interfaces.collections.PriorityDeque;
@@ -16,38 +12,27 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 
 	private final AtomicBoolean running = new AtomicBoolean();
 
-	private final Thread mainThread;
+	private final Thread backgroundExecutionServiceMainThread;
 	private final PrioritizedRunnable[] activeRunnables;
 	private final PriorityDeque<PrioritizedRunnable> waitingRunnables;
 
-	public BackgroundExecutionServiceImpl(BackgroundExecutionPolicy backgroundExecutionPolicy) {
-		Comparator<PrioritizedRunnable> comparator;
-		switch (backgroundExecutionPolicy) {
-			case FIFO:
-				comparator = new PrioritizedRunnableFIFOComparator();
-				break;
-			case LIFO:
-				comparator = new PrioritizedRunnableLIFOComparator();
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid execution policy");
-		}
+	public BackgroundExecutionServiceImpl() {
 		activeRunnables = new PrioritizedRunnable[Runtime.getRuntime().availableProcessors()];
-		waitingRunnables = new BucketedPriorityDeque<>(31);
+		waitingRunnables = new BucketedPriorityDeque<>(1, PriorityDeque.Policy.LIFO);
 
 		running.set(true);
-		mainThread = new Thread(null, this, "BackgroundExecutionService");
-		mainThread.setDaemon(true);
-		mainThread.start();
+		backgroundExecutionServiceMainThread = new Thread(null, this, "BackgroundExecutionService");
+		backgroundExecutionServiceMainThread.setDaemon(true);
+		backgroundExecutionServiceMainThread.start();
 	}
 
 	@Override
 	public void schedule(Thread caller, Runnable runnable, int priority, boolean interruptCallerAtEnd,
 			String threadName) {
 		PrioritizedRunnable prioritizedRunnable = new PrioritizedRunnable(caller, priority, runnable,
-				interruptCallerAtEnd, threadName, mainThread);
+				interruptCallerAtEnd, threadName, backgroundExecutionServiceMainThread);
 		waitingRunnables.add(prioritizedRunnable, priority);
-		mainThread.interrupt();
+		backgroundExecutionServiceMainThread.interrupt();
 	}
 
 	@Override
@@ -63,7 +48,7 @@ public class BackgroundExecutionServiceImpl implements BackgroundExecutionServic
 			runnable.interrupt();
 		}
 		waitingRunnables.clear();
-		mainThread.interrupt();
+		backgroundExecutionServiceMainThread.interrupt();
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package com.threeamigos.mandelbrot.interfaces.service;
 
 /**
  * An object that handles background execution of Runnable objects, used to split
- * calculation in multiple threads
+ * calculations in multiple threads
  *
  * @author Stefano Reksten
  *

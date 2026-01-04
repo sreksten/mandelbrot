@@ -20,7 +20,7 @@ import com.threeamigos.mandelbrot.implementations.service.ImageProducerServiceFa
 import com.threeamigos.mandelbrot.implementations.service.PointsImpl;
 import com.threeamigos.mandelbrot.implementations.service.PointsOfInterestServiceImpl;
 import com.threeamigos.mandelbrot.implementations.service.SnapshotServiceImpl;
-import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionPolicy;
+import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionServiceExecutorImpl;
 import com.threeamigos.mandelbrot.implementations.service.imageproducer.BlackWhiteColorModelImageProducer;
 import com.threeamigos.mandelbrot.implementations.service.backgroundexecution.BackgroundExecutionServiceImpl;
 import com.threeamigos.mandelbrot.implementations.ui.CalculationParametersImpl;
@@ -62,7 +62,7 @@ public class Main {
 
 		Points points = new PointsImpl(resolution);
 
-		BackgroundExecutionService backgroundExecutionService = new BackgroundExecutionServiceImpl(BackgroundExecutionPolicy.LIFO);
+		BackgroundExecutionService backgroundExecutionService = new BackgroundExecutionServiceExecutorImpl();
 
 		FractalServiceFactory fractalServiceFactory = new FractalServiceFactoryImpl(backgroundExecutionService);
 
