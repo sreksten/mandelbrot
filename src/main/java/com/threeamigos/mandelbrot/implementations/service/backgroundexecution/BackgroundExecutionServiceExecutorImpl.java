@@ -34,11 +34,11 @@ public class BackgroundExecutionServiceExecutorImpl implements BackgroundExecuti
         int cores = Runtime.getRuntime().availableProcessors();
 
         // 1. Create our existing project-specific PriorityDeque
-        PriorityDeque<PrioritizedRunnable> deque = new BucketedPriorityDeque<>(1, PriorityDeque.Policy.LIFO);
+        PriorityDeque<Runnable> deque = new BucketedPriorityDeque<>(1, PriorityDeque.Policy.LIFO);
 
         // 2. Wrap it so it can be used by the ThreadPoolExecutor as a BlockingQueue
         // Note: BlockingPriorityDequeWrapper must be implemented to delegate to 'deque'
-        BlockingQueue<Runnable> blockingQueue = new BlockingPriorityDequeWrapper(deque);
+        BlockingQueue<Runnable> blockingQueue = new BlockingPriorityDequeWrapper<>(deque);
 
         // 3. Create the executor. It will automatically 'take()' from our wrapper,
         // which in turn will 'wait()' on the deque if it's empty.
